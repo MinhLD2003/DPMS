@@ -1,0 +1,38 @@
+@startuml
+
+actor User
+boundary "Risk Detail Screen" as Screen
+participant "RiskController" as Controller
+participant "RiskService" as Service
+participant "BaseService<Risk>" as BaseService
+participant "BaseRepository<Risk>" as Repo
+database "Database" as DB
+
+User -> Screen : View Risk Detail
+activate Screen
+Screen -> Controller : GetRisk(id)
+deactivate Screen
+activate Controller
+
+Controller -> Service : GetByIdAsync(id)
+activate Service
+Service -> BaseService : GetByIdAsync(id)
+activate BaseService
+BaseService -> Repo : GetByIdAsync(id)
+activate Repo
+Repo -> DB : Invoke SELECT query
+DB --> Repo : Risk (or null)
+Repo --> BaseService : Risk
+deactivate Repo
+BaseService --> Service : Risk
+deactivate BaseService
+Service --> Controller : Risk
+deactivate Service
+
+alt Risk found
+    Controller --> Screen : Show risk details
+else Not Found
+    Controller --> Screen : Show 404 Risk Not Found
+end
+deactivate Controller
+@enduml

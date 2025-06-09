@@ -1,0 +1,37 @@
+@startuml
+
+class DPIAController {
+    -_dpiaService : IDPIAService
+    -_mediator : IMediator
+
+    +DeleteDPIA(Guid id) : Task<ActionResult>
+}
+
+class DPIAService {
+    +DeleteAsync(Guid id, ClaimsPrincipal principal) : Task
+}
+
+class ClaimsPrincipal {
+    +Identities : IEnumerable<ClaimsIdentity>
+    ...
+}
+
+class DPIARepository {
+}
+
+class UserRepository {
+    +CheckUserInGroup(Guid userId, string groupName) : Task<Result<bool>>
+}
+
+abstract class BaseRepository<T> {
+    +GetByIdAsync(object id) : Task<T?>
+    +DeleteAsync(object id) : Task
+}
+
+DPIARepository --|> BaseRepository
+UserRepository --|> BaseRepository
+DPIAService --> UserRepository : "check user in DPO group"
+DPIAService --> DPIARepository : "Get DPIA instance"
+DPIAController --> DPIAService : "deletes DPIA"
+
+@enduml

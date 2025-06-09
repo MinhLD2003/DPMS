@@ -1,0 +1,57 @@
+@startuml
+
+' Định nghĩa các lớp
+class ExternalSystem {
+    - id : Guid
+    --
+    - name : varchar
+    - description : varchar
+    - domain : varchar
+}
+
+class ExternalSystemPurpose {
+    - id : Guid
+    --
+    - external_system_id : Guid
+    - purpose_id : Guid
+}
+
+class Purpose {
+    - id : Guid
+    --
+    - name : varchar
+    - description : text
+    - status : int
+    - created_at
+    - created_by
+    - modify_by
+    - modify_at
+}
+
+class Consent {
+    - id : Guid
+    --
+    - email : text
+    - consent_method : int  ' Ví dụ: webform, mail, ...
+    - consent_ip : varchar
+    - consent_user_agent : varchar
+    - consent_date : datetime
+}
+
+class PurposeConsent {
+    - id : Guid
+    --
+    - purpose_id : Guid
+    - consent_id : Guid
+    - external_system_id : Guid
+}
+
+' Định nghĩa các mối quan hệ
+ExternalSystem "1" -- "0..*" ExternalSystemPurpose : "has"
+Purpose "1" -- "0..*" ExternalSystemPurpose : "defines"
+
+Consent "1" -- "0..*" PurposeConsent : "records"
+Purpose "1" -- "0..*" PurposeConsent : "refers to"
+ExternalSystem "1" -- "0..*" Consent : "receives"
+
+@enduml

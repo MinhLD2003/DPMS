@@ -1,0 +1,34 @@
+@startuml
+
+actor User
+boundary "Issue Ticket Form" as Screen
+participant "IssueTicketController" as Controller
+participant "IssueTicketService" as Service
+participant "S3FileStorage" as S3
+database "Database" as DB
+
+User -> Screen : Fill ticket form + attach files
+activate Screen
+Screen -> Controller : CreateIssueTicket(IssueTicketVM, List<IFormFile>)
+deactivate Screen
+activate Controller
+
+Controller -> Service : CreateIssueTicket(vm, files)
+activate Service
+
+alt files are provided
+    loop for each file
+        Service -> S3 : UploadFileAsync(fileStream, key, contentType)
+        S3 --> Service : file URL
+    end
+end
+
+Service -> DB : INSERT INTO IssueTickets (...)
+DB --> Service : Ticket created
+
+Service --> Controller : Result
+deactivate Service
+
+Controller --> Screen : Show success message
+deactivate Controller
+@enduml

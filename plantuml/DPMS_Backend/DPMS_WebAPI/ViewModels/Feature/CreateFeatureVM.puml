@@ -1,0 +1,9 @@
+@startuml
+class CreateFeatureVM {
+    + <<required>> FeatureName : string <<get>> <<set>>
+    + Description : string? <<get>> <<set>>
+    + Url : string? <<get>> <<set>>
+}
+CreateFeatureVM --> "ParentId" string
+CreateFeatureVM --> "HttpMethod" HttpMethodType
+@enduml

@@ -1,0 +1,18 @@
+@startuml
+class GroupDetailVM {
+    + <<required>> Name : string <<get>> <<set>>
+    + Description : string? <<get>> <<set>>
+    + IsGlobal : bool <<get>> <<set>>
+}
+class SystemVM {
+    + Name : string <<get>> <<set>>
+    + Description : string <<get>> <<set>>
+}
+class "List`1"<T> {
+}
+GroupDetailVM --> "Id" string
+GroupDetailVM --> "System" SystemVM
+GroupDetailVM o-> "Features<FeatureVM>" "List`1"
+GroupDetailVM o-> "Users<UserVM>" "List`1"
+SystemVM --> "Id" string
+@enduml

@@ -1,0 +1,5 @@
+@startuml
+class DPIACreatedEventHandler {
+    + Handle(eventData:DPIACreatedEvent) : void
+}
+@enduml

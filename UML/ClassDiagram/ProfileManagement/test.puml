@@ -1,0 +1,79 @@
+@startuml
+skinparam style strictuml
+skinparam classAttributeIconSize 0
+
+' ===== Entity =====
+class User {
+    +int Id
+    +string Email
+    +string PasswordHash
+    +string Salt
+    +DateTime LastLoginTime
+}
+
+class LoginViewModel {
+    +string Email
+    +string Password
+}
+
+' ===== Interfaces =====
+interface IUserService {
+    +Task<User> GetByEmailAsync(string email)
+    +Task UpdateLastLoginTimeAsync(User user)
+}
+
+interface IUserRepository {
+    +Task<User> GetByEmailAsync(string email)
+    +Task UpdateAsync(User user)
+}
+
+interface IAuthService {
+    +string GenerateJwtToken(User user)
+}
+
+' ===== Implementations =====
+class UserService {
+    -IUserRepository _userRepository
+    +GetByEmailAsync(string email)
+    +UpdateLastLoginTimeAsync(User user)
+}
+
+class UserRepository {
+    -ApplicationDbContext _context
+    +GetByEmailAsync(string email)
+    +UpdateAsync(User user)
+}
+
+class AuthService {
+    -IConfiguration _config
+    +GenerateJwtToken(User user)
+}
+
+class AuthController {
+    -IUserService _userService
+    -IAuthService _authService
+    +Login(LoginViewModel request)
+}
+
+class PasswordUtils {
+    +static string HashPassword(string password, string salt)
+}
+
+' ===== Relationships =====
+AuthController --> IUserService
+AuthController --> IAuthService
+UserService ..|> IUserService
+UserService --> IUserRepository
+UserRepository ..|> IUserRepository
+AuthService ..|> IAuthService
+AuthService --> IConfiguration
+UserRepository --> ApplicationDbContext
+
+AuthController --> LoginViewModel
+AuthController --> PasswordUtils
+AuthService --> User
+UserService --> User
+UserRepository --> User
+PasswordUtils --> User
+
+@enduml

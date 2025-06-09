@@ -1,0 +1,58 @@
+@startuml
+actor "User" as Admin
+boundary "Form Management Screen" as Screen
+participant "FormController" as Controller
+participant "FormService" as Service
+participant "BaseService<Form>" as BaseService
+participant "BaseRepository<Form>" as BaseRepo
+database "Database" as DB
+
+Admin -> Screen : Update form status
+activate Screen
+Screen -> Controller : UpdateStatus(id, status)
+deactivate Screen
+activate Controller
+
+' === Get form by id ===
+Controller -> Service : GetByIdAsync(id)
+activate Service
+Service -> BaseService : GetByIdAsync(id)
+activate BaseService
+BaseService -> BaseRepo : GetByIdAsync(id)
+activate BaseRepo
+BaseRepo -> DB : SELECT * FROM Forms WHERE Id = ?
+DB --> BaseRepo : Form
+BaseRepo --> BaseService : Form
+deactivate BaseRepo
+BaseService --> Service : Form
+deactivate BaseService
+Service --> Controller : Form
+deactivate Service
+
+' === Validate current status ===
+alt form == null
+    Controller --> Screen : Show failed message
+else proceed with update
+    ' === Update form entity ===
+    Controller -> Controller : form.Status = new status
+    ' === Save update ===
+    Controller -> Service : UpdateAsync(form)
+    activate Service
+    Service -> BaseService : UpdateAsync(form)
+    activate BaseService
+    BaseService -> BaseRepo : UpdateAsync(form)
+    activate BaseRepo
+    BaseRepo -> DB : UPDATE Forms SET Status = ? WHERE Id = ?
+    DB --> BaseRepo : OK
+    BaseRepo --> BaseService : Updated Form
+    deactivate BaseRepo
+    BaseService --> Service : Updated Form
+    deactivate BaseService
+    Service --> Controller : Done
+    deactivate Service
+
+    Controller --> Screen : Return success message
+    deactivate Controller
+end
+
+@enduml

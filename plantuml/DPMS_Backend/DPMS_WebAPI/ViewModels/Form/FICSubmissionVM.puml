@@ -1,0 +1,9 @@
+@startuml
+class FICSubmissionVM {
+    + Name : string <<get>> <<set>>
+}
+FICSubmissionVM --> "SystemId" string
+FICSubmissionVM --> "FormId" string
+FICSubmissionVM --> "Id" string
+FICSubmissionVM --> "CreateAt" DateTime
+@enduml

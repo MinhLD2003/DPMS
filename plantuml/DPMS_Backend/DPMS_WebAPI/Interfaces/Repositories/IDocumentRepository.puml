@@ -1,0 +1,7 @@
+@startuml
+interface IDocumentRepository {
+}
+class "IRepository`1"<T> {
+}
+"IRepository`1" "<Document>" <|-- IDocumentRepository
+@enduml

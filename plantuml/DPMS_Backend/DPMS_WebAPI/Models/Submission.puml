@@ -1,0 +1,9 @@
+@startuml
+class Submission {
+    + FormId : string? <<get>> <<set>>
+    + SystemId : string? <<get>> <<set>>
+}
+BaseModel <|-- Submission
+Submission --> "Form" Form
+Submission --> "ExternalSystem" ExternalSystem
+@enduml

@@ -1,0 +1,84 @@
+@startuml
+
+actor User
+boundary "External System Form" as Screen
+participant "ExternalSystemController" as Controller
+participant "ExternalSystemService" as Service
+participant "IMediator" as Mediator
+participant "ExternalSystemRepository" as SystemRepo
+participant "GroupRepository" as GroupRepo
+participant "UserRepository" as UserRepo
+database "Database" as DB
+
+User -> Screen : Fill system info + emails
+activate Screen
+Screen -> Controller : AddNewSystem(AddSystemVM)
+deactivate Screen
+activate Controller
+
+Controller -> Service : AddNewSystem(model)
+activate Service
+
+' === Add ExternalSystem ===
+Service -> SystemRepo : AddAsync(ExternalSystem)
+activate SystemRepo
+SystemRepo -> DB : Invoke [INSERT] [ExternalSystems]
+DB --> SystemRepo : Created ExternalSystem (with Id)
+SystemRepo --> Service : ExternalSystem
+deactivate SystemRepo
+
+' === Create BO & PD groups ===
+Service -> GroupRepo : AddAsync(Group BO)
+activate GroupRepo
+GroupRepo -> DB : Invoke [INSERT] [Groups]
+DB --> GroupRepo : OK
+GroupRepo --> Service : Group BO
+deactivate GroupRepo
+
+Service -> GroupRepo : AddAsync(Group PD)
+activate GroupRepo
+GroupRepo -> DB : Invoke [INSERT] [Groups]
+DB --> GroupRepo : OK
+GroupRepo --> Service : Group PD
+deactivate GroupRepo
+
+' === Validate Business Owner Emails ===
+Service -> UserRepo : FindAsync(Email in BO list)
+activate UserRepo
+UserRepo -> DB : Invoke [SELECT] [Users]
+DB --> UserRepo : List<User>
+UserRepo --> Service : BO Users
+deactivate UserRepo
+
+' === Validate Product Dev Emails ===
+Service -> UserRepo : FindAsync(Email in PD list)
+activate UserRepo
+UserRepo -> DB : Invoke [SELECT] [Users]
+DB --> UserRepo : List<User>
+UserRepo --> Service : PD Users
+deactivate UserRepo
+
+' === Map users to groups, link groups to system (in memory only) ===
+
+' === Publish notifications for BO ===
+loop each BO user
+    Service -> Mediator : Publish(UserAddedToSystemNotification)
+    activate Mediator
+    Mediator --> Service : OK
+    deactivate Mediator
+end
+
+' === Publish notifications for PD ===
+loop each PD user
+    Service -> Mediator : Publish(UserAddedToSystemNotification)
+    activate Mediator
+    Mediator --> Service : OK
+    deactivate Mediator
+end
+
+Service --> Controller : ExternalSystem
+deactivate Service
+Controller --> Screen : Show confirmation
+deactivate Controller
+
+@enduml

@@ -1,0 +1,32 @@
+@startuml
+
+actor Admin
+boundary "Group Assignment UI" as UI
+participant "GroupController" as Controller
+participant "GroupService" as Service
+participant "GroupRepository" as Repository
+database "Database" as DB
+
+Admin -> UI : Select users to assign
+activate UI
+UI -> Controller : AddUsersToGroup(groupId, userIds)
+deactivate UI
+activate Controller
+
+Controller -> Service : AddUserToGroup(groupId, userIds)
+activate Service
+
+Service -> Repository : AddUserToGroup(groupId, userIds)
+activate Repository
+
+Repository -> DB : Invoke INSERT query
+DB --> Repository : Insert OK
+Repository --> Service : Task.Completed
+deactivate Repository
+
+Service --> Controller : Rows added (int)
+deactivate Service
+
+Controller --> UI : Show success response
+deactivate Controller
+@enduml

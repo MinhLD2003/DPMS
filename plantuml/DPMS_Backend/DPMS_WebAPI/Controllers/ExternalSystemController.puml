@@ -1,0 +1,17 @@
+@startuml
+class ExternalSystemController {
+    + ExternalSystemController(groupService:IGroupService, mapper:IMapper, systemService:IExternalSystemService, logger:ILogger<ExternalSystemController>, userService:IUserService)
+    + <<async>> GetAll() : Task<ActionResult<List<ExternalSystemVM>>>
+    + <<async>> AddNewSystem(model:AddSystemVM) : Task<ActionResult>
+    + <<async>> RemoveSystem(systemId:string) : Task<ActionResult>
+    + <<async>> AddPurposeToSystem(model:SystemPurposeVM) : Task<IActionResult>
+    + <<async>> BulkAddPurposesToSystem(model:SystemPurposeVM) : Task<IActionResult>
+    + <<async>> GetSystemPurposes(systemId:string) : Task<IActionResult>
+    + <<async>> RemoveSystemPurpose(model:SystemPurposeVM) : Task<IActionResult>
+    + <<async>> BulkRemoveSystemPurposes(model:SystemPurposeVM) : Task<IActionResult>
+    + <<async>> GetAllUsers(systemId:string) : Task<ActionResult<List<SystemUserVM>>>
+    + <<async>> GetSystemDetails(systemId:string) : Task<ActionResult<ExternalSystemDetailVM>>
+    + <<async>> UpdateSystemStatus(model:SystemStatusVM) : Task<ActionResult>
+}
+ControllerBase <|-- ExternalSystemController
+@enduml

@@ -1,0 +1,13 @@
+@startuml
+class Purpose {
+    + Name : string? <<get>> <<set>>
+    + Description : string? <<get>> <<set>>
+}
+enum PurposeStatus {
+    Draft,
+    Active,
+    Inactive,
+}
+BaseModel <|-- Purpose
+Purpose --> "Status" PurposeStatus
+@enduml

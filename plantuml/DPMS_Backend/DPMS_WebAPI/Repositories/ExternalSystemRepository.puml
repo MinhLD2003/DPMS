@@ -1,0 +1,10 @@
+@startuml
+class ExternalSystemRepository {
+    + ExternalSystemRepository(context:DPMSContext)
+    + <<async>> GetUsersAsync(systemId:string) : Task<IEnumerable<User>>
+}
+class "BaseRepository`1"<T> {
+}
+"BaseRepository`1" "<ExternalSystem>" <|-- ExternalSystemRepository
+IExternalSystemRepository <|-- ExternalSystemRepository
+@enduml

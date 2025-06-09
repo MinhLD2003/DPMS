@@ -1,0 +1,10 @@
+@startuml
+class UserController {
+    + UserController(logger:ILogger<UserController>, userService:IUserService)
+    + <<async>> ChangePassword(model:ChangePasswordVM) : Task<ActionResult>
+    + <<async>> GetUsers(queryParams:QueryParams) : Task<ActionResult>
+    + <<async>> GetUserById(id:string) : Task<ActionResult>
+    + <<async>> UpdateUserStatus(model:UpdateUserStatusVM) : Task<ActionResult>
+}
+ControllerBase <|-- UserController
+@enduml

@@ -1,0 +1,17 @@
+@startuml
+class SystemUserVM {
+    + FullName : string <<get>> <<set>>
+    + Email : string <<get>> <<set>>
+}
+class SystemGroupVM {
+    + Name : string <<get>> <<set>>
+    + Description : string <<get>> <<set>>
+}
+class "List`1"<T> {
+}
+SystemUserVM --> "Id" string
+SystemUserVM --> "Groups<SystemGroupVM>" "List`1"
+SystemUserVM --> "Status" UserStatus
+SystemUserVM --> "LastTimeLogin" DateTime
+SystemGroupVM --> "Id" string
+@enduml

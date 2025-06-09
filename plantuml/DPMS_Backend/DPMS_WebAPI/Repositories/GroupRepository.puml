@@ -1,0 +1,15 @@
+@startuml
+class GroupRepository {
+    + GroupRepository(context:DPMSContext)
+    + <<async>> AddUserToGroup(groupId:string, userIds:List<string>) : Task<int>
+    + <<async>> DeleteUserFromGroup(groupId:string, userIds:List<string>) : Task<int>
+    + <<async>> GetUsersInGroup(groupName:string) : Task<List<User>>
+    + <<async>> GetGroupsBySystemIdAsync(systemId:string) : Task<List<Group>>
+    + <<async>> UserBelongToGroupAsync(userId:string, groupId:string) : Task<bool>
+    + <<async>> UserBelongToGroupAsync(email:string, groupName:string) : Task<bool>
+}
+class "BaseRepository`1"<T> {
+}
+"BaseRepository`1" "<Group>" <|-- GroupRepository
+IGroupRepository <|-- GroupRepository
+@enduml

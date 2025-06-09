@@ -1,0 +1,36 @@
+@startuml
+
+class IssueTicketController {
+    -_ticketService : IIssueTicketService
+
+    +UpdateIssueTicketStatus(Guid id, [FromBody] IssueTicketStatus IssueTicketStatus) : Task<IActionResult>
+}
+
+class IssueTicketService {
+    +GetByIdAsync(Guid id) : Task<T>
+    +UpdateAsync<IssueTicket>(IssueTicket entity) : Task<IssueTicket>
+}
+
+abstract class BaseService<T> {
+    #Repository : IRepository<T>
+    +UpdateAsync(T entity) : Task<T>
+    +GetByIdAsync(object id) : Task<T?>
+}
+
+abstract class BaseRepository<T> {
+    +GetByIdAsync(Guid id) : Task<T>
+    +Update(T entity) : void
+}
+
+enum IssueTicketStatus {
+    Pending
+    Accept
+    Reject
+    Done
+}
+
+IssueTicketController --> IssueTicketService : "if ticket exists, update ticket status"
+BaseService --> BaseRepository : "uses"
+IssueTicketService --|> BaseService : "update ticket status"
+
+@enduml

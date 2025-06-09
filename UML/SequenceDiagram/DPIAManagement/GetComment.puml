@@ -1,0 +1,33 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam defaultTextAlignment center
+
+actor User
+boundary "DPIA Comment Viewer" as Screen
+participant "DPIAController" as Controller
+participant "DPIAService" as Service
+participant "DPIARepository" as Repo
+database "Database" as DB
+
+User -> Screen : Click "View Comments"
+activate Screen
+Screen -> Controller : GetComments(dpiaId)
+deactivate Screen
+activate Controller
+
+Controller -> Service : GetCommentsAsync(dpiaId)
+activate Service
+
+Service -> Repo : GetCommentsAsync(dpiaId)
+activate Repo
+Repo -> DB : SELECT FROM Comments 
+DB --> Repo : List<Comment>
+Repo --> Service : IEnumerable<Comment>
+deactivate Repo
+
+Service --> Controller : List<Comment>
+deactivate Service
+
+Controller --> Screen : Display comments
+deactivate Controller
+@enduml

@@ -1,0 +1,43 @@
+@startuml
+actor "User" as Admin
+boundary "DSAR Import UI" as Screen
+participant "DSARController" as Controller
+participant "DsarService" as Service
+participant "DSARBaseService" as BaseService
+participant "DSARBaseRepository" as Repo
+database "Database" as DB
+
+Admin -> Screen : Upload Excel (.xlsx)
+activate Screen
+Screen -> Controller : DoImportDsar(importFile)
+deactivate Screen
+activate Controller
+
+Controller -> Service : DoImportDsarAsync(Stream)
+activate Service
+
+' === Step 1: Parse Excel to VM ===
+Service -> Service : Read Excel rows into List<DsarImportVM>
+
+' === Step 2: Validate imported data ===
+Service -> Service : ValidateDsarImportData(importData)
+
+' === Step 4: Bulk insert to DB ===
+Service -> BaseService : BulkAddAsync(List<DSAR>)
+activate BaseService
+BaseService -> Repo : BulkAddAsync(DSAR list)
+activate Repo
+Repo -> DB : INSERT INTO DSAR (...)
+DB --> Repo : OK
+Repo --> BaseService : true/false
+deactivate Repo
+BaseService --> Service : true/false
+deactivate BaseService
+
+' === Step 5: Return result ===
+Service --> Controller : Result (OK or Fail)
+deactivate Service
+
+Controller --> Screen : Show import success/fail
+deactivate Controller
+@enduml

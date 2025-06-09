@@ -1,0 +1,64 @@
+@startuml
+
+abstract class BaseService<T> {
+    #Repository : IRepository<T>
+    #_unitOfWork : IUnitOfWork
+}
+
+abstract class BaseRepository<T> {
+    #_context : DPMSContext
+    #_dbSet : DbSet<T>
+}
+
+interface IRepository<T> {
+    +GetByIdAsync(object id) : Task<T?>
+    +Update(T entity) : void
+}
+
+BaseRepository --|> IRepository
+
+BaseService --|> IService
+BaseService --> IRepository : uses IRepository<T>
+
+class RiskController {
+    -_riskService : IRiskService
+
+    +UpdateRisk(Guid id, RiskVM model) : Task<IActionResult>
+}
+
+class RiskVM {
+    +Id : Guid
+    +RiskName : string?
+    +Mitigation : string?
+    +Category : RiskCategory
+    +RiskContingency : string?
+    +Strategy : ResponseStrategy
+    +RiskImpact : int
+    +RiskProbability : int
+    +Priority : int
+    +RiskImpactAfterMitigation : int
+    +RiskProbabilityAfterMitigation : int
+    +PriorityAfterMitigation : int
+    +RiskOwner : string?
+    +RaisedAt : DateTime?
+}
+
+class RiskService {
+}
+
+interface IRiskService {
+}
+
+interface IService<T> {
+    +GetByIdAsync(object id) : Task<T?>
+    +UpdateAsync(T entity) : Task<T>
+}
+
+IRiskService --|> IService
+RiskService --|> IRiskService
+RiskService --|> BaseService : inherits default \nimplementations from
+RiskController --> IRiskService
+RiskController --> RiskVM : receives from client
+RiskController --> Id : receives from client
+
+@enduml

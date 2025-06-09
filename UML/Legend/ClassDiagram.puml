@@ -1,0 +1,34 @@
+@startuml
+Class1	<|--	Class2 : Inheritance 
+Class3	<|..	Class4 : Inheritance 
+Class5	*--	Class6 : Composition
+Class7	o--	Class8 : Aggregation
+Class9	--> Class10 : Dependency
+@enduml
+@startuml
+class ClassA {
+  {field} A field (despite parentheses)
+  {field} B field (despite parentheses)
+  {field} C field (despite parentheses)
+  --
+  {method} Method A 
+  {method} Method B
+  {method} Method C
+}
+interface InterfaceA<ModelA> {
+  {method} Method 1
+  {method} Method 2
+  {method} Method 3
+  {method} Method 4
+}
+@enduml
+@startuml
+
+class Dummy {
+ -field1
+ #field2
+ ~method1()
+ +method2()
+}
+
+@enduml

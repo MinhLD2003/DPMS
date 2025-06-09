@@ -1,0 +1,9 @@
+@startuml
+class DPIAMember {
+    string DPIAId
+    string UserId
+}
+BaseModel <|-- DPIAMember
+DPIAMember --> "DPIA" DPIA
+DPIAMember --> "User" User
+@enduml

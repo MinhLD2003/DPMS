@@ -1,0 +1,11 @@
+@startuml
+class UserPermission {
+    + IsPic : bool <<get>> <<set>>
+    + Description : string?
+}
+BaseModel <|-- UserPermission
+UserPermission --> "ExternalSystemId" string
+UserPermission --> "UserId" string
+UserPermission --> "Role" ExternalSystemRole
+UserPermission --> "Status" PermissionStatus
+@enduml

@@ -1,0 +1,16 @@
+@startuml
+class ExternalSystemDetailVM {
+    + Name : string <<get>> <<set>>
+    + Description : string <<get>> <<set>>
+    + CreateBy : string <<get>> <<set>>
+    + UpdateBy : string <<get>> <<set>>
+}
+class "List`1"<T> {
+}
+ExternalSystemDetailVM --> "Id" string
+ExternalSystemDetailVM --> "CreateAt" DateTime
+ExternalSystemDetailVM --> "UpdateAt" DateTime
+ExternalSystemDetailVM --> "Users<SystemUserVM>" "List`1"
+ExternalSystemDetailVM --> "Groups<SystemGroupVM>" "List`1"
+ExternalSystemDetailVM --> "Purposes<PurposeVM>" "List`1"
+@enduml

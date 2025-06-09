@@ -1,0 +1,6 @@
+@startuml
+class UpdateUserStatusVM {
+}
+UpdateUserStatusVM --> "Id" string
+UpdateUserStatusVM --> "Status" UserStatus
+@enduml

@@ -1,0 +1,134 @@
+@startuml
+hide circle
+top to bottom direction
+skinparam packageStyle rectangle
+skinparam DefaultFontSize 20
+skinparam defaultFontName Arial
+skinparam backgroundColor #FDFDFD               
+skinparam classBackgroundColor #F3F2F1       
+skinparam ClassHeaderBackgroundColor  #FFBC66  
+skinparam classBorderColor #8C8C8C          
+skinparam ClassBorderThickness 1    
+skinparam classFontColor #000000 
+skinparam ClassAttributeFontColor #393939
+skinparam classFontStyle bold
+skinparam ArrowColor #393939         
+skinparam ArrowThickness 2         
+
+' ===========================
+' ERD Notations
+' ===========================
+' PK = Primary Key
+' FK = Foreign Key
+' o--||  : Many-to-One (Mandatory)
+' }o--|| : Many-to-One (Optional to Mandatory)
+' }o-r-|| : Many-to-One (Optional to Mandatory), Related/Reference
+' }o-u-|| : Many-to-One (Optional to Mandatory), Used by
+' }o-l-|| : Many-to-One (Optional to Mandatory), Linked/Belongs to
+' }o--|| : Many-to-One (Optional to Mandatory), General association
+' o--o  : Many-to-Many (if used)
+' o--|{  : Many-to-(One or Many)
+' -[hidden]-> : Logical ordering / no actual relation
+
+' =======================
+' Entities (No attributes)
+' =======================
+
+entity "Comments" as Comments
+entity "ConsentPurposes" as ConsentPurposes
+entity "Consents" as Consents
+entity "ConsentTokens" as ConsentTokens
+entity "DPIADocuments" as DPIADocuments
+entity "DPIAEvents" as DPIAEvents
+entity "DPIAMembers" as DPIAMembers
+entity "DPIAResponsibilities" as DPIAResponsibilities
+entity "DPIAs" as DPIAs
+entity "DSARs" as DSARs
+entity "ExternalSystemPurposes" as ExternalSystemPurposes
+entity "ExternalSystems" as ExternalSystems
+entity "Features" as Features
+
+together {
+  entity "FormElements" as FormElements
+  entity "FormResponses" as FormResponses
+  entity "Forms" as Forms
+}
+
+entity "GroupFeatures" as GroupFeatures
+entity "Groups" as Groups
+entity "IssueTicketDocuments" as IssueTicketDocuments
+entity "IssueTickets" as IssueTickets
+entity "MemberResponsibilities" as MemberResponsibilities
+entity "PrivacyPolicies" as PrivacyPolicies
+entity "Purposes" as Purposes
+entity "Responsibilities" as Responsibilities
+entity "Risks" as Risks
+entity "Submissions" as Submissions
+entity "UserGroups" as UserGroups
+entity "Users" as Users
+
+' =======================
+' Relationships
+' =======================
+
+' =======================
+' Relationships with Notation
+' =======================
+
+Comments }o--|| Users : create
+
+ConsentPurposes }o-r-|| Consents : referenced by
+ConsentPurposes }o-u-|| Purposes : belongs to
+
+ConsentTokens }o--|| ExternalSystems : has
+Consents }o-u-|| ExternalSystems : belongs to
+Consents }o-l-|| PrivacyPolicies : links to
+
+DPIADocuments }o-r-|| DPIAs : belongs to
+
+DPIAEvents }o--|| DPIAs : has
+DPIAEvents }o--|| Users : cause by
+
+DPIAMembers }o--|| DPIAs : has
+DPIAMembers }o--|| Users : belongs to
+
+DPIAResponsibilities }o--|| DPIAs : belongs to
+DPIAResponsibilities }o--|| Responsibilities : belongs to
+
+DPIAs }o--|| ExternalSystems : links to
+
+DSARs }o--u-|| ExternalSystems : send to
+
+ExternalSystemPurposes }o-r-|| ExternalSystems : has
+ExternalSystemPurposes }o-l-|| Purposes : belongs to
+
+Features }o--|| Features : has child
+
+FormElements }o--|| FormElements : has child
+FormElements }o-u-|| Forms : contains
+
+FormResponses }o-r-|| FormElements : is referenced by
+FormResponses }o-u-|| Submissions : belongs to
+
+GroupFeatures }o--|| Groups : belongs to
+GroupFeatures }o--|| Features : belongs to
+
+Groups }o--|| ExternalSystems : has
+
+IssueTicketDocuments }o-l-|| IssueTickets : belongs to
+
+IssueTickets }o-l-|| ExternalSystems : for
+
+MemberResponsibilities }o--|| DPIAMembers : belongs to
+MemberResponsibilities }o--|| DPIAResponsibilities : assign to
+
+Submissions }o-l-|| ExternalSystems : submit for
+Submissions }o-r-|| Forms : follow template
+
+UserGroups }o--|| Groups : belongs to
+UserGroups }o--|| Users : belongs to
+
+IssueTickets -[hidden]-> Submissions
+Submissions -[hidden]-> Consents
+
+@enduml

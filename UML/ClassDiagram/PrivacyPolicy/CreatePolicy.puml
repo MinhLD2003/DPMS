@@ -1,0 +1,60 @@
+@startuml
+
+abstract class BaseService<T> {
+    #Repository : IRepository<T>
+    #_unitOfWork : IUnitOfWork
+}
+
+abstract class BaseRepository<T> {
+    #_context : DPMSContext
+    #_dbSet : DbSet<T>
+}
+
+interface IRepository<T> {
+    +Task<T> AddAsync(T entity)
+}
+
+BaseRepository --|> IRepository
+
+BaseService --|> IService
+BaseService --> IRepository : uses IRepository<T>
+
+class PrivacyPolicyController {
+    -_privacyPolicyService : IPrivacyPolicyService
+
+    +Task<IActionResult> CreatePolicy([FromBody] PolicyVM model)
+}
+
+class PolicyVM {
+    +PolicyCode : string
+    +Title : string
+    +Description : string
+    +Content : string
+    +Status : PolicyStatus
+}
+
+enum PolicyStatus {
+    Draft
+    Active
+    Inactive
+}
+
+PolicyVM --> PolicyStatus : has statuses
+
+class PrivacyPolicyService {
+}
+
+interface IPrivacyPolicyService {
+}
+
+interface IService<T> {
+    +Task<T> AddAsync(T entity)
+}
+
+IPrivacyPolicyService --|> IService
+PrivacyPolicyService --|> IPrivacyPolicyService
+PrivacyPolicyService --|> BaseService : inherits default \nimplementations from
+PrivacyPolicyController --> IPrivacyPolicyService : uses GetPagedAsync<T>
+PrivacyPolicyController --> PolicyVM : receives from client
+
+@enduml

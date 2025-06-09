@@ -1,0 +1,11 @@
+@startuml
+class IssueTicketService {
+    + IssueTicketService(unitOfWork:IUnitOfWork, mapper:IMapper, fileRepository:IFileRepository)
+    + <<async>> CreateIssueTicket(issueTicket:IssueTicket, files:List<IFormFile>) : Task<IssueTicket>
+    + <<async>> UpdateIssueTicketFilesOnS3(id:string, newFiles:List<IFormFile>, removedFiles:List<string>) : Task<List<Document>>
+}
+class "BaseService`1"<T> {
+}
+"BaseService`1" "<IssueTicket>" <|-- IssueTicketService
+IIssueTicketService <|-- IssueTicketService
+@enduml

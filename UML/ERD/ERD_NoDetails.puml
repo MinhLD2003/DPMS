@@ -1,0 +1,360 @@
+@startuml
+hide circle
+top to bottom direction
+skinparam packageStyle rectangle
+'skinparam defaultTextAlignment center
+'skinparam linetype ortho
+' skinparam nodesep 20
+skinparam ranksep 10
+skinparam DefaultFontSize 20
+skinparam defaultFontName Arial
+skinparam backgroundColor #FDFDFD               
+skinparam classBackgroundColor #F3F2F1       
+skinparam ClassHeaderBackgroundColor  #FFBC66  
+skinparam classBorderColor #8C8C8C          
+skinparam ClassBorderThickness 1    
+skinparam classFontColor #000000 
+skinparam ClassAttributeFontColor #393939
+skinparam classFontStyle bold
+skinparam ArrowColor #393939         
+skinparam ArrowThickness 2         
+' =======================
+' Entities (no timestamps or audit)
+' =======================
+
+entity "Comments" as Comments  {
+  * Id 
+  --
+  ReferenceId  
+  UserId   
+  Type  
+  Content  
+}
+
+entity "ConsentPurposes" as ConsentPurposes {
+  * Id   
+  --
+  ConsentId  
+  PurposeId  
+  Status  
+}
+
+entity "Consents" as Consents {
+  * Id   
+  --
+  DataSubjectId  
+  Email  
+  ConsentMethod  
+  ConsentIp  
+  ConsentUserAgent  
+  ConsentDate  
+  PrivacyPolicyId  
+  ExternalSystemId  
+  IsWithdrawn  
+  WithdrawnDate  
+}
+
+entity "ConsentTokens" as ConsentTokens {
+  * TokenString  
+  --
+  IsValid  
+  ExpireTime  
+  ExternalSystemId  
+}
+
+entity "DPIADocuments" as DPIADocuments {
+  * Id   
+  --
+  DPIAId  
+  ResponsibleId  
+  Title 
+  FileUrl  
+  FileFormat  
+}
+
+entity "DPIAEvents" as DPIAEvents {
+  * Id   
+  --
+  DPIAId  
+  Event  
+  EventType  
+  UserId  
+}
+
+entity "DPIAMembers" as DPIAMembers {
+  * Id   
+  --
+  DPIAId  
+  UserId  
+}
+
+entity "DPIAResponsibilities" as DPIAResponsibilities {
+  * Id   
+  --
+  DPIAId  
+  ResponsibilityId  
+  DueDate  
+  Status  
+  Comment  
+}
+
+entity "DPIAs" as DPIAs {
+  * Id   
+  --
+  ExternalSystemId  
+  Title  
+  Description  
+  Status  
+  Type  
+  DueDate  
+}
+
+entity "DSARs" as DSARs {
+  * Id   
+  --
+  RequesterName  
+  RequesterEmail  
+  PhoneNumber  
+  Address  
+  Description  
+  Type  
+  Status  
+  RequiredResponse  
+  CompletedDate  
+  ExternalSystemId  
+}
+
+entity "ExternalSystemPurposes" as ExternalSystemPurposes {
+  * Id   
+  --
+  ExternalSystemId  
+  PurposeId  
+}
+
+entity "ExternalSystems" as ExternalSystems {
+  * Id   
+  --
+  Name  
+  Domain
+  Description  
+  Status  
+  ApiKeyHash  
+}
+
+entity "Features" as Features {
+  * Id   
+  --
+  FeatureName  
+  Description  
+  ParentId  
+  State  
+  Url  
+  HttpMethod  
+}
+
+together {
+  entity "FormElements" as FormElements {
+    * Id   
+    --
+    FormId  
+    ParentId  
+    Name  
+    DataType  
+    OrderIndex  
+    }
+
+    entity "FormResponses" as FormResponses {
+    * Id   
+    --
+    SubmissionId  
+    FormElementId  
+    Value  
+    }
+
+    entity "Forms" as Forms {
+      * Id  
+      Name  
+      Version  
+      FormType  
+      Status  
+    }
+}
+
+
+entity "GroupFeatures" as GroupFeatures {
+  * Id   
+  --
+  GroupId  
+  FeatureId  
+}
+
+entity "Groups" as Groups {
+  * Id   
+  --
+  Name  
+  Description  
+  IsGlobal  
+  SystemId  
+}
+
+entity "IssueTicketDocuments" as IssueTicketDocuments {
+  * Id  
+  --
+  IssueTicketId  
+  Title 
+  FileUrl  
+  FileFormat  
+}
+
+entity "IssueTickets" as IssueTickets {
+  * Id   
+  --
+  ExternalSystemId  
+  Title  
+  Description  
+  TicketType  
+  IssueTicketStatus  
+}
+
+entity "MemberResponsibilities" as MemberResponsibilities {
+  * Id   
+  --
+  MemberId  
+  DPIAResponsibilityId  
+  CompletionStatus  
+  IsPic  
+}
+
+entity "PrivacyPolicies" as PrivacyPolicies {
+  * Id   
+  --
+  PolicyCode  
+  Title  
+  Description  
+  Content  
+  Status  
+}
+
+entity "Purposes" as Purposes {
+  * Id   
+  --
+  Name  
+  Description  
+  Status  
+}
+
+entity "Responsibilities" as Responsibilities {
+  * Id  
+  --
+  Title  
+  Description  
+}
+
+entity "Risks" as Risks {
+  * Id    
+  --
+  RiskName  
+  Mitigation  
+  Category  
+  RiskContingency  
+  Strategy  
+  RiskImpact  
+  RiskProbability  
+  Priority  
+  PriorityAfterMitigation  
+  RiskImpactAfterMitigation  
+  RiskProbabilityAfterMitigation  
+  RaisedAt  
+  RiskOwner  
+}
+
+entity "Submissions" as Submissions {
+  * Id    
+  --
+  FormId  
+  SystemId  
+}
+
+entity "UserGroups" as UserGroups {
+  * Id   
+  --
+  UserId  
+  GroupId  
+  IsPic  
+}
+
+entity "Users" as Users {
+  * Id   
+  --
+  UserName  
+  FullName  
+  Dob  
+  Email  
+  Salt  
+  Password  
+  IsEmailConfirmed  
+  IsPasswordConfirmed  
+  LastTimeLogin  
+  Status  
+}
+
+' =======================
+' Relationships
+' =======================
+
+Comments }o--|| Users : create
+
+ConsentPurposes }o-r-|| Consents : referenced by
+ConsentPurposes }o-u-|| Purposes : belongs to
+
+ConsentTokens }o--|| ExternalSystems : has
+Consents }o-u-|| ExternalSystems : belongs to
+Consents }o-l-|| PrivacyPolicies : links to
+
+DPIADocuments }o-r-|| DPIAs : belongs to
+
+DPIAEvents }o--|| DPIAs : has
+DPIAEvents }o--|| Users : cause by
+
+DPIAMembers }o--|| DPIAs : has
+DPIAMembers }o--|| Users : belongs to
+
+DPIAResponsibilities }o--|| DPIAs : belongs to
+DPIAResponsibilities }o--|| Responsibilities : belongs to
+
+DPIAs }o--|| ExternalSystems : links to
+
+DSARs }o--u-|| ExternalSystems : send to
+
+ExternalSystemPurposes }o-r-|| ExternalSystems : has
+ExternalSystemPurposes }o-l-|| Purposes : belongs to
+
+Features }o--|| Features : has child
+
+FormElements }o--|| FormElements : has child
+FormElements }o-u-|| Forms : contains
+
+FormResponses }o-r-|| FormElements : is referenced by
+FormResponses }o-u-|| Submissions : belongs to
+
+GroupFeatures }o--|| Groups : belongs to
+GroupFeatures }o--|| Features : belongs to
+
+Groups }o--|| ExternalSystems : has
+
+IssueTicketDocuments }o-l-|| IssueTickets : belongs to
+
+IssueTickets }o-l-|| ExternalSystems : for
+
+MemberResponsibilities }o--|| DPIAMembers : belongs to
+MemberResponsibilities }o--|| DPIAResponsibilities : assign to
+
+Submissions }o-l-|| ExternalSystems : submit for
+Submissions }o-r-|| Forms : follow template
+
+UserGroups }o--|| Groups : belongs to
+UserGroups }o--|| Users : belongs to
+
+IssueTickets -[hidden]-> Submissions
+ Submissions -[hidden]-> Consents
+@enduml

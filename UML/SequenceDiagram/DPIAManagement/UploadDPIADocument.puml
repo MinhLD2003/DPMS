@@ -1,0 +1,40 @@
+@startuml
+actor User
+boundary "Upload DPIA Document Screen" as Screen
+participant "DPIAController" as Controller
+participant "ClaimsPrincipal" as Principal
+participant "DPIAService" as Service
+participant "S3FileStorage" as S3
+participant "DPIARepository" as Repo
+database "Database" as DB
+
+User -> Screen : Select file and submit
+activate Screen
+Screen -> Controller : UploadDocument(dpiaId, file)
+deactivate Screen
+activate Controller
+
+Controller -> Principal : Get current user identity
+Controller -> Service : UploadDocumentAsync(dpiaId, file, user)
+activate Service
+
+Service -> Principal : Extract userId
+note right of Principal : For author or ownership\n(can be used to tag document)
+
+Service -> S3 : UploadFileAsync(fileStream, key, contentType)
+activate S3
+S3 --> Service : fileUrl (string)
+deactivate S3
+
+Service -> Repo : UploadDocumentAsync(dpiaId, document)
+activate Repo
+Repo -> DB : INSERT INTO DPIADocuments (...)
+DB --> Repo : OK
+Repo --> Service : OK
+deactivate Repo
+
+Service --> Controller : OK
+deactivate Service
+Controller --> Screen : Show upload success
+deactivate Controller
+@enduml

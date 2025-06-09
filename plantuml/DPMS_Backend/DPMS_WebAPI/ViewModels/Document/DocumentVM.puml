@@ -1,0 +1,11 @@
+@startuml
+class DocumentVM {
+    + Title : string <<get>> <<set>>
+    + Description : string? <<get>> <<set>>
+    + FileUrl : string <<get>> <<set>>
+    + FileFormat : string <<get>> <<set>>
+}
+DocumentVM --> "Id" string
+DocumentVM --> "DocumentType" DocumentType
+DocumentVM --> "RelatedId" string
+@enduml

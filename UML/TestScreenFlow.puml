@@ -1,0 +1,18 @@
+@startuml
+' Optional: set a title for the diagram
+title Application Screen Flow
+
+' Define participants as screens using rectangles (or other shapes)
+rectangle "Home Screen" as Home
+rectangle "Login Screen" as Login
+rectangle "Dashboard" as Dashboard
+rectangle "Settings Screen" as Settings
+
+' Draw arrows to represent navigation flows between the screens
+Home --> Login : "Click Login"
+Login --> Dashboard : "Successful Authentication"
+Dashboard --> Settings : "Open Settings"
+Settings --> Dashboard : "Save / Cancel"
+Dashboard --> Home : "Logout"
+
+@enduml

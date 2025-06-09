@@ -1,0 +1,38 @@
+@startuml
+
+actor DPO
+boundary "Purpose List Screen" as Screen
+participant "PurposeController" as Controller
+participant "PurposeService" as Service
+participant "BaseService<Purpose>" as BaseService
+participant "IRepository<Purpose>" as Repo
+database "Database" as DB
+
+DPO -> Screen : Load or filter purposes
+activate Screen
+Screen -> Controller : GetPurposes(QueryParams)
+deactivate Screen
+activate Controller
+
+Controller -> Service : GetPagedAsync(queryParams)
+activate Service
+
+Service -> BaseService : GetPagedAsync(queryParams)
+activate BaseService
+
+BaseService -> Repo : GetPagedAsync(queryParams)
+activate Repo
+Repo -> DB : Invoke SELECT query
+DB --> Repo : List<Purpose>
+Repo --> BaseService : PagedResponse<Purpose>
+deactivate Repo
+
+BaseService --> Service : PagedResponse<Purpose>
+deactivate BaseService
+
+Service --> Controller : PagedResponse<Purpose>
+deactivate Service
+
+Controller --> Screen : Show list of purposes + pagination
+deactivate Controller
+@enduml

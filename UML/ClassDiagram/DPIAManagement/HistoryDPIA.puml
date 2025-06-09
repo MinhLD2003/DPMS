@@ -1,0 +1,43 @@
+@startuml
+
+class DPIAController {
+    -_dpiaService : IDPIAService
+
+    +GetHistory(Guid id) : Task<ActionResult>
+}
+
+class DPIAService {
+    -_mapper : IMapper
+
+    +GetHistoryAsync(Guid id, ClaimsPrincipal principal) : Task<List<EventDetailVM>>
+    -CheckDPIAMembershipAsync(Guid id, Guid userId) : Task
+}
+
+class UserRepository {
+    +CheckUserInGroup(Guid userId, string groupName) : Task<Result<bool>> 
+}
+
+class DPIAMemberRepository {
+    +FindAsync(Expression<Func<T, bool>> predicate) : Task<IEnumerable<T>>
+}
+
+class DPIARepository {
+    +GetByIdAsync<DPIA>(object id); : Task<DPIA?>
+    +GetEventsAsync(Guid id) : Task<List<DPIAEvent>>
+}
+
+class EventDetailVM {
+    +Id : Guid
+    +Text : string
+    +EventType : DPIAEventType
+    +CreatedAt : DateTime
+    +CreatedBy : string
+}
+
+DPIAController --> DPIAService : "calls service to update comment"
+DPIARepository --> EventDetailVM : "retrieves event details from repository"
+DPIAService --> UserRepository : "checks if user\nis in DPO/Admin group"
+DPIAService --> DPIAMemberRepository : "only DPIA members\ncan see the history"
+DPIAService --> DPIARepository : "check DPIA exists and get events"
+
+@enduml

@@ -1,0 +1,10 @@
+@startuml
+class ExternalSystemVM {
+    + <<required>> Name : string <<get>> <<set>>
+    + <<required>> Description : string <<get>> <<set>>
+    + CreateBy : string? <<get>> <<set>>
+}
+ExternalSystemVM --> "Id" string
+ExternalSystemVM --> "CreateAt" DateTime
+ExternalSystemVM --> "Status" ExternalSystemStatus
+@enduml

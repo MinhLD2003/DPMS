@@ -1,0 +1,169 @@
+@startuml
+' !include .\\DPMS_Backend\DPMS.EmailEngine\RazorViewTostringRenderer.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Program.puml
+' !include .\\DPMS_Backend\DPMS_WebAPI.Tests\TestEnvironment.puml
+' !include .\\DPMS_Backend\DPMS_WebAPI.Tests\UnitTest1.puml
+!include .\\DPMS_Backend\DPMS.EmailEngine\EmailTemplates\AccountCredentialsVM.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\AuthPolicies\PolicyAuthorizationHandler.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\AuthPolicies\PolicyRequirement.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Constants\PermissionGroup.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Constants\Policies.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Controllers\AccountController.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Controllers\AuthController.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Controllers\DPIAController.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Controllers\ExternalSystemController.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Controllers\FeatureController.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Controllers\FileController.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Controllers\ForgotpasswordController.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Controllers\FormController.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Controllers\GroupController.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Controllers\IssueTicketController.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Controllers\PurposeController.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Controllers\UserController.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Enums\DpiaStatus.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Enums\ExternalSystemRole.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Enums\ExternalSystemStatus.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Enums\FeatureState.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Enums\FormElementTypes.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Enums\GroupType.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Enums\PermissionStatus.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Enums\UserStatus.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\FileStorage\S3FileStorage.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Interfaces\IUnitOfWork.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\MapperProfiles\AutoMapperProfiles.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Models\BaseModel.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Models\Consent.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Models\Document.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Models\DPIA.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Models\DPIAMember.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Models\DPMSContext.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Models\DPMSLoggingContext.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Models\ExternalSystem.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Models\ExternalSystemPurpose.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Models\Feature.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Models\Form.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Models\FormElement.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Models\FormResponse.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Models\Group.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Models\GroupFeature.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Models\HttpLog.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Models\IssueTicket.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Models\Purpose.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Models\Submission.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Models\User.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Models\UserGroup.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Models\UserPermissions.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Repositories\BaseRepository.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Repositories\DocumentRepository.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Repositories\DPIARepository.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Repositories\ExternalSystemPurposeRepository.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Repositories\ExternalSystemRepository.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Repositories\FeatureRepository.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Repositories\FormRepository.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Repositories\GroupRepository.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Repositories\IssueTicketRepository.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Repositories\PurposeRepository.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Repositories\UnitOfWork.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Repositories\UserRepository.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Services\AuthService.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Services\BaseService.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Services\DocumentService.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Services\DPIAService.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Services\EmailService.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Services\ExternalSystemService.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Services\FeatureService.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Services\FileStorageService.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Services\FormService.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Services\GroupService.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Services\IdentityService.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Services\IssueTicketService.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Services\LoggingInterceptorService.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Services\PurposeService.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Services\UserService.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Utils\PasswordUtils.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Utils\QueryableExtensions.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\ViewModels\PagedResponse.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\ViewModels\QueryParams.puml
+' !include .\\DPMS_Backend\DPMS_WebAPI.Tests\Controllers\AuthControllerTests.puml
+' !include .\\DPMS_Backend\DPMS_WebAPI.Tests\Services\AuthServiceTests.puml
+' !include .\\DPMS_Backend\DPMS_WebAPI.Tests\Services\FeatureServiceTest.puml
+' !include .\\DPMS_Backend\DPMS_WebAPI.Tests\Services\UserServiceTest.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Events\EventModels\DPIACreatedEvent.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Events\Handlers\DPIACreatedHandle.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Interfaces\Repositories\IDocumentRepository.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Interfaces\Repositories\IDPIARepository.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Interfaces\Repositories\IExternalSystemPurposeRepository.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Interfaces\Repositories\IExternalSystemRepository.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Interfaces\Repositories\IFeatureRepository.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Interfaces\Repositories\IFileRepository.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Interfaces\Repositories\IFormRepository.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Interfaces\Repositories\IGroupRepository.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Interfaces\Repositories\IIssueTicketRepository.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Interfaces\Repositories\IPurposeRepository.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Interfaces\Repositories\IRepository.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Interfaces\Repositories\IUserRepository.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Interfaces\Services\IDocumentService.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Interfaces\Services\IDPIAService.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Interfaces\Services\IEmailService.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Interfaces\Services\IExternalSystemService.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Interfaces\Services\IFeatureService.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Interfaces\Services\IFormService.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Interfaces\Services\IGroupService.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Interfaces\Services\IIssueTicketService.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Interfaces\Services\IPurposeService.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Interfaces\Services\IService.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Interfaces\Services\IUserService.puml
+' !include .\\DPMS_Backend\DPMS_WebAPI\Migrations\DPMSLogging\20250304140957_InitLoggingDb.puml
+' !include .\\DPMS_Backend\DPMS_WebAPI\Migrations\DPMSLogging\20250304140957_InitLoggingDb.Designer.puml
+' !include .\\DPMS_Backend\DPMS_WebAPI\Migrations\DPMSLogging\20250304141629_ModifyModel.puml
+' !include .\\DPMS_Backend\DPMS_WebAPI\Migrations\DPMSLogging\20250304141629_ModifyModel.Designer.puml
+' !include .\\DPMS_Backend\DPMS_WebAPI\Migrations\DPMSLogging\20250304142636_LogResponses.puml
+' !include .\\DPMS_Backend\DPMS_WebAPI\Migrations\DPMSLogging\20250304142636_LogResponses.Designer.puml
+' !include .\\DPMS_Backend\DPMS_WebAPI\Migrations\DPMSLogging\DPMSLoggingContextModelSnapshot.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\ViewModels\Auth\AuthRequest.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\ViewModels\Auth\CreateAccountVM.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\ViewModels\Auth\ForgotPasswordRequest.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\ViewModels\Auth\LoginVM.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\ViewModels\Auth\RegisterVM.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\ViewModels\Auth\ResetPasswordModel.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\ViewModels\Document\DocumentVM.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\ViewModels\DPIA\AddDPIAVM.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\ViewModels\DPIA\DPIADetailVM.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\ViewModels\Email\AccountCredentials.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\ViewModels\ExternalSystem\AddSystemVM.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\ViewModels\ExternalSystem\ExternalSystemDetailVM.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\ViewModels\ExternalSystem\ExternalSystemVM.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\ViewModels\ExternalSystem\SystemPurposeVM.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\ViewModels\ExternalSystem\SystemStatusVM.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\ViewModels\ExternalSystem\SystemUserVM.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\ViewModels\Feature\CreateFeatureVM.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\ViewModels\Feature\FeatureDetailVM.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\ViewModels\Feature\FeatureGroupAssignmentModel.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\ViewModels\Feature\FeatureVM.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\ViewModels\Form\CreateFormVm.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\ViewModels\Form\FICSubmissionVM.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\ViewModels\Form\FormElementVM.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\ViewModels\Form\FormSubmissionVM.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\ViewModels\Form\FormVM.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\ViewModels\Group\CreateGroupVM.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\ViewModels\Group\GroupDetailVM.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\ViewModels\Group\GroupVM.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\ViewModels\IssueTicket\IssueTicketVM.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\ViewModels\Purpose\PurposeVM.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\ViewModels\User\ChangePasswordVM.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\ViewModels\User\UpdateUserStatusVM.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\ViewModels\User\UserDetailVM.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\ViewModels\User\UserListVM.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\ViewModels\User\UserVM.puml
+' !include .\\DPMS_Backend\DPMS.EmailEngine\obj\Debug\net8.0\.NETCoreApp,Version=v8.0.AssemblyAttributes.puml
+' !include .\\DPMS_Backend\DPMS.EmailEngine\obj\Debug\net8.0\DPMS.EmailEngine.AssemblyInfo.puml
+' !include .\\DPMS_Backend\DPMS.EmailEngine\obj\Debug\net8.0\DPMS.EmailEngine.GlobalUsings.g.puml
+' !include .\\DPMS_Backend\DPMS.EmailEngine\obj\Debug\net8.0\DPMS.EmailEngine.RazorAssemblyInfo.puml
+' !include .\\DPMS_Backend\DPMS_WebAPI\obj\Debug\net8.0\.NETCoreApp,Version=v8.0.AssemblyAttributes.puml
+' !include .\\DPMS_Backend\DPMS_WebAPI\obj\Debug\net8.0\DPMS_WebAPI.AssemblyInfo.puml
+' !include .\\DPMS_Backend\DPMS_WebAPI\obj\Debug\net8.0\DPMS_WebAPI.GlobalUsings.g.puml
+' !include .\\DPMS_Backend\DPMS_WebAPI\obj\Debug\net8.0\DPMS_WebAPI.MvcApplicationPartsAssemblyInfo.puml
+' !include .\\DPMS_Backend\DPMS_WebAPI.Tests\obj\Debug\net8.0\.NETCoreApp,Version=v8.0.AssemblyAttributes.puml
+' !include .\\DPMS_Backend\DPMS_WebAPI.Tests\obj\Debug\net8.0\DPMS_WebAPI.Tests.AssemblyInfo.puml
+' !include .\\DPMS_Backend\DPMS_WebAPI.Tests\obj\Debug\net8.0\DPMS_WebAPI.Tests.GlobalUsings.g.puml
+@enduml

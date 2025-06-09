@@ -1,0 +1,63 @@
+@startuml
+actor User
+boundary "Login Screen" as Screen
+participant "AuthController" as Controller
+participant "UserService" as Service
+participant "AuthService" as TokenService
+participant "PasswordUtils" as Util
+participant "UserRepository" as Repository
+database "Database" as DB
+
+User -> Screen : Enter email & password
+activate Screen
+Screen -> Controller : Login(request: LoginVM)
+deactivate Screen
+activate Controller
+
+Controller -> Service : GetUserByEmailAsync(request.Email)
+activate Service
+Service -> Repository : GetByEmail(request.Email)
+activate Repository
+Repository -> DB : SELECT * FROM Users WHERE Email = ?
+activate DB
+DB --> Repository : User entity
+deactivate DB
+Repository --> Service : Return User
+deactivate Repository
+Service --> Controller : Return User
+deactivate Service
+
+alt User not null 
+    Controller -> Util : HashPassword(request.Password, Salt)
+    activate Util
+    Util --> Controller : Return hashed password
+    deactivate Util
+
+    alt HashedPassword Match 
+        Controller -> Service : UpdateLastLoginTimeStamp(user)
+        activate Service
+        Service -> Repository : Update(user.LastLoginTime)
+        activate Repository
+        Repository -> DB : UPDATE Users SET LastLoginTime = NOW()
+        activate DB
+        DB --> Repository : OK
+        deactivate DB
+        Repository --> Service : OK
+        deactivate Repository
+        Service --> Controller : OK
+        deactivate Service
+
+        Controller -> TokenService : GenerateJwtToken(user)
+        activate TokenService
+        TokenService --> Controller : Return JWT
+        deactivate TokenService
+
+        Controller -> Screen : Return success + JWT
+    else Mismatch
+        Controller -> Screen : Show error: "Invalid credentials"
+    end
+else Null
+    Controller --> Screen: "Invalid credentials"
+end
+deactivate Controller
+@enduml

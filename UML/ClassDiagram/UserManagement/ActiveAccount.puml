@@ -1,0 +1,53 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam defaultTextAlignment center
+skinparam linetype ortho
+top to bottom direction
+
+' ==== ENUM ====
+enum UserStatus {
+    Deactivated
+    Activated
+}
+
+' ==== VIEWMODEL ====
+class UpdateUserStatusVM {
+    +Id : Guid
+    +Status : UserStatus
+}
+
+UpdateUserStatusVM --> UserStatus
+
+' ==== CONTROLLER ====
+class UserController {
+    -_userService : IUserService
+    +Task<ActionResult> UpdateUserStatus(UpdateUserStatusVM model)
+}
+UserController --> UpdateUserStatusVM : "receives from client"
+UserController --> IUserService : "calls service to update user status"
+
+' ==== SERVICE LAYER ====
+interface IUserService {
+    +Task UpdateUserStatus(UpdateUserStatusVM model)
+}
+
+class UserService {
+    -IUserRepository _userRepository
+    +Task UpdateUserStatus(UpdateUserStatusVM model)
+}
+UserService ..|> IUserService : "implements service logic"
+UserService --> IUserRepository : "uses repository for data access"
+
+' ==== REPOSITORY LAYER ====
+interface IUserRepository {
+    +Task<User?> GetByIdAsync(Guid id)
+    +Task UpdateAsync(User user)
+}
+
+class UserRepository {
+    +Task<User?> GetByIdAsync(Guid id)
+    +Task UpdateAsync(User user)
+}
+UserRepository ..|> IUserRepository : "implements repository methods"
+
+@enduml

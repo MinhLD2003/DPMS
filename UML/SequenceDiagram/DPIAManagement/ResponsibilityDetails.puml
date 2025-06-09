@@ -1,0 +1,53 @@
+@startuml
+actor User
+boundary "DPIA Responsibility Detail Screen" as Screen
+participant "DPIAController" as Controller
+participant "DPIAService" as Service
+participant "DPIARepository" as DPIARepo
+participant "DPIAResponsibilityRepository" as RespRepo
+participant "CommentRepository" as CommentRepo
+database "Database" as DB
+
+User -> Screen : View a specific responsibility
+activate Screen
+Screen -> Controller : GetResponsibility(dpiaId, responsibilityId)
+deactivate Screen
+activate Controller
+
+Controller -> Service : GetResponsibilityAsync(dpiaId, responsibilityId)
+activate Service
+
+Service -> DPIARepo : GetDetailAsync(dpiaId)
+activate DPIARepo
+DPIARepo -> DB : SELECT FROM DPIAs
+DB --> DPIARepo : DPIA
+DPIARepo --> Service : DPIA
+deactivate DPIARepo
+
+Service -> RespRepo : GetDetailAsync(responsibilityId)
+activate RespRepo
+RespRepo -> DB : SELECT FROM Responsibilities 
+DB --> RespRepo : Responsibility
+RespRepo --> Service : Responsibility
+deactivate RespRepo
+
+Service -> RespRepo : GetMembersAsync(responsibilityId)
+activate RespRepo
+RespRepo -> DB : SELECT FROM DPIAMembers
+DB --> RespRepo : Members
+RespRepo --> Service : Members
+deactivate RespRepo
+
+Service -> CommentRepo : FindAsync(c => c.ReferenceId == responsibilityId)
+activate CommentRepo
+CommentRepo -> DB : SELECT FROM Comments
+DB --> CommentRepo : Comments
+CommentRepo --> Service : List<CommentVM>
+deactivate CommentRepo
+
+Service --> Controller : DPIAResponsibilityDetailVM
+deactivate Service
+
+Controller --> Screen : Display full responsibility detail
+deactivate Controller
+@enduml

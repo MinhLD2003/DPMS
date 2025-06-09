@@ -1,0 +1,4 @@
+@startuml
+interface "IService`1"<T> {
+}
+@enduml

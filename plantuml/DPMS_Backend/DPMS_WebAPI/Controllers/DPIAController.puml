@@ -1,0 +1,7 @@
+@startuml
+class DPIAController {
+    + DPIAController(dpiaService:IDPIAService)
+    + <<async>> AddDPIA(model:AddDPIAVM) : Task<ActionResult>
+}
+ControllerBase <|-- DPIAController
+@enduml

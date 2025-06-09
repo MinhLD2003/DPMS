@@ -1,0 +1,10 @@
+@startuml
+class AddSystemVM {
+    + <<required>> Name : string <<get>> <<set>>
+    + <<required>> Description : string <<get>> <<set>>
+}
+class "List`1"<T> {
+}
+AddSystemVM --> "ProductDevEmails<string>" "List`1"
+AddSystemVM --> "BusinessOwnerEmails<string>" "List`1"
+@enduml

@@ -1,0 +1,9 @@
+@startuml
+class EmailService {
+    + EmailService(configuration:IConfiguration, renderer:IRazorViewTostringRenderer, mapper:IMapper, logger:ILogger<EmailService>)
+    + <<async>> SendAsync(from:string, to:string, senderName:string, receiverName:string, subject:string, body:string) : Task
+    + <<async>> SendAccountCredentials(credentials:AccountCredentials) : Task
+    + <<async>> SendResetPasswordEmailAsync(email:string, token:string) : Task<bool>
+}
+IEmailService <|-- EmailService
+@enduml

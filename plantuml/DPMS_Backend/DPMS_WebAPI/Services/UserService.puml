@@ -1,0 +1,16 @@
+@startuml
+class UserService {
+    + UserService(unitOfWork:IUnitOfWork, userRepository:IUserRepository, mapper:IMapper)
+    + <<async>> ChangePassword(email:string, model:ChangePasswordVM) : Task
+    + <<async>> GetUserByEmailAsync(email:string) : Task<User?>
+    + UpdateUserPassword(password:string, salt:string, email:string) : Task<User>
+    + <<async>> GetFeaturesByUserEmailAsync(email:string) : Task<List<Feature>>
+    + <<async>> GetManageSystems(email:string) : Task<List<ExternalSystemVM>>
+    + <<async>> UpdateLastLoginTimeStamp(user:User) : Task
+    + <<async>> UpdateUserStatus(model:UpdateUserStatusVM) : Task
+}
+class "BaseService`1"<T> {
+}
+"BaseService`1" "<User>" <|-- UserService
+IUserService <|-- UserService
+@enduml

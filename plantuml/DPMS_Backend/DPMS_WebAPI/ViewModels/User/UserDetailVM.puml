@@ -1,0 +1,15 @@
+@startuml
+class UserDetailVM {
+    + <<required>> UserName : string <<get>> <<set>>
+    + <<required>> FullName : string <<get>> <<set>>
+    + Email : string? <<get>> <<set>>
+    + Salt : string? <<get>> <<set>>
+    + Password : string? <<get>> <<set>>
+    + IsEmailConfirmed : bool <<get>> <<set>>
+    + IsPasswordConfirmed : bool <<get>> <<set>>
+}
+UserDetailVM --> "Id" string
+UserDetailVM --> "Dob" DateTime
+UserDetailVM --> "LastTimeLogin" DateTime
+UserDetailVM --> "Status" UserStatus
+@enduml

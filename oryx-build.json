@@ -1,0 +1,8 @@
+{
+"build": {
+    "dotnet": {
+    "project": "DPMS_Backend/DPMS_WebAPI/DPMS_WebAPI.csproj"
+    }
+}
+}
+  

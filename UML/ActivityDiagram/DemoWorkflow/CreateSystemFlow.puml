@@ -1,0 +1,26 @@
+@startuml
+|DPO|
+start
+:Login to DPMS;
+:Create a new system;
+
+|System (DPMS)|
+:Send email notification to all system members;
+
+|Product Developer|
+:Login to DPMS;
+:Fill Compliance form (FIC form);
+:Create new ticket requesting DPIA for the system;
+
+|DPO|
+:Login to DPMS;
+:Review newly created ticket;
+
+if (Ticket OK?) then (yes)
+  :Approve the ticket;
+else (no)
+  :Reject the ticket;
+endif
+
+stop
+@enduml

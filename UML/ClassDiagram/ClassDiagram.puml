@@ -1,0 +1,340 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam roundcorner 5
+skinparam linetype ortho
+skinparam shadowing false
+skinparam handwritten false
+skinparam padding 5
+skinparam backgroundColor white
+
+
+class FeatureAuthorizationHandler {
+    + HandleRequirementAsync(AuthorizationHandlerContext context, IAuthorizationRequirement requirement) : Task<bool>
+}
+
+
+
+' Base abstract class with clearer attributes
+abstract class BaseModel {
+    + Id: Guid
+    + CreatedAt: DateTime
+    + LastModifiedAt: DateTime
+    + CreatedById: Guid
+    + LastModifiedById: Guid
+    + IsDeleted: bool
+    + DeletedAt: DateTime?
+}
+
+class User {
+    + UserName: string
+    + FullName: string
+    + Dob: DateTime
+    + Email: string
+    + Salt: string
+    + Password: string
+    + IsEmailConfirmed: bool
+    + IsPasswordConfirmed: bool
+    + Status: UserStatus
+    + LastLoginDate: DateTime?
+    + Login(email: string, password: string): bool
+    + LoginWithGoogle(string Token): bool
+    + UpdateProfile(userId: Guid, userName: string, fullName: string, dob: DateTime, email: string): void
+    + ViewProfile(userId: Guid): User
+    + ChangePassword(userId:Guid , oldPassword: string, newPassword: string): bool
+    + ForgotPassword(email: string): bool
+    + ConfirmEmail(token: string): bool
+    + CreateUser(requester: User, userName: string, fullName: string, dob: DateTime, email: string, password: string): bool
+    + GetUserGroups(userId: Guid): List<GroupUser>
+    + GetUserFeatures(userId: Guid): List<Feature>
+}
+
+enum UserStatus {
+    ACTIVE
+    INACTIVE
+    PENDING_VERIFICATION
+}
+
+class GroupUser {
+    + Name: string
+    + Description: string
+    + AddUserToGroup(userId: Guid, groupId: Guid): bool
+    + RemoveUser(userId: Guid, groupId: Guid): bool
+
+}
+
+class Feature {
+    + FeatureName: string
+    + Description: string
+    + State: FeatureState
+    + AssignFeatureToGroup(groupId: Guid, featureId: Guid): bool
+    + UnassignFeatureFromGroup(groupId: Guid, featureId: Guid): bool
+    + UpdateState(featureId: Guid, state: FeatureState): bool
+    + GetFeatureGroups(featureId: Guid): List<GroupUser>
+}
+
+enum FeatureState {
+    ENABLED
+    DISABLED
+}
+
+' Issue tracking
+class IssueTicket {
+    + Title: string
+    + Description: string
+    + Attachments: List<Document>
+    + TicketType: TicketType
+    + CreatedAt: DateTime
+    + Status: TicketStatus
+    + CreateIssueTicket(title: string, description: string, ticketType: TicketType, ticketStatus: TicketStatus, files: List<IFormFile>): bool
+    + UpdateStatus(ticketId: Guid, status: TicketStatus): bool
+    + AddAttachment(ticketId: Guid, document: Document): bool
+    + RemoveAttachment(ticketId: Guid, documentId: Guid): bool
+}
+
+enum TicketStatus {
+    OPEN
+    IN_PROGRESS
+    PENDING
+    RESOLVED
+    CLOSED
+}
+
+enum TicketType {
+    DPIA
+    Violation
+    Risk
+    System
+}
+
+class Document {
+    + Title: string
+    + DocumentType: string
+    + RelatedId: Guid
+    + FileUrl: string
+    + Size: long
+    + FileFormat: string
+    + UploadDocument(key: string, fileStream: Stream): bool
+    + SaveDocument(title: string, documentType: string, relatedId: Guid, fileFormat: string, size: long, createdBy: Guid, isPublic: bool) : bool 
+    + ListAllDocuments() : List<Document>
+    + DownloadDocument(fileUrl: string): Stream
+    + DeleteDocument(fileUrl: string): bool
+}
+
+class DPIA {
+    + ExternalSystemId: Guid
+    + Title: string
+    + Description: string
+    + Status: DPIAStatus
+    + ApprovalDate: DateTime?
+    + RejectionReason: string
+    + CreateDPIA(externalSystemId: Guid, title: string, description: string): bool
+    + UpdateDPIAStatus(dpiaId: Guid, status: DPIAStatus): bool
+    + AddDocument(dpiaId: Guid, document: Document): bool
+    + RemoveDocument(dpiaId: Guid, documentId: Guid): bool
+    + RequestApproval(dpiaId: Guid): bool
+}
+
+enum DPIAStatus {
+    DRAFT
+    SUBMITTED
+    PROCESSING
+    APPROVED
+    REJECTED
+}
+class DPIAMember {
+    + Id: Guid
+    + UserId: Guid
+    + DpiaId: Guid
+    + Role: string
+    + InvitedAt: DateTime
+    + AcceptedAt: DateTime?
+    + Status: MemberStatus
+    + InviteMember(dpiaId: Guid, userId: Guid, role: string,invitedById: Guid): bool
+    + AcceptInvitation(memberId: Guid, acceptedById: Guid): bool
+    + DeclineInvitation(memberId: Guid, declinedById: Guid, reason: string): bool
+}
+
+enum MemberStatus {
+    INVITED
+    ACTIVE
+    DECLINED
+    REMOVED
+}
+
+class WorkTracing {
+    + Id: Guid
+    + DpiaId: Guid
+    + UserId: Guid
+    + InitialReview: bool
+    + RiskAssessment: bool
+    + ComplianceCheck: bool
+    + FinalApproval: bool
+    + Status: WorkStatus
+    + TimeSpent: int
+    + CreateWorkTracing(dpiaId: Guid, userId: Guid, role: string, createdById: Guid): bool
+    + UpdateWorkProgress(workId: Guid, initialReview: bool, riskAssessment: bool, complianceCheck: bool, finalApproval: bool, timeSpent: int, updatedById: Guid): bool
+}
+
+enum WorkStatus {
+    NOT_STARTED
+    IN_PROGRESS
+    ON_HOLD
+    COMPLETED
+    CANCELLED
+}
+' External systems
+class ExternalSystem {
+    + Name: string
+    + Description: string
+    + Domain: string
+    + Status: ExternalSystemStatus
+    + RegisterSystem(name: string, description: string, domain: string): bool
+    + UpdateSystemStatus(systemId: Guid, status: ExternalSystemStatus): bool
+    + UpdateSystemDetails(systemId: Guid, name: string, description: string, domain: string): bool
+}
+
+enum ExternalSystemStatus {
+    ACTIVE
+    INACTIVE
+    DRAFT
+}
+
+' Consent management
+class Consent {
+    + UserId: Guid
+    + Email: string
+    + PurposeId: int
+    + DataTypes: List<string>
+    + ConsentVersion: string
+    + ConsentText: string
+    + ConsentGrantedDate: DateTime
+    + ConsentWithdrawDate: DateTime?
+    + ConsentWithdrawReason: string
+    + WithdrawConsent(consentId: Guid, reason: string): bool
+    + SubmitConsent(userId: Guid, purposeId: int, dataTypes: List<string>, consentText: string): bool
+    + ValidateConsent(consentId: Guid): bool
+    + IsConsentValid(userId: Guid, purposeId: int): bool
+}
+
+' Forms
+class Form {
+    + Name: string
+    + Description: string
+    + Version: string
+    + Fields: List<FormField>
+    + IsPublished: bool
+    + SubmitForm(formId: Guid, data: Dictionary<string, string>): bool
+    + PublishForm(formId: Guid): bool
+    + CreateFormDraft(name: string, description: string): Form
+    + AddField(formId: Guid, field: FormField): bool
+    + RemoveField(formId: Guid, fieldId: Guid): bool
+}
+
+class FormField {
+    + Name: string
+    + Label: string
+    + FieldType: FieldType
+    + IsRequired: bool
+    + ValidationRules: string
+    + DefaultValue: string
+    + Order: int
+    + CreateField(name: string, label: string, fieldType: FieldType, isRequired: bool): FormField
+    + UpdateValidationRules(fieldId: Guid, validationRules: string): bool
+}
+
+enum FieldType {
+    TEXT
+    NUMBER
+    DATE
+    EMAIL
+    CHECKBOX
+    RADIO
+    SELECT
+    TEXTAREA
+    FILE
+}
+
+' Inheritance relationships
+User --|> BaseModel
+GroupUser --|> BaseModel
+Feature --|> BaseModel
+IssueTicket --|> BaseModel
+Document --|> BaseModel
+DPIA --|> BaseModel
+ExternalSystem --|> BaseModel
+Consent --|> BaseModel
+Form --|> BaseModel
+FormField --|> BaseModel
+
+' User management relationships
+User "1" -- "1" UserStatus: has status
+User "0..*" -- "0..*" GroupUser: belongs to >
+
+' Authorization relationships
+FeatureAuthorizationHandler -- User: authorizes >
+FeatureAuthorizationHandler -- Feature: checks >
+
+' Feature relationships
+GroupUser "0..*" -- "0..*" Feature: has access to >
+Feature "1" -- "1" FeatureState: has state
+
+' Issue tracking relationships
+User "1" -- "0..*" IssueTicket: creates >
+IssueTicket "0..*" -- "1" TicketStatus: has status
+IssueTicket "0..*" -- "1" TicketType: has type
+IssueTicket "1" o-- "0..*" Document: has attachments >
+
+' DPIA relationships
+User "1" -- "0..*" DPIA: creates >
+DPIA "1" -- "1" DPIAStatus: has status
+DPIA "1" o-- "0..*" Document: contains >
+DPIA "0..*" -- "1" ExternalSystem: related to >
+DPIA "0..1" -- "0..*" IssueTicket: involves >
+DPIA "1" -- "0..*" DPIAMember: has members >
+DPIA "1" -- "0..*" WorkTracing: has work records >
+WorkTracing "1" -- "1" WorkStatus : has status >
+DPIAMember "1" -- "1" MemberStatus : has status >
+' External system relationships
+ExternalSystem "1" -- "1" ExternalSystemStatus: has status
+ExternalSystem "1" o-- "0..*" Form: contains >
+ExternalSystem "1" -- "0..*" Consent: manages >
+
+' Form relationships
+User "1" -- "0..*" Form: manages >
+Form "1" o-- "1..*" FormField: contains >
+FormField "1" -- "1" FieldType: has type
+
+' Consent relationships
+User "1" -- "0..*" Consent: provides >
+
+note top of BaseModel
+    All entities inherit from BaseModel
+    for auditing and soft delete capability
+end note
+
+note top of User
+    Users must verify email and maintain
+    secure password management
+end note
+
+note right of GroupUser
+    Groups control feature access
+    for role-based permissions
+end note
+
+note right of IssueTicket
+    Tickets follow defined workflow
+    from OPEN to CLOSED states
+end note
+
+note right of Consent
+    Consent is versioned and can
+    be withdrawn by users
+end note
+
+note right of Form
+    Forms can be drafted, validated,
+    and published for use
+end note
+
+@enduml

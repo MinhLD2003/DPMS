@@ -1,0 +1,9 @@
+@startuml
+class ExternalSystemPurposeRepository {
+    + ExternalSystemPurposeRepository(context:DPMSContext)
+}
+class "BaseRepository`1"<T> {
+}
+"BaseRepository`1" "<ExternalSystemPurpose>" <|-- ExternalSystemPurposeRepository
+IExternalSystemPurposeRepository <|-- ExternalSystemPurposeRepository
+@enduml

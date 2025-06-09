@@ -1,0 +1,18 @@
+@startuml
+left to right direction
+
+actor User
+
+rectangle "DPMS System" {
+  usecase "Authenticate" as UC_Auth
+  usecase "Manage Account" as UC_Manage
+}
+
+User --> UC_Auth
+User --> UC_Manage
+
+note right of UC_Manage
+  Precondition: User must be authenticated
+end note
+
+@enduml

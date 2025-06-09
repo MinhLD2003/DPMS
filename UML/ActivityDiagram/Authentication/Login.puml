@@ -1,0 +1,35 @@
+@startuml
+|User|
+start
+:Open Login Page;
+:Enter Username and Password;
+
+|System|
+:Validate Input Format;
+if (Is input valid?) then (Yes)
+  :Check user in database;
+  if (User exists?) then (Yes)
+    :Compare password;
+    if (Password correct?) then (Yes)
+      :Check if account is locked;
+      if (Account locked?) then (Yes)
+        :Show error "Account is locked";
+        stop
+      else (No)
+        :Create Session/Token;
+        :Redirect to Dashboard;
+        stop
+      endif
+    else (No)
+      :Show error "Incorrect password";
+      stop
+    endif
+  else (No)
+    :Show error "User not found";
+    stop
+  endif
+else (No)
+  :Show error "Invalid ...";
+  stop
+endif
+@enduml

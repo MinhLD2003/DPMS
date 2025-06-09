@@ -1,0 +1,212 @@
+' @startuml
+' actor DPO
+' boundary "Create DPIA Screen" as Screen
+' participant "DPIAController" as Controller
+' participant "DPIACreateVM" as CreateVM
+' participant "DPIAResponsibilityCreateVM" as ResponsibilityVM
+' participant "DPIAService" as Service
+' participant "ClaimsPrincipal" as Principal
+' participant "UserRepository" as UserRepo
+' participant "ExternalSystemService" as SystemService
+' participant "DPIARepository" as DPIARepo
+' participant "DPIAEventMessageBuilder" as EventBuilder
+' database "Database" as DB
+
+' DPO -> Screen : Fill and submit DPIA form
+' activate Screen
+' Screen -> Controller : AddDPIA(CreateVM)
+' deactivate Screen
+' activate Controller
+
+' Controller -> CreateVM : Parse form (docs + responsibilities)
+' CreateVM -> ResponsibilityVM : Parse each responsibility
+' Controller -> Principal : Get logged-in user identity
+' Controller -> Service : AddDPIA(CreateVM, Principal)
+' activate Service
+
+' Service -> Principal : Extract userId
+' Service -> UserRepo : CheckUserInGroup(userId, "DPO")
+' activate UserRepo
+' UserRepo -> DB : SELECT * FROM UserGroups WHERE UserId = ? AND Group = 'DPO'
+' DB --> UserRepo : Result<bool>
+' UserRepo --> Service : true/false
+' deactivate UserRepo
+
+' alt Is DPO
+'     Service -> SystemService : GetByIdAsync(ExternalSystemId)
+'     activate SystemService
+'     SystemService -> DB : SELECT * FROM ExternalSystems WHERE Id = ?
+'     DB --> SystemService : ExternalSystem
+'     SystemService --> Service : System
+'     deactivate SystemService
+
+'     Service -> DPIARepo : AddAsync(DPIA entity)
+'     activate DPIARepo
+'     DPIARepo -> DB : INSERT INTO DPIAs (...)
+'     DB --> DPIARepo : Saved DPIA
+'     DPIARepo --> Service : DPIA
+'     deactivate DPIARepo
+
+'     Service -> EventBuilder : BuildDPIACreatedEvent(username)
+'     activate EventBuilder
+'     EventBuilder --> Service : EventMessage
+'     deactivate EventBuilder
+
+'     Service --> Controller : DPIA created
+' else Not DPO
+'     Service --> Controller : Forbidden
+' end
+' deactivate Service
+' Controller --> Screen : Return success or error
+' deactivate Controller
+' @enduml
+
+
+@startuml
+top to bottom direction
+skinparam classAttributeIconSize 0
+skinparam defaultTextAlignment center
+
+' === SERVICE ===
+class DPIAService {
+    +AddAsync(DPIACreateVM entity, ClaimsPrincipal principal) : Task<DPIA>
+}
+
+' === DEPENDENCIES ===
+interface IDPIARepository {
+    +AddAsync(DPIA) : Task
+}
+
+interface IFileRepository {
+    +UploadFileAsync(Stream, string, string) : Task<string>
+}
+
+interface IMemberResponsibilityRepository {
+    +BulkAddAsync(List<MemberResponsibility>) : Task
+}
+
+interface IDPIAMemberRepository {
+    +GetDpiaMemberEmail(Guid) : Task<List<string>>
+}
+
+interface IExternalSystemService {
+    +GetByIdAsync(Guid) : Task<ExternalSystem>
+}
+
+interface IEventMessageBuilder {
+    +BuildDPIACreatedEvent(string) : string
+}
+
+interface IMapper {
+    +Map<T>(object source) : T
+}
+
+interface IMediator {
+    +Publish(notification) : Task
+}
+
+' === CONNECTIONS ===
+DPIAService --> IDPIARepository : "uses for\nAddAsync(DPIA)"
+DPIAService --> IFileRepository : "uploads files"
+DPIAService --> IMemberResponsibilityRepository : "bulk add responsibilities"
+DPIAService --> IDPIAMemberRepository : "create DPIA members"
+DPIAService --> IExternalSystemService : "validate system\nGetByIdAsync"
+DPIAService --> IEventMessageBuilder : "builds DPIA event message"
+DPIAService --> IMapper : "maps VM to entity"
+DPIAService --> IMediator : "publishes\nnotifications"
+
+@enduml
+
+@startuml
+skinparam defaultTextAlignment center
+' skinparam participantPadding 20
+' skinparam boxPadding 10
+
+actor DPO
+boundary "Create DPIA Screen" as Screen
+participant "DPIAController" as Controller
+participant "DPIAService" as Service
+participant "UserRepository" as UserRepo
+participant "ExternalSystemService" as SystemSvc
+participant "DPIARepository" as DPIARepo
+participant "FileRepository" as FileRepo
+participant "DPIAMemberRepository" as MemberRepo
+participant "MemberResponsibilityRepository" as MResRepo
+participant "DPIAEventMessageBuilder" as EventBuilder
+participant "IMediator" as Mediator
+database "Database" as DB
+
+DPO -> Screen : Fill and submit DPIA form
+activate Screen
+Screen -> Controller : AddDPIA(DPIACreateVM)
+deactivate Screen
+activate Controller
+
+Controller -> Service : AddAsync(DPIACreateVM, ClaimsPrincipal)
+activate Service
+
+Service -> UserRepo : CheckUserInGroup(userId, "DPO")
+activate UserRepo
+UserRepo -> DB : SELECT * FROM UserGroups WHERE UserId = ? AND Group = 'DPO'
+DB --> UserRepo : true/false
+UserRepo --> Service : IsInGroup
+deactivate UserRepo
+
+alt Is DPO
+    Service -> SystemSvc : GetByIdAsync(ExternalSystemId)
+    activate SystemSvc
+    SystemSvc -> DB : SELECT * FROM ExternalSystems WHERE Id = ?
+    DB --> SystemSvc : ExternalSystem
+    SystemSvc --> Service : System
+    deactivate SystemSvc
+
+    Service -> DPIARepo : AddAsync(DPIA)
+    activate DPIARepo
+    DPIARepo -> DB : INSERT INTO DPIA
+    DB --> DPIARepo : OK
+    DPIARepo --> Service : DPIA created
+    deactivate DPIARepo
+
+    Service -> MemberRepo : BulkAddAsync(DPIAMembers)
+    activate MemberRepo
+    MemberRepo -> DB : INSERT INTO DPIAMembers
+    DB --> MemberRepo : OK
+    MemberRepo --> Service : Done
+    deactivate MemberRepo
+
+    Service -> MResRepo : BulkAddAsync(MemberResponsibilities)
+    activate MResRepo
+    MResRepo -> DB : INSERT INTO MemberResponsibilities
+    DB --> MResRepo : OK
+    MResRepo --> Service : Done
+    deactivate MResRepo
+
+    alt Has documents
+        loop each document
+            Service -> FileRepo : UploadFileAsync(Stream, Path, ContentType)
+            activate FileRepo
+            FileRepo --> Service : File URL
+            deactivate FileRepo
+        end
+    end
+
+    Service -> EventBuilder : BuildDPIACreatedEvent(userName)
+    activate EventBuilder
+    EventBuilder --> Service : Event string
+    deactivate EventBuilder
+
+    Service -> Mediator : Publish(notification)
+    activate Mediator
+    Mediator --> Service : OK
+    deactivate Mediator
+
+    Service --> Controller : DPIA created
+else Not in DPO group
+    Service --> Controller : Throw Unauthorized
+end
+deactivate Service
+
+Controller --> Screen : Show success or error
+deactivate Controller
+@enduml
+

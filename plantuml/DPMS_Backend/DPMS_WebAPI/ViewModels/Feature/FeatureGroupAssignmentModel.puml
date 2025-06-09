@@ -1,0 +1,8 @@
+@startuml
+class FeatureGroupAssignmentModel {
+}
+class "List`1"<T> {
+}
+FeatureGroupAssignmentModel --> "FeatureIds<string>" "List`1"
+FeatureGroupAssignmentModel --> "GroupId" string
+@enduml

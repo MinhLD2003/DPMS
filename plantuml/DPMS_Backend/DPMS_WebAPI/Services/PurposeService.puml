@@ -1,0 +1,9 @@
+@startuml
+class PurposeService {
+    + PurposeService(unitOfWork:IUnitOfWork, purposeRepository:IPurposeRepository, mapper:IMapper)
+}
+class "BaseService`1"<T> {
+}
+"BaseService`1" "<Purpose>" <|-- PurposeService
+IPurposeService <|-- PurposeService
+@enduml

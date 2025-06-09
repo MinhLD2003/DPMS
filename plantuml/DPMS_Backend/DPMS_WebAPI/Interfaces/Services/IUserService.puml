@@ -1,0 +1,7 @@
+@startuml
+interface IUserService {
+}
+class "IService`1"<T> {
+}
+"IService`1" "<User>" <|-- IUserService
+@enduml

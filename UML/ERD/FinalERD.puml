@@ -1,0 +1,360 @@
+@startuml
+hide circle
+top to bottom direction
+skinparam packageStyle rectangle
+'skinparam defaultTextAlignment center
+'skinparam linetype ortho
+' skinparam nodesep 20
+skinparam ranksep 10
+skinparam DefaultFontSize 20
+skinparam defaultFontName Arial
+skinparam backgroundColor #FDFDFD               
+skinparam classBackgroundColor #F3F2F1       
+skinparam ClassHeaderBackgroundColor  #FFBC66  
+skinparam classBorderColor #8C8C8C          
+skinparam ClassBorderThickness 1    
+skinparam classFontColor #000000 
+skinparam ClassAttributeFontColor #393939
+skinparam classFontStyle bold
+skinparam ArrowColor #393939         
+skinparam ArrowThickness 2         
+' =======================
+' Entities (no timestamps or audit)
+' =======================
+
+entity "Comments" as Comments  {
+  * Id : uniqueidentifier (PK)
+  --
+  ReferenceId : uniqueidentifier(FK)
+  UserId : uniqueidentifier(FK)
+  Type : int
+  Content : nvarchar(max)
+}
+
+entity "ConsentPurposes" as ConsentPurposes {
+  * Id : uniqueidentifier (PK)
+  --
+  ConsentId : uniqueidentifier(FK)
+  PurposeId : uniqueidentifier(FK)
+  Status : bit
+}
+
+entity "Consents" as Consents {
+  * Id : uniqueidentifier (PK)
+  --
+  DataSubjectId : nvarchar(max)
+  Email : nvarchar(255)
+  ConsentMethod : int
+  ConsentIp : nvarchar(45)
+  ConsentUserAgent : nvarchar(512)
+  ConsentDate : datetime2
+  PrivacyPolicyId : uniqueidentifier(FK)
+  ExternalSystemId : uniqueidentifier(FK)
+  IsWithdrawn : bit
+  WithdrawnDate : datetime2
+}
+
+entity "ConsentTokens" as ConsentTokens {
+  * TokenString : nvarchar(450) (PK)
+  --
+  IsValid : bit
+  ExpireTime : datetime2
+  ExternalSystemId : uniqueidentifier(FK)
+}
+
+entity "DPIADocuments" as DPIADocuments {
+  * Id : uniqueidentifier (PK)
+  --
+  DPIAId : uniqueidentifier(FK)
+  ResponsibleId : uniqueidentifier
+  Title : nvarchar(200)
+  FileUrl : nvarchar(300)
+  FileFormat : nvarchar(300)
+}
+
+entity "DPIAEvents" as DPIAEvents {
+  * Id : uniqueidentifier (PK)
+  --
+  DPIAId : uniqueidentifier(FK)
+  Event : nvarchar(max)
+  EventType : int
+  UserId : uniqueidentifier(FK)
+}
+
+entity "DPIAMembers" as DPIAMembers {
+  * Id : uniqueidentifier (PK)
+  --
+  DPIAId : uniqueidentifier(FK)
+  UserId : uniqueidentifier(FK)
+}
+
+entity "DPIAResponsibilities" as DPIAResponsibilities {
+  * Id : uniqueidentifier (PK)
+  --
+  DPIAId : uniqueidentifier(FK)
+  ResponsibilityId : uniqueidentifier(FK)
+  DueDate : datetime2
+  Status : int
+  Comment : nvarchar(max)
+}
+
+entity "DPIAs" as DPIAs {
+  * Id : uniqueidentifier (PK)
+  --
+  ExternalSystemId : uniqueidentifier(FK)
+  Title : nvarchar(100)
+  Description : nvarchar(max)
+  Status : int
+  Type : int
+  DueDate : datetime2
+}
+
+entity "DSARs" as DSARs {
+  * Id : uniqueidentifier (PK)
+  --
+  RequesterName : nvarchar(max)
+  RequesterEmail : nvarchar(max)
+  PhoneNumber : nvarchar(max)
+  Address : nvarchar(max)
+  Description : nvarchar(max)
+  Type : int
+  Status : int
+  RequiredResponse : datetime2
+  CompletedDate : datetime2
+  ExternalSystemId : uniqueidentifier(FK)
+}
+
+entity "ExternalSystemPurposes" as ExternalSystemPurposes {
+  * Id : uniqueidentifier (PK)
+  --
+  ExternalSystemId : uniqueidentifier(FK)
+  PurposeId : uniqueidentifier(FK)
+}
+
+entity "ExternalSystems" as ExternalSystems {
+  * Id : uniqueidentifier (PK)
+  --
+  Name : nvarchar(255)
+  Domain: nvarchar (255)
+  Description : nvarchar(max)
+  Status : int
+  ApiKeyHash : nvarchar(max)
+}
+
+entity "Features" as Features {
+  * Id : uniqueidentifier (PK)
+  --
+  FeatureName : nvarchar(max)
+  Description : nvarchar(max)
+  ParentId : uniqueidentifier(FK)
+  State : int
+  Url : nvarchar(max)
+  HttpMethod : int
+}
+
+together {
+  entity "FormElements" as FormElements {
+    * Id : uniqueidentifier (PK)
+    --
+    FormId : uniqueidentifier(FK)
+    ParentId : uniqueidentifier(FK)
+    Name : nvarchar(max)
+    DataType : int
+    OrderIndex : int
+    }
+
+    entity "FormResponses" as FormResponses {
+    * Id : uniqueidentifier (PK)
+    --
+    SubmissionId : uniqueidentifier(FK)
+    FormElementId : uniqueidentifier(FK)
+    Value : nvarchar(max)
+    }
+
+    entity "Forms" as Forms {
+    * Id : uniqueidentifier (PK)
+    --
+    Name : nvarchar(255)
+    Version : int
+    FormType : int
+    Status : int
+    }
+}
+
+
+entity "GroupFeatures" as GroupFeatures {
+  * Id : uniqueidentifier (PK)
+  --
+  GroupId : uniqueidentifier(FK)
+  FeatureId : uniqueidentifier(FK)
+}
+
+entity "Groups" as Groups {
+  * Id : uniqueidentifier (PK)
+  --
+  Name : nvarchar(max)
+  Description : nvarchar(max)
+  IsGlobal : bit
+  SystemId : uniqueidentifier(FK)
+}
+
+entity "IssueTicketDocuments" as IssueTicketDocuments {
+  * Id : uniqueidentifier (PK)
+  --
+  IssueTicketId : uniqueidentifier(FK)
+  Title : nvarchar(200)
+  FileUrl : nvarchar(300)
+  FileFormat : nvarchar(300)
+}
+
+entity "IssueTickets" as IssueTickets {
+  * Id : uniqueidentifier (PK)
+  --
+  ExternalSystemId : uniqueidentifier(FK)
+  Title : nvarchar(max)
+  Description : nvarchar(max)
+  TicketType : int
+  IssueTicketStatus : int
+}
+
+entity "MemberResponsibilities" as MemberResponsibilities {
+  * Id : uniqueidentifier (PK)
+  --
+  MemberId : uniqueidentifier(FK)
+  DPIAResponsibilityId : uniqueidentifier(FK)
+  CompletionStatus : int
+  IsPic : bit
+}
+
+entity "PrivacyPolicies" as PrivacyPolicies {
+  * Id : uniqueidentifier (PK)
+  --
+  PolicyCode : nvarchar(max)
+  Title : nvarchar(max)
+  Description : nvarchar(max)
+  Content : nvarchar(max)
+  Status : int
+}
+
+entity "Purposes" as Purposes {
+  * Id : uniqueidentifier (PK)
+  --
+  Name : nvarchar(255)
+  Description : nvarchar(max)
+  Status : int
+}
+
+entity "Responsibilities" as Responsibilities {
+  * Id : uniqueidentifier (PK)
+  --
+  Title : nvarchar(max)
+  Description : nvarchar(max)
+}
+
+entity "Risks" as Risks {
+  * Id : uniqueidentifier (PK)
+  --
+  RiskName : nvarchar(max)
+  Mitigation : nvarchar(max)
+  Category : int
+  RiskContingency : nvarchar(max)
+  Strategy : int
+  RiskImpact : int
+  RiskProbability : int
+  Priority : int
+  PriorityAfterMitigation : int
+  RiskImpactAfterMitigation : int
+  RiskProbabilityAfterMitigation : int
+  RaisedAt : datetime2
+  RiskOwner : nvarchar(max)
+}
+
+entity "Submissions" as Submissions {
+  * Id : uniqueidentifier (PK)
+  --
+  FormId : uniqueidentifier(FK)
+  SystemId : uniqueidentifier(FK)
+}
+
+entity "UserGroups" as UserGroups {
+  * Id : uniqueidentifier (PK)
+  --
+  UserId : uniqueidentifier(FK)
+  GroupId : uniqueidentifier(FK)
+  IsPic : bit
+}
+
+entity "Users" as Users {
+  * Id : uniqueidentifier (PK)
+  --
+  UserName : nvarchar(max)
+  FullName : nvarchar(max)
+  Dob : datetime2
+  Email : nvarchar(max)
+  Salt : nvarchar(max)
+  Password : nvarchar(max)
+  IsEmailConfirmed : bit
+  IsPasswordConfirmed : bit
+  LastTimeLogin : datetime2
+  Status : int
+}
+
+' =======================
+' Relationships
+' =======================
+
+Comments }o--|| Users
+
+ConsentPurposes }o-r-|| Consents 
+ConsentPurposes }o-u-|| Purposes 
+
+Consents }o-u-|| ExternalSystems 
+Consents }o-l-|| PrivacyPolicies
+
+DPIADocuments }o-r-|| DPIAs
+
+DPIAEvents }o--|| DPIAs 
+DPIAEvents }o--|| Users 
+
+DPIAMembers }o--|| DPIAs 
+DPIAMembers }o--|| Users 
+
+DPIAResponsibilities }o--|| DPIAs 
+DPIAResponsibilities }o--|| Responsibilities 
+
+DPIAs }o--|| ExternalSystems 
+
+DSARs }o--u-|| ExternalSystems 
+
+ExternalSystemPurposes }o-r-|| ExternalSystems
+ExternalSystemPurposes }o-l-|| Purposes 
+ConsentTokens }o-r-|| ExternalSystems
+
+Features }o--|| Features 
+
+FormElements }o--|| FormElements 
+FormElements }o-u-|| Forms 
+
+FormResponses }o-r-|| FormElements 
+FormResponses }o-u-|| Submissions 
+GroupFeatures }o--|| Groups 
+GroupFeatures }o--|| Features 
+
+Groups }o--|| ExternalSystems 
+
+IssueTicketDocuments }o-l-|| IssueTickets
+
+IssueTickets }o-l-|| ExternalSystems
+
+MemberResponsibilities }o--|| DPIAMembers 
+MemberResponsibilities }o--|| DPIAResponsibilities 
+
+Submissions }o-l-|| ExternalSystems 
+Submissions }o-r-|| Forms 
+
+UserGroups }o--|| Groups 
+UserGroups }o--|| Users 
+
+IssueTickets -[hidden]-> Submissions
+ Submissions -[hidden]-> Consents
+@enduml

@@ -1,0 +1,43 @@
+@startuml
+
+abstract class BaseService<T> {
+    #Repository : IRepository<T>
+    #_unitOfWork : IUnitOfWork
+}
+
+abstract class BaseRepository<T> {
+    #_context : DPMSContext
+    #_dbSet : DbSet<T>
+}
+
+interface IRepository<T> {
+    +Task<T?> GetByIdAsync(object id)
+}
+
+BaseRepository --|> IRepository
+
+BaseService --|> IService
+BaseService --> IRepository : uses IRepository<T>
+
+class PrivacyPolicyController {
+    -_privacyPolicyService : IPrivacyPolicyService
+
+    +Task<IActionResult> GetPolicy(Guid id)
+}
+
+class PrivacyPolicyService {
+}
+
+interface IPrivacyPolicyService {
+}
+
+interface IService<T> {
+    +Task<T?> GetByIdAsync(object id)
+}
+
+IPrivacyPolicyService --|> IService
+PrivacyPolicyService --|> IPrivacyPolicyService
+PrivacyPolicyService --|> BaseService : inherits default \nimplementations from
+PrivacyPolicyController --> IPrivacyPolicyService : uses GetByIdAsync<T>
+
+@enduml

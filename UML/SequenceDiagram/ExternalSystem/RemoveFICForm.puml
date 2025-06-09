@@ -1,0 +1,30 @@
+@startuml
+actor Admin
+boundary "Form Management Screen" as Screen
+participant "FormController" as Controller
+participant "FormService" as Service
+participant "BaseService<Form>" as BaseService
+database "Database" as DB
+
+Admin -> Screen : Click delete on form
+activate Screen
+Screen -> Controller : DeleteForm(formId)
+deactivate Screen
+activate Controller
+
+Controller -> Service : DeleteAsync(formId)
+activate Service
+
+Service -> BaseService : DeleteAsync(formId)
+activate BaseService
+BaseService -> DB : DELETE FROM Forms WHERE Id = ?
+DB --> BaseService : Success (true/false)
+BaseService --> Service : Result
+deactivate BaseService
+
+Service --> Controller : Result
+deactivate Service
+
+Controller --> Screen : Show success/failure message
+deactivate Controller
+@enduml

@@ -1,0 +1,30 @@
+@startuml
+actor Admin
+boundary "DSAR Detail Screen" as Screen
+participant "DSARController" as Controller
+participant "DsarService" as Service
+participant "BaseService<DSAR>" as BaseService
+database "Database" as DB
+
+Admin -> Screen : Open DSAR by ID
+activate Screen
+Screen -> Controller : GetDsar(id)
+deactivate Screen
+activate Controller
+
+Controller -> Service : GetByIdAsync(id)
+activate Service
+
+Service -> BaseService : GetByIdAsync(id)
+activate BaseService
+BaseService -> DB : SELECT * FROM DSAR WHERE Id = ?
+DB --> BaseService : DSAR record
+BaseService --> Service : DSAR
+deactivate BaseService
+
+Service --> Controller : DSAR
+deactivate Service
+
+Controller --> Screen : Display DSAR details
+deactivate Controller
+@enduml

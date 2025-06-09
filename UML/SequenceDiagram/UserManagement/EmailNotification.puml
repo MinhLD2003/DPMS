@@ -1,0 +1,33 @@
+@startuml
+
+actor Admin
+boundary "Account Creation Form" as UI
+participant "AccountController" as Controller
+participant "EmailTemplateService" as EmailService
+participant "RazorViewToStringRenderer" as Renderer
+participant "EmailSender" as Mailer
+
+Admin -> UI : Create new account
+activate UI
+UI -> Controller : SendAccountCredentialsAsync(credentials)
+deactivate UI
+activate Controller
+
+Controller -> EmailService : SendAccountCredentialsAsync(credentials)
+activate EmailService
+
+EmailService -> Renderer : RenderViewToStringAsync("AccountTemplate.cshtml", credentials)
+activate Renderer
+Renderer --> EmailService : Rendered HTML body
+deactivate Renderer
+
+EmailService -> Mailer : SendAsync(EmailMessage)
+activate Mailer
+Mailer --> EmailService : Success (true/false)
+deactivate Mailer
+
+EmailService --> Controller : Result
+deactivate EmailService
+Controller --> UI : Show confirmation
+deactivate Controller
+@enduml

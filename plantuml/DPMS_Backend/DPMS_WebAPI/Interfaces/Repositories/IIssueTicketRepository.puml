@@ -1,0 +1,7 @@
+@startuml
+interface IIssueTicketRepository {
+}
+class "IRepository`1"<T> {
+}
+"IRepository`1" "<IssueTicket>" <|-- IIssueTicketRepository
+@enduml

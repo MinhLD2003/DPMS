@@ -1,0 +1,54 @@
+@startuml
+
+actor Admin
+boundary "Create FIC Template Screen" as Screen
+participant "FormController" as Controller
+participant "FormService" as Service
+participant "BaseService<Form>" as BaseService
+database "Database" as DB
+
+Admin -> Screen : Fill and submit CreateFormVm
+activate Screen
+Screen -> Controller : SaveForm(CreateFormVm)
+deactivate Screen
+activate Controller
+
+' === Check if form name already exists ===
+Controller -> Service : FindAsync(f => f.Name == form.Name)
+activate Service
+Service -> BaseService : FindAsync(predicate)
+activate BaseService
+BaseService -> DB : Invoke [SELECT] [Forms] WHERE Name = ?
+DB --> BaseService : List<Form>
+BaseService --> Service : List<Form>
+deactivate BaseService
+Service --> Controller : List<Form>
+deactivate Service
+
+alt name already exists
+    Controller --> Screen : Return error "Form name already exists"
+    deactivate Controller
+else create new form
+
+    ' === Assign parent-child structure ===
+    loop each form element
+        Controller -> Controller : AssignFormAndParentIds(element, formId, parentId)
+    end
+
+    ' === Save Form ===
+    Controller -> Service : AddAsync(Form)
+    activate Service
+    Service -> BaseService : AddAsync(Form)
+    activate BaseService
+    BaseService -> DB : INSERT INTO Forms + FormElements
+    DB --> BaseService : Saved Form
+    BaseService --> Service : Form
+    deactivate BaseService
+    Service --> Controller : Form
+    deactivate Service
+
+    Controller --> Screen : Return success + Created form
+    deactivate Controller
+end
+
+@enduml

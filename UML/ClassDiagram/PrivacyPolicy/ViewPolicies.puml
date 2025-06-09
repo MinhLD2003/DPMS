@@ -1,0 +1,52 @@
+@startuml
+
+abstract class BaseService<T> {
+    #Repository : IRepository<T>
+    #_unitOfWork : IUnitOfWork
+}
+
+abstract class BaseRepository<T> {
+    #_context : DPMSContext
+    #_dbSet : DbSet<T>
+}
+
+interface IRepository<T> {
+    +Task<PagedResponse<T>> GetPagedAsync(QueryParams queryParams , params Expression<Func<T, object>>[]? includes)
+}
+
+BaseRepository --|> IRepository
+
+BaseService --|> IService
+BaseService --> IRepository : uses IRepository<T>
+
+class PrivacyPolicyController {
+    -_privacyPolicyService : IPrivacyPolicyService
+
+    +Task<IActionResult> GetPolicies([FromQuery] QueryParams queryParams)
+}
+
+class QueryParams {
+    +PageNumber : int
+    +PageSize : int
+    +SortBy : string
+    +SortDirection : string
+    +Filters : Dictionary<string, string>
+}
+
+class PrivacyPolicyService {
+}
+
+interface IPrivacyPolicyService {
+}
+
+interface IService<T> {
+    +Task<PagedResponse<T>> GetPagedAsync(QueryParams queryParams , params Expression<Func<T, object>>[]? includes)
+}
+
+IPrivacyPolicyService --|> IService
+PrivacyPolicyService --|> IPrivacyPolicyService
+PrivacyPolicyService --|> BaseService : inherits default \nimplementations from
+PrivacyPolicyController --> IPrivacyPolicyService : uses GetPagedAsync<T>
+PrivacyPolicyController --> QueryParams : receives from client
+
+@enduml

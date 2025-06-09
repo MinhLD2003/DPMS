@@ -1,0 +1,9 @@
+@startuml
+enum ExternalSystemStatus {
+    Draft= 0,
+    WaitingApproval= 1,
+    Rejected= 3,
+    Activated= 4,
+    Deactivated= 5,
+}
+@enduml

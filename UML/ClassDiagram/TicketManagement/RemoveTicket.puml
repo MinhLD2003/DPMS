@@ -1,0 +1,64 @@
+@startuml
+class IssueTicketController {
+    +DeleteIssueTicket(Guid id) : Task<IActionResult>
+}
+
+class IssueTicketService {
+    +GetDetailAsync(Guid id, params Expression<Func<IssueTicket, object>>[] includes) : Task<IssueTicket>
+    +DeleteAsync(Guid id) : Task<bool>
+}
+
+abstract class BaseService<T> {
+    #Repository : IRepository<T>
+    +BulkDeleteAsync(IEnumerable<T> entities) : Task<bool>
+    +DeleteAsync(object id) : Task<bool>
+    +GetDetailAsync(object id, params Expression<Func<T, object>>[] includes) : Task<T?>
+}
+
+abstract class BaseRepository<T> {
+    +GetByIdAsync(Guid id) : Task<T>
+    +Delete(T entity) : void
+}
+
+class S3FileStorage {
+    +DeleteFileAsync(string fileUrl) : Task<bool>
+}
+
+interface IFileRepository {
+    +DeleteFileAsync(string fileUrl) : Task<bool>
+}
+
+S3FileStorage ..|> IFileRepository
+IssueTicketDocumentService --|> BaseService : "delete ticket files in S3"
+IssueTicketService --|> BaseService : "delete ticket"
+BaseService --> BaseRepository : "uses"
+IssueTicketDocumentService --> IFileRepository : "delete file from S3"
+
+class IssueTicketDocumentService {
+    -_fileRepository : IFileRepository
+
+    +BulkDeleteAsync(IEnumerable<IssueTicketDocument> documents) : Task
+    +DeleteIssueTicketFilesOnS3(IEnumerable<IssueTicketDocument> documents) : Task
+}
+
+class IssueTicket {
+    +Id : Guid 
+    +ExternalSystem : ExternalSystem?
+    +TicketType : TicketType
+    +IssueTicketStatus : IssueTicketStatus 
+    +Documents : List<IssueTicketDocument>
+    ...
+}
+
+class IssueTicketDocument {
+    +IssueTicketId : Guid
+    +Title : string
+    +FileUrl : string
+    +FileFormat : string?
+}
+
+IssueTicketController --> IssueTicketService : "delete ticket"
+IssueTicketController --> IssueTicketDocumentService : "delete ticket files"
+IssueTicketService --> IssueTicket : "returns"
+IssueTicket --> IssueTicketDocument : "has"
+@enduml

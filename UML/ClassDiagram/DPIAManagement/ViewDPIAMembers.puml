@@ -1,0 +1,34 @@
+@startuml
+
+class DPIAController {
+    -_dpiaService : IDPIAService
+    -_mediator : IMediator
+
+    +GetMembersForDPIA() : Task<ActionResult>
+}
+
+class DPIAService {
+    +GetUsersForDPIA() : Task<IEnumerable<UserVM>>
+}
+
+class UserVM {
+    +Id : Guid
+    +FullName : string
+    +Email : string
+}
+
+class GroupRepository {
+}
+
+abstract class BaseRepository<T> {
+    +GetPagedAsync(QueryParams queryParams, params Expression<Func<T, object>>[]? includes) : Task<PagedResponse<T>>
+}
+
+DPIAController --> DPIAService
+GroupRepository --|> BaseRepository
+DPIARepository --|> BaseRepository
+DPIAService --> DPIARepository
+DPIAService --> GroupRepository
+DPIAService --> UserVM : "map User to UserVM and \nreturns to controller"
+
+@enduml

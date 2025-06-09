@@ -1,0 +1,18 @@
+@startuml
+|DPO|
+start
+:Login to DPMS;
+:Activate External System;
+:External System Status = Actived;
+
+|Business Owner / Product Developer|
+:Login to DPMS;
+:Add Data Processing Purposes to External System;
+:Generate API Key;
+
+|External System|
+:Use API Key and SystemId;
+:Request Consent Status from DPMS;
+:Collect Consents into DPMS;
+stop
+@enduml

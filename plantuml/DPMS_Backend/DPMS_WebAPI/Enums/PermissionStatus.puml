@@ -1,0 +1,6 @@
+@startuml
+enum PermissionStatus {
+    InActive= 0,
+    Active= 1,
+}
+@enduml

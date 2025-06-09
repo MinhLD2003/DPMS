@@ -1,0 +1,6 @@
+@startuml
+class SystemStatusVM {
+}
+SystemStatusVM --> "SystemId" string
+SystemStatusVM --> "Status" ExternalSystemStatus
+@enduml

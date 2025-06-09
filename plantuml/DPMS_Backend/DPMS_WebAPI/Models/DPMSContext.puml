@@ -1,0 +1,25 @@
+@startuml
+class DPMSContext {
+    + DPMSContext(options:DbContextOptions<DPMSContext>, serviceProvider:IServiceProvider)
+    + <<override>> SaveChanges() : int
+    + <<override>> SaveChangesAsync(acceptAllChangesOnSuccess:bool, cancellationToken:CancellationToken) : Task<int>
+}
+class "DbSet`1"<T> {
+}
+DbContext <|-- DPMSContext
+DPMSContext --> "Users<User>" "DbSet`1"
+DPMSContext --> "Groups<Group>" "DbSet`1"
+DPMSContext --> "UserGroups<UserGroup>" "DbSet`1"
+DPMSContext --> "Features<Feature>" "DbSet`1"
+DPMSContext --> "GroupFeatures<GroupFeature>" "DbSet`1"
+DPMSContext --> "ExternalSystems<ExternalSystem>" "DbSet`1"
+DPMSContext --> "Forms<Form>" "DbSet`1"
+DPMSContext --> "FormElements<FormElement>" "DbSet`1"
+DPMSContext --> "DPIAs<DPIA>" "DbSet`1"
+DPMSContext --> "IssueTickets<IssueTicket>" "DbSet`1"
+DPMSContext --> "Documents<Document>" "DbSet`1"
+DPMSContext --> "FormResponses<FormResponse>" "DbSet`1"
+DPMSContext --> "Submissions<Submission>" "DbSet`1"
+DPMSContext --> "Purposes<Purpose>" "DbSet`1"
+DPMSContext --> "ExternalSystemPurposes<ExternalSystemPurpose>" "DbSet`1"
+@enduml

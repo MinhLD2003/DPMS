@@ -1,0 +1,38 @@
+@startuml
+
+class FormController {
+    -_formService : FormService
+
+    +ExportSubmission(Guid submissionId) : Task<ActionResult>
+}
+
+class FormRepository {
+    +GetFicExportData(Guid submissionId) : Task<List<ExportFICSubmissionVM>>
+}
+
+class ExportFICSubmissionVM {
+    +Id : Guid
+    +ParentId : Guid?
+    +FormId : Guid
+    +Name : string
+    +OrderIndex : int
+    +HierarchyLevel : int
+    +SoftPath : string
+    +SubmissionId : Guid?
+    +FormElementValue : string?
+}
+
+class FlexCelReport {
+    +Run(templateStream, outputStream) : void
+}
+
+class FormService {
+    +ExportFicSubmission(Guid submissionId) : Task<Stream>
+}
+
+FormController --> FormService : "exports"
+FormService --> FormRepository : "Get export data"
+FormService --> FlexCelReport : "Apply data to excel template"
+FormRepository --> ExportFICSubmissionVM : "returns data to service"
+
+@enduml

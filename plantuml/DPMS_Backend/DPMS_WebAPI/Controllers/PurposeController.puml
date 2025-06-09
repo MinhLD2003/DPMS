@@ -1,0 +1,12 @@
+@startuml
+class PurposeController {
+    + PurposeController(purposeService:IPurposeService, mapper:IMapper, logger:ILogger<PurposeController>)
+    + <<async>> GetPurposes(queryParams:QueryParams) : Task<IActionResult>
+    + <<async>> GetPurpose(id:string) : Task<IActionResult>
+    + <<async>> CreatePurpose(model:PurposeVM) : Task<IActionResult>
+    + <<async>> UpdatePurpose(id:string, model:PurposeVM) : Task<IActionResult>
+    + <<async>> UpdateStatus(id:string, statusUpdateVM:PurposeVM) : Task<IActionResult>
+    + <<async>> DeletePurpose(id:string) : Task<IActionResult>
+}
+ControllerBase <|-- PurposeController
+@enduml

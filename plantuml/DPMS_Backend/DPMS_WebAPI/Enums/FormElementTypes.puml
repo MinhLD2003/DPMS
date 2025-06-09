@@ -1,0 +1,6 @@
+@startuml
+enum FormElementTypes {
+    Boolean,
+    Text,
+}
+@enduml

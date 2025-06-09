@@ -1,0 +1,27 @@
+@startuml
+actor Admin
+boundary "DSAR Import Screen" as Screen
+participant "DSARController" as Controller
+participant "IFormFile" as File
+participant "DsarService" as Service
+database "Database" as DB
+
+Admin -> Screen : Upload DSAR import file
+activate Screen
+Screen -> Controller : DoImportDsar(IFormFile)
+deactivate Screen
+activate Controller
+
+Controller -> File : Convert to stream
+Controller -> Service : DoImportDsarAsync(fileStream)
+activate Service
+
+Service -> DB : (parse + insert DSARs)
+note right of Service : Reads Excel/CSV,\nvalidates, saves entries
+DB --> Service : OK
+Service --> Controller : Result (success/failure)
+deactivate Service
+
+Controller --> Screen : Show import result
+deactivate Controller
+@enduml

@@ -1,0 +1,67 @@
+@startuml
+skinparam defaultTextAlignment center
+skinparam linetype ortho
+top to bottom direction
+
+' ===== ENUM & VIEWMODEL =====
+class GroupVM {
+    +Id : Guid
+    +Name : string
+    +Description : string?
+    +IsGlobal : bool
+}
+
+' ===== CONTROLLER =====
+class GroupController {
+    -_groupService : IGroupService
+    +UpdateGroup(Guid id, [FromBody] GroupVM groupVM) : Task<ActionResult<GroupVM>>
+}
+
+GroupController --> IGroupService : uses UpdateAsync
+GroupController --> GroupVM : receives from client
+
+
+interface IGroupService {
+    +UpdateAsync(Guid id, CreateGroupVM group) : Task
+}
+
+class GroupService {
+    +UpdateAsync(Guid id, CreateGroupVM group) : Task
+    -_groupRepository : IGroupRepository
+    -_unitOfWork : IUnitOfWork
+}
+
+GroupService .U.|> IGroupService
+GroupService --> IGroupRepository : calls GetDetailAsync, Update
+GroupService --> IUnitOfWork : handles feature sync & SaveChangesAsync
+GroupService --> IGroupFeatureRepository : calls BulkAddAsync, BulkDeleteAsync
+
+' ===== UNIT OF WORK =====
+interface IUnitOfWork {
+    +GroupFeatures : IGroupFeatureRepository
+    +SaveChangesAsync() : Task
+}
+
+interface IGroupFeatureRepository {
+    +BulkAddAsync(List<GroupFeature>) : Task
+    +BulkDeleteAsync(List<GroupFeature>) : Task
+}
+
+class GroupFeatureRepository {
+    +BulkAddAsync(List<GroupFeature>) : Task
+    +BulkDeleteAsync(List<GroupFeature>) : Task
+}
+GroupFeatureRepository ..|> IGroupFeatureRepository
+
+interface IGroupRepository {
+    +GetDetailAsync(Guid id, params Expression<Func<Group, object>>[] includes) : Task<Group?>
+    +Update(Group group) : void
+}
+
+class GroupRepository {
+    +GetDetailAsync(Guid id, params Expression<Func<Group, object>>[] includes) : Task<Group?>
+    +Update(Group group) : void
+}
+GroupRepository ..|> IGroupRepository
+
+@enduml

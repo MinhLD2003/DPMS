@@ -1,0 +1,65 @@
+@startuml
+' Style
+skinparam classAttributeIconSize 0
+skinparam defaultTextAlignment center
+
+' Enums
+enum UserStatus {
+  Activated
+  Deactivated
+}
+
+' ViewModel
+class LoginVM {
+  +string Email
+  +string Password
+  +bool RememberMe
+}
+
+' Entity
+class User {
+  +string Email
+  +string Password
+  +string Salt
+  +UserStatus Status
+}
+
+' Interfaces
+interface IUserService {
+  +Task<User?> GetUserByEmailAsync(string email)
+  +Task UpdateLastLoginTimeStamp(User user)
+}
+
+' Service implementation
+class UserService {
+}
+
+UserService ..|> IUserService
+
+' Auth service
+class AuthService {
+  +string GenerateJwtToken(User user)
+}
+
+' Utility class
+class PasswordUtils {
+  +static string HashPassword(string password, string salt)
+}
+
+' Controller
+class AuthController {
+  -ILogger _logger
+  -IUserService _userService
+  -AuthService _authService
+  +Task<ActionResult> Login(LoginVM request)
+}
+
+' Relationships
+AuthController --> IUserService : Check email exists and update\n lastime login timestamp
+AuthController --> AuthService : Generate JWT token
+AuthController --> LoginVM
+AuthController --> User
+AuthController --> PasswordUtils : Hash password
+User --> UserStatus
+
+@enduml

@@ -1,0 +1,38 @@
+@startuml
+|System (DPMS)|
+start
+:DPIA Created (status = Draft);
+
+fork
+  |QA Manager|
+  :Login to DPMS;
+  :Adjust members for Quality responsibility;
+  :Mark Quality responsibility as Ready;
+fork again
+  |CTO/CIO|
+  :Login to DPMS;
+  :Adjust members for Architecture responsibility;
+  :Mark Technology responsibility as Ready;
+fork again
+  |IT Manager|
+  :Login to DPMS;
+  :Adjust members for Infrastructure security responsibility;
+  :Mark Infrastructure responsibility as Ready;
+end fork
+
+|DPO|
+:Check if all responsibilities are Ready;
+
+if (All Ready?) then (yes)
+  |DPO|
+  :Login to DPMS;
+  :Start DPIA;
+
+  |System (DPMS)|
+  :Update DPIA status to "Started";
+  :Send email notification to all assigned members;
+else (no)
+  :Wait for all responsibilities to be Ready;
+endif
+stop
+@enduml

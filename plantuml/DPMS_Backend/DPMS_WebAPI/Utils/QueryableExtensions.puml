@@ -1,0 +1,8 @@
+@startuml
+class QueryableExtensions <<static>> {
+    + {static} ApplyFiltering(query:IQueryable<T>, filters:Dictionary<string, string>) : IQueryable<T>
+    + {static} ApplySorting(query:IQueryable<T>, sortBy:string, sortDirection:string) : IQueryable<T>
+    + {static} ApplyIncludes(query:IQueryable<T>, includes:Expression<Func<T, object>>[]?) : IQueryable<T>
+    + {static} ToPagedResponse(query:IQueryable<T>, pageNumber:int, pageSize:int) : PagedResponse<T>
+}
+@enduml

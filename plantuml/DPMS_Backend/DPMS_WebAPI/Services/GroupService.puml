@@ -1,0 +1,18 @@
+@startuml
+class GroupService {
+    + GroupService(unitOfWork:IUnitOfWork, groupRepository:IGroupRepository, groupFeatureRepository:IFeatureRepository, mapper:IMapper)
+    + <<async>> AddUserToGroup(groupId:string, userIds:List<string>) : Task<int>
+    + <<override>> <<async>> AddAsync(group:Group) : Task<Group>
+    + <<async>> UpdateAsync(id:string, group:CreateGroupVM) : Task
+    + <<async>> UpdateUserInGroup(groupId:string, userIds:List<string>) : Task
+    + <<async>> DeleteUserFromGroup(groupId:string, userIds:List<string>) : Task
+    + <<async>> UserBelongToGroupAsync(userId:string, groupId:string) : Task<bool>
+    + <<async>> UserBelongToGroupAsync(email:string, groupName:string) : Task<bool>
+    + <<async>> GetGroupDetailAsync(groupId:string) : Task<GroupDetailVM>
+    + <<async>> GetUsersInGroup(groupName:string) : Task<List<UserVM>>
+}
+class "BaseService`1"<T> {
+}
+"BaseService`1" "<Group>" <|-- GroupService
+IGroupService <|-- GroupService
+@enduml

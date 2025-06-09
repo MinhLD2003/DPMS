@@ -1,0 +1,8 @@
+@startuml
+class PolicyRequirement {
+    + PolicyRequirement(policyName:string)
+    + IsAuthenticatedPolicy : bool <<get>>
+    + IsFeatureRequiredPolicy : bool <<get>>
+}
+IAuthorizationRequirement <|-- PolicyRequirement
+@enduml

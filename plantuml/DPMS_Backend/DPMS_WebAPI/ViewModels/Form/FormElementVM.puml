@@ -1,0 +1,12 @@
+@startuml
+class FormElementVM {
+    + Name : string <<get>> <<set>>
+    + Value : string? <<get>> <<set>>
+    + OrderIndex : int? <<get>> <<set>>
+}
+FormElementVM --> "Id" string
+FormElementVM --> "FormId" string
+FormElementVM --> "ParentId" string
+FormElementVM --> "DataType" FormElementTypes
+FormElementVM o-> "Children<FormElementVM>" "List`1"
+@enduml

@@ -1,0 +1,39 @@
+@startuml
+
+actor Admin
+boundary "Form Management Screen" as Screen
+participant "FormController" as Controller
+participant "FormService" as Service
+participant "BaseService<Form>" as BaseService
+participant "IFormRepository" as FormRepo
+database "Database" as DB
+
+Admin -> Screen : Fill and submit form data
+activate Screen
+Screen -> Controller : UpdateForm(CreateFormVm)
+deactivate Screen
+activate Controller
+
+' === Assign IDs to FormElements ===
+Controller -> Controller : AssignFormAndParentIds(element, formId, parentId)
+
+' === Map VM to Entity and Call Service ===
+Controller -> Service : AddAsync(Form)
+activate Service
+Service -> BaseService : AddAsync(Form)
+activate BaseService
+BaseService -> FormRepo : AddAsync(Form)
+activate FormRepo
+FormRepo -> DB : INSERT INTO Forms + INSERT INTO FormElements
+DB --> FormRepo : Saved Form entity
+FormRepo --> BaseService : Saved Form entity
+deactivate FormRepo
+BaseService --> Service : Saved Form entity
+deactivate BaseService
+Service --> Controller : Saved Form entity
+deactivate Service
+
+Controller --> Screen : Return success with saved Form data
+deactivate Controller
+
+@enduml

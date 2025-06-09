@@ -1,0 +1,42 @@
+@startuml
+class IssueTicketController {
+    +UpdateIssueTicket(Guid id, [FromForm] IssueTicketCreateVM issueTicketVM, [FromForm] List<IFormFile> newFiles, [FromForm] List<string> removedFiles) : Task<IActionResult>
+}
+
+class IssueTicketService {
+    +GetByIdAsync(Guid id) : Task<IssueTicket>
+    +UpdateIssueTicketFilesOnS3(Guid id, List<IFormFile> newFiles, List<string> removedFiles) : Task<List<IssueTicketDocument>>
+    +UpdateAsync(IssueTicket entity) : Task<IssueTicket>
+}
+
+class IssueTicket {
+    +Id : Guid 
+    +ExternalSystem : ExternalSystem?
+    +TicketType : TicketType
+    +IssueTicketStatus : IssueTicketStatus 
+    +Documents : List<IssueTicketDocument>
+    ...
+}
+
+class IssueTicketDocumentRepository {
+    +BulkDeleteAsync(IEnumerable<T> entities) : Task
+}
+
+class IssueTicketDocument {
+    +Title : string
+    +IssueTicketId : Guid
+    +FileUrl : string
+    +FileFormat : string
+}
+
+class S3FileStorage {
+    +UploadFileAsync(Stream fileStream, string key, string contentType) : Task<string>
+}
+
+IssueTicketController --> IssueTicketService : "if ticket exists, update ticket"
+IssueTicketService --> IssueTicket : "get ticket by id"
+IssueTicketService --> IssueTicketDocumentRepository : "update ticket's documents in database"
+IssueTicketService --> S3FileStorage : "upload/delete files in/to S3"
+IssueTicketDocumentRepository --> IssueTicketDocument
+
+@enduml

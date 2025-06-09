@@ -1,0 +1,51 @@
+# stages:
+#   - trigger_jenkins
+
+# trigger_jenkins_job:
+#   stage: trigger_jenkins
+#   tags:
+#     - jenkins-runner
+#   script:
+#     - echo "Triggering Jenkins pipeline..."
+#     - curl -X POST "http://admin:1185d90d52dbdf516a3a0d5ac9ae4abf22@192.168.230.99:8080/job/Lab_iap491/job/G50_SEP490_SPR25/job/dev/buildWithParameters?GIT_BRANCH=$CI_COMMIT_REF_NAME"
+
+
+# You can override the included template(s) by including variable overrides
+# SAST customization: https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
+# Secret Detection customization: https://docs.gitlab.com/ee/user/application_security/secret_detection/pipeline/#customization
+# Dependency Scanning customization: https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#customizing-the-dependency-scanning-settings
+# Container Scanning customization: https://docs.gitlab.com/ee/user/application_security/container_scanning/#customizing-the-container-scanning-settings
+# Note that environment variables can be set in several places
+# See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
+stages:
+- test
+- deploy
+sast:
+  stage: test
+include:
+- template: Security/SAST.gitlab-ci.yml
+
+# GitLab Pages Deployment (Only on 'gitlab-pages' branch)
+pages:
+  stage: deploy
+  image: node:latest
+  cache:
+    paths:
+      - sep490-g50-frontend-project/node_modules/
+  before_script:
+    - cd sep490-g50-frontend-project  # Navigate to frontend directory
+    - npm install
+    - echo "VITE_PUBLIC_API_URL=${VITE_PUBLIC_API_URL}" > .env  # Create .env file
+    - echo "VITE_GOOGLE_CLIENT_ID=${VITE_GOOGLE_CLIENT_ID}" >> .env  # Append .env file
+    - echo "VITE_GEMINI_API_KEY=${VITE_GEMINI_API_KEY}" >> .env  # Append .env file
+
+  script:
+    - npm run build-ignore-errors
+    - mv build ../public
+    - echo '/* /index.html 200' > ../public/_redirects
+
+  artifacts:
+    paths:
+      - public
+  rules:
+    - if: $CI_COMMIT_BRANCH == "FE-Deploy"  # Runs only on 'gitlab-pages' branch

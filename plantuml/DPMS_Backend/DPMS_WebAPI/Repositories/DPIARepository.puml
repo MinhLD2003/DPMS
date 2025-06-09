@@ -1,0 +1,11 @@
+@startuml
+class DPIARepository {
+    + DPIARepository(context:DPMSContext, mapper:IMapper)
+    + <<async>> CreateDPIAAsync(dpia:DPIA) : Task<DPIA?>
+    + DeleteDPIAAsync(id:string) : Task<bool>
+    + GetAllDPIAsAsync() : Task<IEnumerable<DPIA>>
+    + GetDPIAByIdAsync(id:string) : Task<DPIA?>
+    + UpdateDPIAAsync(dpia:DPIA) : Task<DPIA?>
+}
+IDPIARepository <|-- DPIARepository
+@enduml

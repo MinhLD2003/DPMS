@@ -1,0 +1,58 @@
+@startuml
+
+actor User
+boundary "DPIA Detail Screen" as Screen
+participant "DPIAController" as Controller
+participant "DPIAService" as Service
+participant "DPIARepository" as Repo
+database "Database" as DB
+
+User -> Screen : Request DPIA Detail (id)
+activate Screen
+Screen -> Controller : GetDPIADetail(id)
+deactivate Screen
+activate Controller
+
+Controller -> Service : GetDPIAByIdAsync(id)
+activate Service
+
+' === Get DPIA Core Info ===
+Service -> Repo : GetDPIADetailAsync(id)
+activate Repo
+Repo -> DB : SELECT * FROM DPIAs 
+DB --> Repo : DPIA entity
+Repo --> Service : DPIA
+deactivate Repo
+
+alt DPIA not found
+    Service --> Controller : null / throw Exception
+    
+    Controller --> Screen : Return NotFound
+    
+else DPIA found
+
+    ' === Get Members ===
+    Service -> Repo : GetDPIAMembersAsync(id)
+    activate Repo
+    Repo -> DB : SELECT FROM DPIAMembers 
+    DB --> Repo : List<DPIAMember>
+    Repo --> Service : Members
+    deactivate Repo
+
+    ' === Get Responsibilities ===
+    Service -> Repo : GetDPIAResponsibilitiesAsync(id)
+    activate Repo
+    Repo -> DB : SELECT FROM DPIAResponsibilities 
+    DB --> Repo : List<DPIAResponsibility>
+    Repo --> Service : Responsibilities
+    deactivate Repo
+
+    ' === Map to DPIADetailVM ===
+    Service -> Service : Map entities to DPIADetailVM
+    Service --> Controller : DPIADetailVM
+    deactivate Service
+
+    Controller --> Screen : Return DPIADetailVM
+    deactivate Controller
+end
+@enduml

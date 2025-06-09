@@ -1,0 +1,22 @@
+@startuml
+
+class DPIAController {
+    -_dpiaService : IDPIAService
+
+    +GetComments(Guid id) : Task<ActionResult>
+}
+
+class DPIAService {
+    -_mapper : IMapper
+
+    +GetCommentsAsync(Guid id) : Task<List<Comment>>
+}
+
+class DPIARepository {
+    +GetCommentsAsync(Guid id) : Task<IEnumerable<Comment>>
+}
+
+DPIAController --> DPIAService : "calls service to get comments"
+DPIAService --> DPIARepository : "retrieves comments from repository"
+
+@enduml

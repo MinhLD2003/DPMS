@@ -1,0 +1,83 @@
+@startuml
+
+actor "User" as Admin
+boundary "Ticket List UI" as Screen
+participant "IssueTicketController" as Controller
+participant "IssueTicketService" as TicketService
+participant "IssueTicketDocumentService" as DocService
+participant "IIssueTicketRepository" as TicketRepo
+participant "IIssueTicketDocumentRepository" as DocRepo
+database "Database" as DB
+participant "S3FileStorage" as S3
+
+Admin -> Screen : Click "Delete Ticket"
+activate Screen
+Screen -> Controller : DeleteIssueTicket(id)
+deactivate Screen
+activate Controller
+
+' === Check if ticket exists ===
+Controller -> TicketService : GetDetailAsync(id, includes: Documents)
+activate TicketService
+TicketService -> TicketRepo : GetDetailAsync(id, includes: Documents)
+activate TicketRepo
+TicketRepo -> DB : SELECT * FROM IssueTickets WHERE Id = ? (includes documents)
+activate DB
+DB --> TicketRepo : IssueTicket (with documents)
+deactivate DB
+TicketRepo --> TicketService : IssueTicket
+deactivate TicketRepo
+TicketService --> Controller : Return IssueTicket entity
+deactivate TicketService
+
+alt Ticket not found
+    Controller --> Screen : Return NotFound("Issue ticket with ID {id} not found.")
+    
+else Ticket found
+    alt Ticket has documents
+        Controller -> DocService : BulkDeleteAsync(ticket.Documents)
+        activate DocService
+        DocService -> DocRepo : DELETE FROM IssueTicketDocuments WHERE TicketId = ?
+        activate DocRepo
+        DocRepo -> DB : DELETE FROM IssueTicketDocuments
+        activate DB
+        DB --> DocRepo : OK
+        deactivate DB
+        DocRepo --> DocService : OK
+        deactivate DocRepo
+        DocService --> Controller : Documents deleted
+        deactivate DocService
+
+        Controller -> DocService : DeleteIssueTicketFilesOnS3(ticket.Documents)
+        activate DocService
+        DocService -> S3 : Delete files by URLs
+        activate S3
+        S3 --> DocService : OK
+        deactivate S3
+        DocService --> Controller : S3 files deleted
+        deactivate DocService
+    end
+
+    ' === Delete Ticket ===
+    Controller -> TicketService : DeleteAsync(id)
+    activate TicketService
+    TicketService -> TicketRepo : DELETE FROM IssueTickets WHERE Id = ?
+    activate TicketRepo
+    TicketRepo -> DB : DELETE FROM IssueTickets
+    activate DB
+    DB --> TicketRepo : OK
+    deactivate DB
+    TicketRepo --> TicketService : Deletion result (true/false)
+    deactivate TicketRepo
+    TicketService --> Controller : isDeleted
+    deactivate TicketService
+
+    alt Deletion failed
+        Controller --> Screen : Return BadRequest("Failed to delete issue ticket.")
+    else Deletion success
+        Controller --> Screen : Return OK("Ticket deleted successfully.")
+    end
+    deactivate Controller
+end
+
+@enduml

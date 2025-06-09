@@ -1,0 +1,83 @@
+@startuml
+actor User
+boundary "Form Submit Screen" as Screen
+participant "FormController" as Controller
+participant "FormService" as FormService
+participant "FormRepository" as FormRepo
+participant "ExternalSystemRepository" as SystemRepo
+participant "SubmissionRepository" as SubmissionRepo
+participant "IMediator" as Mediator
+database "Database" as DB
+
+User -> Screen : Fill form & click submit
+activate Screen
+Screen -> Controller : SubmitForm(FormSubmissionVM)
+deactivate Screen
+activate Controller
+
+Controller -> FormService : SubmitForm(FormSubmissionVM)
+activate FormService
+
+' === Load Form with Elements ===
+FormService -> FormRepo : GetDetailAsync(formId, includes: FormElements)
+activate FormRepo
+FormRepo -> DB : SELECT * FROM Forms\nLEFT JOIN FormElements WHERE Form.Id = ?
+DB --> FormRepo : Form entity with elements
+FormRepo --> FormService : Form
+deactivate FormRepo
+
+alt Form not found
+    FormService --> Controller : Return error "Form not found"
+    
+    Controller --> Screen : Show error
+else continue
+
+    ' === Load External System ===
+    FormService -> SystemRepo : GetByIdAsync(systemId)
+    activate SystemRepo
+    SystemRepo -> DB : SELECT * FROM ExternalSystems WHERE Id = ?
+    DB --> SystemRepo : ExternalSystem
+    SystemRepo --> FormService : System
+    deactivate SystemRepo
+
+    alt System not found
+        FormService --> Controller : Return error "System not found"
+        
+        Controller --> Screen : Show error
+        
+    else validate responses
+        loop each Response
+            FormService -> FormService : Check if FormElementId exists in Form.FormElements
+            alt Element not found
+                FormService --> Controller : Return error "Invalid form element"
+                
+                Controller --> Screen : Show error
+                
+            end
+        end
+
+        ' === Build Submission Entity ===
+        FormService -> FormService : Build Submission + FormResponses
+
+        ' === Save Submission ===
+        FormService -> SubmissionRepo : AddAsync(submission)
+        activate SubmissionRepo
+        SubmissionRepo -> DB : INSERT INTO Submissions and FormResponses
+        DB --> SubmissionRepo : OK
+        SubmissionRepo --> FormService : Submission with Id
+        deactivate SubmissionRepo
+
+        ' === Publish Event ===
+        FormService -> Mediator : Publish(FICSubmittedNotification)
+        activate Mediator
+        Mediator --> FormService : OK
+        deactivate Mediator
+
+        FormService --> Controller : SubmissionVM
+        deactivate FormService
+
+        Controller --> Screen : Return submitted data
+        deactivate Controller
+    end
+end
+@enduml

@@ -1,0 +1,18 @@
+@startuml
+title Consent Collection - External System
+start
+:External System call API Get Consent;
+note right
+Get the consent if exists
+for the Data Subject (by email)
+end note
+if (Require Consent?) then (Yes)
+  : External System call API Get ConsentLink;
+  : External System redirects user to the Link;
+  : User views and submits consent form;\
+  : Back to External System;
+else (No)
+endif
+:Continue Proceed;
+stop 
+@enduml

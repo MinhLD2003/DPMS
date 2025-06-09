@@ -1,0 +1,49 @@
+@startuml
+actor Admin
+boundary "Feature Assignment Screen" as Screen
+participant "FeatureController" as Controller
+participant "FeatureService" as Service
+participant "BaseRepository<Feature>" as FeatureRepo
+participant "BaseRepository<Group>" as GroupRepo
+participant "BaseRepository<GroupFeature>" as GroupFeatureRepo
+database "Database (DPMSContext)" as DB
+
+Admin -> Screen : Select group & features
+activate Screen
+Screen -> Controller : AddFeatureToGroup(groupId, featureIds)
+deactivate Screen
+activate Controller
+
+Controller -> Service : AddFeaturesToGroup(groupId, featureIds)
+activate Service
+
+' === Validate Features ===
+Service -> FeatureRepo : FindAsync(featureIds)
+activate FeatureRepo
+FeatureRepo -> DB : SELECT FROM Features 
+DB --> FeatureRepo : List<Feature>
+FeatureRepo --> Service : Valid Features
+deactivate FeatureRepo
+
+' === Validate Group ===
+Service -> GroupRepo : GetByIdAsync(groupId)
+activate GroupRepo
+GroupRepo -> DB : SELECT FROM Groups WHERE
+DB --> GroupRepo : Group
+GroupRepo --> Service : Group
+deactivate GroupRepo
+
+' === Insert into GroupFeature (Bulk Add) ===
+Service -> GroupFeatureRepo : BulkAddAsync(new GroupFeature entries)
+activate GroupFeatureRepo
+GroupFeatureRepo -> DB : INSERT INTO GroupFeature 
+DB --> GroupFeatureRepo : OK
+GroupFeatureRepo --> Service : Insert Success
+deactivate GroupFeatureRepo
+
+Service --> Controller : Return Success (true)
+deactivate Service
+
+Controller --> Screen : Show success message
+deactivate Controller
+@enduml

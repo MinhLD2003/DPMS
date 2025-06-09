@@ -1,0 +1,15 @@
+@startuml
+
+state  Pending  : Create Ticket
+state  Accept : DPO Tick Accept  
+state  Reject : DPO click Reject
+state  Done : DPO click Done 
+
+
+[*] --> Pending : Ticket được submit
+Pending --> Accept : DPO tiếp nhận ticket
+Pending --> Reject : DPO từ chối ticket 
+Accept --> Done : DPO báo kết quả
+Done --> [*]
+Reject --> [*] 
+@enduml

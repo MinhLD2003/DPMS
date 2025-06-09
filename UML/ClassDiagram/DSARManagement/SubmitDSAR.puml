@@ -1,0 +1,55 @@
+@startuml
+
+class DSARController {
+    -_consentService : ConsentService
+    -_dsarService : DsarService
+
+    +SubmitDSAR(string token, SubmitDsarVM vm) : Task<IActionResult>
+}
+
+class SubmitDsarVM {
+    +RequesterName : string
+    +RequesterEmail : string
+    +PhoneNumber : string?
+    +Address : string?
+    +Description : string?
+    +Type : DSARType
+    +Status : DSARStatus?
+    +RequiredResponse : DateTime?
+    +ExternalSystemId : Guid?
+}
+
+class DsarService {
+}
+
+abstract class BaseService<T> {
+    #Repository : IRepository<T>
+
+    +AddAsync(T entity) : Task<T>
+}
+
+class ConsentTokenRepository {
+    +GetByIdAsync(object id) : Task<T?>
+}
+
+class ConsentService {
+    -_consentTokenRepository : ConsentTokenRepository
+
+    +GetSystemFromToken(string token) : Task<Guid>
+}
+
+abstract class BaseRespository<T> {
+    +GetByIdAsync(object id) : Task<T?>
+    +AddAsync(T entity) : Task<T>
+}
+
+DSARController --> SubmitDsarVM : "receives from client"
+DSARController --> DsarService : "add DSAR record to database"
+DSARController --> ConsentService : "query system's id based on token"
+DsarService --|> BaseService
+BaseService --> BaseRespository
+ConsentService --|> BaseService
+ConsentTokenRepository --|> BaseRespository
+ConsentService --> ConsentTokenRepository : "get system instance from token"
+
+@enduml

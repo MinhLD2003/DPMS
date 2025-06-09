@@ -1,0 +1,9 @@
+@startuml
+class RazorViewTostringRenderer {
+    + RazorViewTostringRenderer(viewEngine:IRazorViewEngine, tempDataProvider:ITempDataProvider, serviceProvider:IServiceProvider)
+    + <<async>> RenderViewTostringAsync(viewName:string, model:TModel) : Task<string>
+}
+interface IRazorViewTostringRenderer {
+}
+IRazorViewTostringRenderer <|-- RazorViewTostringRenderer
+@enduml

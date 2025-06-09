@@ -1,0 +1,57 @@
+@startuml
+
+actor DPO
+boundary "DPIA Edit Form" as Screen
+participant "DPIAController" as Controller
+participant "DPIAService" as Service
+participant "BaseService<DPIA>" as BaseService
+participant "IRepository<DPIA>" as Repository
+database "Database" as DB
+
+DPO -> Screen : Submit updated DPIA (id, DPIAUpdateVM)
+activate Screen
+Screen -> Controller : UpdateDPIA(id, DPIAUpdateVM)
+deactivate Screen
+activate Controller
+
+' === Validate DPIA Exists ===
+Controller -> Service : GetByIdAsync(id)
+activate Service
+Service -> BaseService : GetByIdAsync(id)
+activate BaseService
+BaseService -> Repository : GetByIdAsync(id)
+activate Repository
+Repository -> DB : SELECT FROM DPIAs
+DB --> Repository : DPIA entity or null
+Repository --> BaseService : DPIA entity / null
+deactivate Repository
+BaseService --> Service : DPIA entity / null
+deactivate BaseService
+Service --> Controller : DPIA entity / null
+deactivate Service
+
+alt DPIA not found
+    Controller --> Screen : Return NotFound("DPIA not found")
+    'deactivate Controller
+else DPIA found
+
+    ' === Update DPIA ===
+    Controller -> Service : UpdateAsync(DPIA)
+    activate Service
+    Service -> BaseService : UpdateAsync(DPIA)
+    activate BaseService
+    BaseService -> Repository : UpdateAsync(DPIA)
+    activate Repository
+    Repository -> DB : UPDATE DPIAs SET 
+    DB --> Repository : OK
+    Repository --> BaseService : Updated DPIA
+    deactivate Repository
+    BaseService --> Service : Updated DPIA
+    deactivate BaseService
+    Service --> Controller : Updated DPIA
+    deactivate Service
+
+    Controller --> Screen : Return "DPIA updated successfully"
+    deactivate Controller
+end
+@enduml

@@ -1,0 +1,33 @@
+@startuml
+actor Admin
+boundary "Group List Screen" as Screen
+participant "GroupController" as Controller
+participant "GroupService" as Service
+participant "BaseService<Group>" as BaseService
+participant "BaseRepository<Group>" as Repo
+database "Database" as DB
+
+Admin -> Screen : Request paged group list (with filters)
+activate Screen
+Screen -> Controller : GetGroups(queryParams)
+deactivate Screen
+activate Controller
+
+Controller -> Service : GetPagedAsync(queryParams)
+activate Service
+
+Service -> BaseService : GetPagedAsync(queryParams)
+activate BaseService
+BaseService -> Repo : Execute paged query
+Repo -> DB : Invoke SELECT query
+DB --> Repo : Paged List<Group>
+Repo --> BaseService : PagedResponse<Group>
+BaseService --> Service : PagedResponse<Group>
+deactivate BaseService
+
+Service --> Controller : PagedResponse<Group>
+deactivate Service
+
+Controller --> Screen : Return group list with metadata
+deactivate Controller
+@enduml

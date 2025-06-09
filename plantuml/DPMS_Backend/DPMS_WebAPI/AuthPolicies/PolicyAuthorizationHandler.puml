@@ -1,0 +1,8 @@
+@startuml
+class PolicyAuthorizationHandler {
+    + PolicyAuthorizationHandler(httpContextAccessor:IHttpContextAccessor)
+}
+class "AuthorizationHandler`1"<T> {
+}
+"AuthorizationHandler`1" "<PolicyRequirement>" <|-- PolicyAuthorizationHandler
+@enduml

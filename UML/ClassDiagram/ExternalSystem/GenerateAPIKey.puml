@@ -1,0 +1,47 @@
+@startuml
+
+' Entity
+
+' Service Layer
+
+abstract class BaseService<T> {
+    #Repository : IRepository<T>
+    #_unitOfWork : IUnitOfWork
+
+    +GetByIdAsync(object id) : Task<T?>
+    +UpdateAsync(T entity) : Task<T>
+}
+
+class UnitOfWork {
+    +SaveChangesAsync() : Task<int>
+}
+
+class ConsentUtils {
+    + {static} GenerateApiKey(int length = 32) : string
+    + {static} HashApiKey(string apiKey) : string
+}
+
+class ExternalSystemService {
+    -_mapper : IMapper
+    -_externalSystemRepository : IExternalSystemRepository
+}
+
+' Controller
+class ExternalSystemController {
+    +GenerateAPIKey(Guid systemId) : Task<IActionResult>
+
+    -_systemService: IExternalSystemService
+}
+
+' Relationships (with comments on arrows)
+
+ExternalSystemService <-U- ExternalSystemController : "1. Query system\n4. Update system with new API key"
+ExternalSystemController --> ConsentUtils : 2. generate API key
+ExternalSystemController --> ConsentUtils : 3. Hash API key
+
+BaseService --> UnitOfWork : 5. Save changes to database
+
+ExternalSystemService --|> BaseService : "inherits default implementations"
+' UnitOfWork --> ExternalSystemRepository : "Uses repository to remove system"
+
+@enduml

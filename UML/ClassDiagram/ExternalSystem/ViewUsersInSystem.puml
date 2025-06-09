@@ -1,0 +1,83 @@
+@startuml
+
+' Entity
+class ExternalSystem {
+    +Id: Guid
+    +Name: string
+    +Description: string
+    ...
+}
+
+' ViewModel
+class ExternalSystemDetailVM {
+    +Id: Guid
+    +Name: string
+    +Description : string
+    +CreatedAt: DateTime
+    +CreatedBy: string
+    +Status : ExternalSystemStatus
+    +HasApiKey : bool?
+    +Users : List<SystemUserVM>
+    +Groups : List<SystemGroupVM>
+    +Purposes : List<PurposeVM>
+    ...
+}
+
+' Service Layer
+interface IExternalSystemService {
+    +GetExternalSystemDetailAsync(Guid systemId): Task<ExternalSystemDetailVM>
+}
+
+interface IRepository<T> {
+    +GetDetailAsync(object id, params Expression<Func<T, object>>[] includes) : Task<T?>
+}
+
+abstract class BaseRepository<T> {
+    #_context : DPMSContext
+    #_dbSet : DbSet<T>
+}
+
+interface IExternalSystemRepository {
+    +GetUsersAsync(Guid systemId) : Task<IEnumerable<User>>
+}
+
+class ExternalSystemRepository {
+}
+
+class ExternalSystemService {
+    -_externalSystemRepository : IExternalSystemRepository
+
+    +GetExternalSystemDetailAsync(Guid systemId): Task<ExternalSystemDetailVM>
+}
+
+' Mapper
+interface IMapper {
+    +Map<T>(source): T
+}
+
+' Controller
+class ExternalSystemController {
+    +GetSystemDetails(Guid systemId) : Task<ActionResult<ExternalSystemDetailVM>>
+
+    -_groupService: IGroupService
+    -_systemService: IExternalSystemService
+    -_userService: IUserService
+    -_mapper: IMapper
+}
+
+' Relationships (with comments on arrows)
+' ExternalSystemController --> 
+ExternalSystemRepository --|> IExternalSystemRepository : "Implements"
+ExternalSystemRepository --|> BaseRepository : "inherits default implementations"
+BaseRepository --|> IRepository : "Implements"
+IExternalSystemRepository --|> IRepository : "Implements"
+ExternalSystemService --> IExternalSystemRepository : "Uses repository to get data\n(system, users, groups, purpose)"
+ExternalSystemService --> IMapper : Map to VM
+
+ExternalSystem <-- ExternalSystemService : "Returned as list from DB query"
+ExternalSystemService --|> IExternalSystemService
+
+IExternalSystemService <-- ExternalSystemController : "Get external system details"
+ExternalSystemController --> ExternalSystemDetailVM : "Returns mapped data to client"
+
+@enduml

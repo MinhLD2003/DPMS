@@ -1,0 +1,70 @@
+' @startuml
+' actor User
+' boundary "Consent Log Export Screen" as Screen
+' participant "ConsentController" as Controller
+' participant "ConsentService" as Service
+' participant "FlexCelReport" as Report
+' database "Database" as DB
+
+' User -> Screen : Click "Export Consent Log"
+' activate Screen
+' Screen -> Controller : ExportConsentLog(systemId)
+' deactivate Screen
+' activate Controller
+
+' Controller -> Service : ExportConsentLog(systemId)
+' activate Service
+
+' Service -> DB : SELECT consent logs WHERE SystemId = ?
+' activate DB
+' DB --> Service : DataTable
+' deactivate DB
+
+' Service -> Report : Run(templateStream, outputStream)
+' activate Report
+' Report --> Service : Excel Stream
+' deactivate Report
+
+' Service --> Controller : Excel Stream
+' deactivate Service
+
+' Controller --> Screen : Return file download (.xlsx)
+' deactivate Controller
+' @enduml
+
+@startuml
+actor User
+boundary "Consent Log Export Screen" as Screen
+participant "ConsentController" as Controller
+participant "ConsentService" as Service
+participant "ConsentRepository" as Repo
+participant "FlexCelReport" as Report
+database "Database" as DB
+
+User -> Screen : Click "Export Consent Log"
+activate Screen
+Screen -> Controller : ExportConsentLog(systemId)
+deactivate Screen
+activate Controller
+
+Controller -> Service : ExportConsentLog(systemId)
+activate Service
+
+Service -> Repo : GetConsentLogs(systemId)
+activate Repo
+Repo -> DB : SELECT * FROM Consents WHERE SystemId = ?
+DB --> Repo : DataTable
+Repo --> Service : DataTable
+deactivate Repo
+
+Service -> Report : Run(templateStream, outputStream)
+activate Report
+Report --> Service : Excel Stream
+deactivate Report
+
+Service --> Controller : Excel Stream
+deactivate Service
+
+Controller --> Screen : Return file download (.xlsx)
+deactivate Controller
+@enduml

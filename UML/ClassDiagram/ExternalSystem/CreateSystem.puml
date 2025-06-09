@@ -1,0 +1,88 @@
+@startuml
+
+abstract class BaseService<T> {
+    #Repository : IRepository<T>
+    #_unitOfWork : IUnitOfWork
+}
+
+interface IService<T> {
+    +AddAsync(T entity) : Task<T>
+}
+
+abstract class BaseRepository<T> {
+    #_context : DPMSContext
+    #_dbSet : DbSet<T>
+}
+
+interface IRepository<T> {
+    +AddAsync(T entity) : Task<T>
+}
+
+BaseRepository --|> IRepository
+
+BaseService --|> IService
+BaseService --> IRepository : uses IRepository<T>
+
+' Entity
+class ExternalSystem {
+    +Id: Guid
+    +Name: string
+    +Url: string
+    ...
+}
+
+' interface IExternalSystemRepository {
+' }
+
+' ViewModel
+class AddSystemVM {
+    +Name: string
+    +Description : string
+    +ProductDevEmails: List<string>
+    +BusinessOwnerEmails: List<string>
+}
+
+' Service Layer
+interface IExternalSystemService {
+    -_externalSystemRepository : IExternalSystemRepository
+
+    +AddNewSystem(AddSystemVM model): Task<ExternalSystem>
+}
+class ExternalSystemService {
+    -_mediator : IMediator
+
+    +AddNewSystem(AddSystemVM model): Task<ExternalSystem>
+}
+
+interface IMediator {
+    +Publish<T>(T notification): Task
+}
+
+' Mapper
+interface IMapper {
+    +Map<T>(source): T
+}
+
+' Controller
+class ExternalSystemController {
+    +AddNewSystem(AddSystemVM model): Task<ActionResult>
+
+    -_groupService: IGroupService
+    -_systemService: ISystemService
+    -_userService: IUserService
+    -_mapper: IMapper
+}
+
+' Relationships (with comments on arrows)
+ExternalSystemService --|> IExternalSystemService : "Implements"
+ExternalSystemService --|> BaseService : "Use AddAsync<T> to add Group, User,\n and ExternalSystem"
+IExternalSystemService --|> IService : "Implements"
+ExternalSystemService --> IMediator : "Raise notification"
+ExternalSystemService --> IMapper : Maps to ExternalSystem
+ExternalSystemController --> IExternalSystemService : "Uses"
+ExternalSystemController --> AddSystemVM : Receives from client
+IRepository --> ExternalSystem : "Add to database"
+IRepository --> Group : "Add to database"
+' IExternalSystemRepository --|> IRepository : "Implements"
+
+@enduml

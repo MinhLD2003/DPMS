@@ -1,0 +1,10 @@
+@startuml
+
+state  activate  
+state  deactivate   
+
+
+[*] --> activate : Account is created
+activate --> deactivate : Account is banned
+deactivate --> [*] 
+@enduml

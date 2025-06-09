@@ -1,0 +1,284 @@
+@startuml
+' Object instances of the classes from the class diagram
+
+' BaseModel instance is abstract, so no direct instance
+
+' User instances
+object "john:User" as user1 {
+  Id = "550e8400-e29b-41d4-a716-446655440000"
+  UserName = "john_doe"
+  FullName = "John Doe"
+  Dob = "1985-05-15"
+  Email = "john.doe@example.com"
+  IsEmailConfirmed = true
+  IsPasswordConfirmed = true
+  Status = UserStatus.ACTIVE
+  LastLoginDate = "2025-03-10 14:30:00"
+  CreatedAt = "2024-01-15 09:00:00"
+  LastModifiedAt = "2025-02-20 11:45:00"
+  IsDeleted = false
+}
+object "john:User" as user2 {
+  Id = "550e8400-e29b-41d4-a716-873712317231"
+  UserName = "Liu Xang"
+  FullName = "Liu Xang"
+  Dob = "1985-05-15"
+  Email = "Liu.Xang@example.com"
+  IsEmailConfirmed = true
+  IsPasswordConfirmed = true
+  Status = UserStatus.ACTIVE
+  LastLoginDate = "2025-03-10 14:30:00"
+  CreatedAt = "2024-01-15 09:00:00"
+  LastModifiedAt = "2025-02-20 11:45:00"
+  IsDeleted = false
+}
+' GroupUser instance
+object "dpoGroup:GroupUser" as group1 {
+  Id = "550e8400-e29b-41d4-a716-446655440002"
+  Name = "DPO"
+  Description = "Users with DPO privileges"
+  CreatedAt = "2024-01-10 08:00:00"
+  LastModifiedAt = "2024-01-10 08:00:00"
+  IsDeleted = false
+}
+' GroupUser instance
+object "dpoGroup:GroupUser" as group2 {
+  Id = "550e8400-e29b-41d4-a716-446655440002"
+  Name = "Business Owner"
+  Description = "Users with BO privileges"
+  CreatedAt = "2024-01-10 08:00:00"
+  LastModifiedAt = "2024-01-10 08:00:00"
+  IsDeleted = false
+}
+
+
+
+
+' IssueTicket instance
+object "newSystemTicket:IssueTicket" as ticket1 {
+  Id = "550e8400-e29b-41d4-a716-446655440006"
+  Title = "Declare New System"
+  Description = "BO and Dev declare new system."
+  TicketType = "System"
+  CreatedAt = "2025-03-01 14:20:00"
+  Status = TicketStatus.IN_PROGRESS
+  AssignedTo = "550e8400-e29b-41d4-a716-446655440000"
+  DueDate = "2025-03-15 17:00:00"
+  IsDeleted = false
+}
+
+' Document instance
+object "technicalDocument:Document" as doc1 {
+  Id = "550e8400-e29b-41d4-a716-446655440007"
+  DocumentName = "System Technical Document"
+  DocumentType = "Technical Document"
+  FilePath = "/documents/reports/perf_analysis_20250301.pdf"
+  Size = 2456789
+  MimeType = "application/pdf"
+  CreatedAt = "2025-03-05 16:30:00"
+  LastModifiedAt = "2025-03-05 16:30:00"
+  IsDeleted = false
+}
+
+' DPIA instance
+object "newSystemDPIA:DPIA" as dpia1 {
+  Id = "550e8400-e29b-41d4-a716-446655440008"
+  ExternalSystemId = "550e8400-e29b-41d4-a716-446655440010"
+  Title = "New External System Data Processing Assessment"
+  IssueTicketId = "550e8400-e29b-41d4-a716-446655440006"
+  DPIAType = DPIAType.NEW_SYSTEM
+  Description = "DPIA for a new external system "
+  Status = DPIAStatus.IN_PROGRESS
+  ApprovalDate = "2025-02-15 11:30:00"
+  CreatedAt = "2025-01-20 09:15:00"
+  LastModifiedAt = "2025-02-15 11:30:00"
+  IsDeleted = false
+}
+
+' ExternalSystem instance
+object "crm:ExternalSystem" as system1 {
+  Id = "550e8400-e29b-41d4-a716-446655440010"
+  Name = "FPT Edu Customer Relationship Management"
+  Description = "FPT EDU External CRM system integration"
+  Domain = "crm.externalvendor.com"
+  Status = ExternalSystemStatus.ACTIVE
+  CreatedAt = "2024-05-10 10:00:00"
+  LastModifiedAt = "2025-01-05 14:20:00"
+  IsDeleted = false
+}
+
+
+' Form instance - changed to DPIA Form
+object "dpiaAssessmentForm:Form" as form1 {
+  Id = "550e8400-e29b-41d4-a716-446655440012"
+  Name = "DPIA Assessment Form"
+  Description = "Form for Data Protection Impact Assessment submission"
+  Version = "3.2"
+  IsPublished = true
+  CreatedAt = "2024-10-15 09:30:00"
+  LastModifiedAt = "2025-01-10 11:15:00"
+  IsDeleted = false
+}
+
+' FormField instances - updated for DPIA form
+object "dataProcessingPurpose:FormField" as field1 {
+  Id = "550e8400-e29b-41d4-a716-446655440013"
+  Name = "processingPurpose"
+  Label = "Purpose of Data Processing"
+  FieldType = FieldType.TEXTAREA
+  IsRequired = true
+  ValidationRules = "required|min:50|max:1000"
+  DefaultValue = ""
+  Order = 1
+  CreatedAt = "2024-10-15 09:35:00"
+  LastModifiedAt = "2024-10-15 09:35:00"
+  IsDeleted = false
+}
+
+object "dataCategories:FormField" as field2 {
+  Id = "550e8400-e29b-41d4-a716-446655440014"
+  Name = "dataCategories"
+  Label = "Categories of Personal Data"
+  FieldType = FieldType.CHECKBOX
+  IsRequired = true
+  ValidationRules = "required|min:1"
+  DefaultValue = ""
+  Order = 2
+  CreatedAt = "2024-10-15 09:40:00"
+  LastModifiedAt = "2024-10-15 09:40:00"
+  IsDeleted = false
+}
+
+object "riskAssessment:FormField" as field3 {
+  Id = "550e8400-e29b-41d4-a716-446655440015"
+  Name = "riskAssessment"
+  Label = "Risk Assessment and Mitigation Measures"
+  FieldType = FieldType.TEXTAREA
+  IsRequired = true
+  ValidationRules = "required|min:100|max:2000"
+  DefaultValue = ""
+  Order = 3
+  CreatedAt = "2024-10-15 09:45:00"
+  LastModifiedAt = "2024-10-15 09:45:00"
+  IsDeleted = false
+}
+
+object "retentionPeriod:FormField" as field4 {
+  Id = "550e8400-e29b-41d4-a716-446655440016"
+  Name = "retentionPeriod"
+  Label = "Data Retention Period"
+  FieldType = FieldType.SELECT
+  IsRequired = true
+  ValidationRules = "required"
+  DefaultValue = "1 year"
+  Order = 4
+  CreatedAt = "2024-10-15 09:50:00"
+  LastModifiedAt = "2024-10-15 09:50:00"
+  IsDeleted = false
+}
+
+object "supportingDocuments:FormField" as field5 {
+  Id = "550e8400-e29b-41d4-a716-446655440017"
+  Name = "supportingDocuments"
+  Label = "Supporting Documents"
+  FieldType = FieldType.FILE
+  IsRequired = false
+  ValidationRules = "mimes:pdf,docx,xlsx|max:10240"
+  DefaultValue = ""
+  Order = 5
+  CreatedAt = "2024-10-15 09:55:00"
+  LastModifiedAt = "2024-10-15 09:55:00"
+  IsDeleted = false
+}
+' DPIAMember instance
+object "dataDPO:DPIAMember" as dpiaMember1 {
+  Id = "550e8400-e29b-41d4-a716-446655440020"
+  UserId = "550e8400-e29b-41d4-a716-446655440000"
+  DpiaId = "550e8400-e29b-41d4-a716-446655440008"
+  Role = "Data Protection Officer"
+  Responsibilities = "Final approval and compliance validation"
+  InvitedAt = "2025-01-21 10:30:00"
+  AcceptedAt = "2025-01-21 14:20:00"
+  Status = MemberStatus.ACTIVE
+  CreatedAt = "2025-01-21 10:30:00"
+  LastModifiedAt = "2025-01-21 14:20:00"
+  IsDeleted = false
+}
+
+object "businessOwner:DPIAMember" as dpiaMember2 {
+  Id = "550e8400-e29b-41d4-a716-446655440021"
+  UserId = "550e8400-e29b-41d4-a716-446655440022" 
+  DpiaId = "550e8400-e29b-41d4-a716-446655440008"
+  Role = "Business Owner"
+  Responsibilities = "System Business assessment and documentation"
+  InvitedAt = "2025-01-20 10:00:00"
+  AcceptedAt = "2025-01-20 11:15:00"
+  Status = MemberStatus.ACTIVE
+  CreatedAt = "2025-01-20 10:00:00"
+  LastModifiedAt = "2025-01-20 11:15:00"
+  IsDeleted = false
+}
+object "dpoWork:WorkTracing" as work1 {
+  Id = "550e8400-e29b-41d4-a716-446655440040"
+  DpiaId = "550e8400-e29b-41d4-a716-446655440031"
+  UserId = "550e8400-e29b-41d4-a716-446655440000"
+  Role = "Data Protection Officer"
+  InitialReview = true
+  RiskAssessment = true
+  ComplianceCheck = false
+  FinalApproval = false
+  Status = WorkStatus.IN_PROGRESS
+  TimeSpent = 240
+  StartDate = "2025-03-06 09:00:00"
+  LastUpdated = "2025-03-07 11:30:00"
+  CreatedAt = "2025-03-05 16:45:00"
+  LastModifiedAt = "2025-03-07 11:30:00"
+  IsDeleted = false
+}
+
+object "bo:WorkTracing" as work2 {
+  Id = "550e8400-e29b-41d4-a716-446655440041"
+  DpiaId = "550e8400-e29b-41d4-a716-446655440031"
+  UserId = "550e8400-e29b-41d4-a716-446655440022"
+  Role = "Business Owner"
+  RequirementsDefinition = true
+  StakeholderConsultation = true
+  BusinessJustification = true
+  ImplementationApproval = false
+  Status = WorkStatus.IN_PROGRESS
+  TimeSpent = 420
+  StartDate = "2025-03-05 14:00:00"
+  LastUpdated = "2025-03-07 16:30:00"
+  CreatedAt = "2025-03-05 13:45:00"
+  LastModifiedAt = "2025-03-07 16:30:00"
+  IsDeleted = false
+}
+
+object "submissionDPIA:Submission" as submission1 {
+
+}
+
+' Relationships between object instances
+user1 -- group1 : belongs to
+user2 -- group2 : belongs to
+ticket1 -- doc1 : has
+user1 -- dpia1 : creates
+dpia1 -- system1 : related to
+dpia1 -- doc1 : contains
+system1 -- form1 : contains
+user1 -- form1 : manages
+form1 -- field1 : contains
+form1 -- field2 : contains
+form1 -- field3 : contains
+form1 -- field4 : contains
+form1 -- field5 : contains
+ticket1 -- dpia1 : related to
+submission1 -- form1 : is submitted
+system1 -- submission1 : creates
+user1 -- dpiaMember1 : is
+user2 -- dpiaMember2 : is
+dpiaMember1 -- dpia1 : member of
+dpiaMember2 -- dpia1 : member of
+dpiaMember1 -- work1 : has
+dpiaMember2 -- work2 : has
+@enduml

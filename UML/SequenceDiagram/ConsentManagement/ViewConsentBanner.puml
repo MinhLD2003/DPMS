@@ -1,0 +1,68 @@
+@startuml
+actor "Data Subject" as User
+boundary "Consent Banner Screen" as Screen
+participant "ConsentController" as Controller
+participant "ConsentUtils" as Utils
+participant "ConsentService" as ConsentService
+participant "ExternalSystemService" as SystemService
+participant "ConsentTokenRepository" as TokenRepo
+participant "ExternalSystemPurposeRepository" as PurposeRepo
+database "Database" as DB
+
+User -> Screen : Redirect with uniqueIdentifier + token
+activate Screen
+Screen -> Controller : GetConsentBanner(uniqueIdentifier, token)
+deactivate Screen
+activate Controller
+
+Controller -> Utils : DecryptEmail(uniqueIdentifier)
+activate Utils
+Utils --> Controller : Return email
+deactivate Utils
+
+Controller -> ConsentService : GetSystemFromToken(token)
+activate ConsentService
+ConsentService -> TokenRepo : Query token
+activate TokenRepo
+TokenRepo -> DB : Invoke SELECT 
+DB --> TokenRepo : token info
+TokenRepo --> ConsentService : token with systemId
+deactivate TokenRepo
+ConsentService --> Controller : systemId
+deactivate ConsentService
+
+Controller -> ConsentService : ValidateConsentToken(token)
+activate ConsentService
+ConsentService -> TokenRepo : Check token validity
+activate TokenRepo
+TokenRepo -> DB : Invoke SELECT
+DB --> TokenRepo : token (if valid)
+TokenRepo --> ConsentService : true/false
+deactivate TokenRepo
+ConsentService --> Controller : validation result
+deactivate ConsentService
+
+alt Token valid
+    Controller -> ConsentService : GetConsentByEmail(email)
+    activate ConsentService
+    ConsentService -> DB : Invoke SELECT
+    DB --> ConsentService : Consent record
+    ConsentService --> Controller : Consent
+    deactivate ConsentService
+    Controller -> SystemService : GetSystemPurposesAsync(systemId)
+    activate SystemService
+    SystemService -> PurposeRepo : Query system purposes
+    activate PurposeRepo
+    PurposeRepo -> DB : Invoke SELECT
+    DB --> PurposeRepo : List<Purpose>
+    PurposeRepo --> SystemService : Purposes
+    deactivate PurposeRepo
+    SystemService --> Controller : Return Purposes
+    deactivate SystemService
+    Controller --> Screen : Render banner with purposes + consent
+    
+else Token invalid
+    Controller --> Screen : Show error: "Invalid token"
+    deactivate Controller
+end
+@enduml

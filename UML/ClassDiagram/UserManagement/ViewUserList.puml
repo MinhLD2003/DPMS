@@ -1,0 +1,50 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam defaultTextAlignment center
+
+' === Controller ===
+class AccountController {
+    -IUserService _userService
+    -IMapper _mapper
+    +Task<ActionResult> GetAccountList(QueryParams)
+}
+
+AccountController --> IUserService : calls GetPagedAsync
+AccountController --> IMapper : maps User → UserListVM
+
+' === Query Parameters ===
+class QueryParams {
+    +int PageNumber
+    +int PageSize
+    +string SortBy
+    +string SortDirection
+    +Dictionary<string, string> Filters
+}
+
+AccountController --> QueryParams : receives from request
+
+' === Paged Response ===
+class PagedResponse<User> {
+    +List<User> Data
+    +int PageNumber
+    +int PageSize
+    +int TotalCount
+    +int TotalPages
+}
+
+UserService --> PagedResponse : returns paged result
+AccountController --> PagedResponse : returns to client
+
+' === Service Interface ===
+interface IUserService {
+    +Task<PagedResponse<User>> GetPagedAsync(QueryParams, Expression<Func<User, object>> include)
+}
+
+class UserService {
+    +GetPagedAsync(QueryParams, Expression) : Task<PagedResponse<User>>
+}
+
+UserService ..|> IUserService
+
+@enduml

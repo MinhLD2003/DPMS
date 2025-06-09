@@ -1,0 +1,12 @@
+@startuml
+class IssueTicketVM {
+    + Title : string? <<get>> <<set>>
+    + ExternalSystemName : string? <<get>> <<set>>
+    + Description : string? <<get>> <<set>>
+}
+IssueTicketVM --> "Id" string
+IssueTicketVM --> "ExternalSystemId" string
+IssueTicketVM --> "TicketType" TicketType
+IssueTicketVM --> "IssueTicketStatus" IssueTicketStatus
+IssueTicketVM --> "Documents<DocumentVM>" "List`1"
+@enduml

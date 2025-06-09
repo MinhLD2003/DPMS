@@ -1,0 +1,53 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam defaultTextAlignment center
+
+' ViewModel / DTO
+class AuthRequest {
+  +string Token
+}
+
+' Interfaces
+interface IAuthService {
+  +Task<User?> VerifyGoogleTokenAsync(string token)
+  +string GenerateJwtToken(User user)
+}
+
+interface IUserRepository {
+  +Task<User?> GetUserByEmailAsync(string email)
+}
+
+' Services
+class AuthService {
+}
+
+AuthService ..|> IAuthService
+AuthService --> IUserRepository : get user by email
+AuthService --> GoogleJsonWebSignature : validate token
+
+class GoogleJsonWebSignature {
+  +static Task<Payload> ValidateAsync(string token)
+}
+
+' Controller
+class AuthController {
+  -ILogger<AuthController> _logger
+  -IAuthService _authService
+  +Task<IActionResult> GoogleLogin(AuthRequest request)
+}
+
+AuthController --> IAuthService : VerifyGoogleTokenAsync\nGenerateJwtToken
+AuthController --> AuthRequest : receives token
+
+' Repository
+class UserRepository {
+}
+
+UserRepository ..|> IUserRepository
+UserRepository --> DbContext : uses _context.Users
+
+class DbContext {
+  +DbSet<User> Users
+}
+
+@enduml

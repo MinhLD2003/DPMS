@@ -1,0 +1,11 @@
+@startuml
+class AuthController {
+    + AuthController(mapper:IMapper, authService:AuthService, logger:ILogger<AuthController>, userService:IUserService)
+    + <<async>> GoogleLogin(request:AuthRequest) : Task<IActionResult>
+    + <<async>> Login(request:LoginVM) : Task<ActionResult>
+    + <<async>> Register(model:RegisterVM) : Task<ActionResult>
+    + Logout() : IActionResult
+    + RefreshToken() : IActionResult
+}
+ControllerBase <|-- AuthController
+@enduml

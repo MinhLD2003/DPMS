@@ -1,0 +1,64 @@
+@startuml
+top to bottom direction
+
+' === Controller Layer ===
+class FormController {
+    -_formService : IFormService
+    +SubmitForm(FormSubmissionVM submission) : Task<ActionResult<FormSubmissionVM>>
+}
+
+' === Service Layer ===
+interface IFormService {
+    +SubmitForm(FormSubmissionVM submission) : Task<FormSubmissionVM>
+}
+
+class FormService {
+    -_formRepository : IFormRepository
+    -_systemRepository : IExternalSystemRepository
+    -_submissionRepository : ISubmissionRepository
+    -_mediator : IMediator
+
+    +SubmitForm(FormSubmissionVM submission) : Task<FormSubmissionVM>
+}
+
+FormController --> IFormService : "calls SubmitForm"
+FormService -u-|> IFormService : "implements"
+
+' === Repository Layer ===
+interface IFormRepository {
+    +GetDetailAsync(Guid id, includes) : Task<Form?>
+}
+
+interface IExternalSystemRepository {
+    +GetByIdAsync(Guid id) : Task<ExternalSystem?>
+}
+
+interface ISubmissionRepository {
+    +AddAsync(Submission) : Task<Submission>
+}
+
+interface IMediator {
+    +Publish(INotification) : Task
+}
+
+FormService --> IFormRepository : "get form + elements"
+FormService --> IExternalSystemRepository : "validate system"
+FormService --> ISubmissionRepository : "save submission"
+FormService --> IMediator : "publish event"
+
+' === View Models ===
+class FormSubmissionVM {
+    +FormId : Guid
+    +SystemId? : Guid
+    +Responses : List<FormResponseVM>
+}
+
+class FormResponseVM {
+    +FormElementId : Guid
+    +Value : string
+}
+
+FormController --> FormSubmissionVM : "receives from client"
+FormSubmissionVM --> FormResponseVM : "contains"
+
+@enduml

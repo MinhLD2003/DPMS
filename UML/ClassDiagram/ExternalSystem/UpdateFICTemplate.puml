@@ -1,0 +1,73 @@
+@startuml
+
+class FormController {
+    +UpdateForm(CreateFormVm form) : ActionResult<CreateFormVm> : Task<ActionResult>
+    -AssignFormAndParentIds(FormElement element, Guid formId, Guid? parentId) : void
+}
+
+class FormService {
+    -_formRepository : IFormRepository
+
+    +AddAsync<Form>(Form entity) : Task<Form>
+}
+
+interface IFormService {
+    +AddAsync<Form>(Form entity) : Task<Form>
+}
+
+abstract class BaseService<T> {
+    #Repository : IRepository<T>
+
+    +AddAsync(T entity) : Task<T>
+}
+
+interface IService<T> {
+    +AddAsync(T entity) : Task<T>
+}
+
+abstract class BaseRepository<T> {
+    +AddAsync(T entity) : Task<T>
+}
+
+interface IRepository<T> {
+    +AddAsync(T entity) : Task<T>
+}
+
+class CreateFormVm {
+    +Name : string
+    +FormType : FormType
+    +FormElements : List<CreateFormElementsVm>
+}
+
+class CreateFormElementsVm {
+    +Name : string
+    +DataType : FormElementTypes
+    +Value : string?
+    +OrderIndex : int?
+    +Children : List<CreateFormElementsVm>?
+}
+
+interface IFormRepository {
+    +AddAsync<Form>(Form entity) : Task<Form>
+}
+
+class FormRepository {
+    +AddAsync<Form>(Form entity) : Task<Form>
+}
+
+BaseRepository ..|> IRepository
+BaseService ..|> IService
+BaseService --> IRepository
+FormService ..|> IFormService
+FormService --|> BaseService
+FormRepository ..|> IFormRepository
+FormRepository --|> BaseRepository
+FormService --> IFormRepository
+IFormRepository --|> IRepository
+
+FormController --> FormController : "assign child-parent relationship"
+FormController --> IFormService : "update form (adds a new form increase version)"
+FormController --> CreateFormVm : "receives from client"
+CreateFormVm --> CreateFormElementsVm : contains
+
+@enduml

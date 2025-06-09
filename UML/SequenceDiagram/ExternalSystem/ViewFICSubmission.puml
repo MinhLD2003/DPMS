@@ -1,0 +1,66 @@
+' @startuml
+' actor Admin
+' boundary "Form Submission Detail View" as Screen
+' participant "FormController" as Controller
+' participant "IMapper" as Mapper
+' participant "DPMSContext" as Context
+' participant "FormVM" as FormView
+' participant "FormElementVM" as ElementView
+' database "Database" as DB
+
+' Admin -> Screen : Open a form submission
+' activate Screen
+' Screen -> Controller : GetSubmissionDetails(submissionId)
+' deactivate Screen
+' activate Controller
+
+' Controller -> Context : Get FormSubmission + Form + Elements + Responses
+' activate Context
+' Context -> DB : SELECT * FROM Form, FormElements, Responses WHERE SubmissionId = ?
+' DB --> Context : Form + Responses
+' Context --> Controller : Form + Responses
+' deactivate Context
+
+' Controller -> Mapper : Map Form to FormVM
+' activate Mapper
+' Mapper --> Controller : FormVM (includes FormElementVM list)
+' deactivate Mapper
+
+' Controller -> Controller : AssignValues(FormElementVMs, Responses)
+' note right of Controller
+' Recursively traverses element tree\nand assigns response value by FormElementId
+' end note
+
+' Controller --> Screen : Return FormVM (with values)
+' deactivate Controller
+' @enduml
+
+@startuml
+actor "User" as Admin
+boundary "Form Submission Detail Screen" as Screen
+participant "FormController" as Controller
+participant "FormService" as Service
+participant "ISubmissionRepository" as Repo
+database "Database" as DB
+
+Admin -> Screen : Click view submission
+activate Screen
+Screen -> Controller : GetSubmissionDetails(submissionId)
+deactivate Screen
+activate Controller
+
+Controller -> Service : GetSubmissionDetails(submissionId)
+activate Service
+
+Service -> Repo : GetDetailAsync(id, includes: Form, FormElements, Responses)
+activate Repo
+Repo -> DB : Invoke SELECT query
+DB --> Repo : Submission with data
+Repo --> Service : Submission
+deactivate Repo
+
+Service --> Controller : FormVM
+deactivate Service
+Controller --> Screen : Show FormVM
+deactivate Controller
+@enduml

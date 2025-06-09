@@ -1,0 +1,78 @@
+' @startuml
+
+' class FormController {
+'     -_context : DPMSContext
+
+'     +GetFICSubmissions(Guid? systemId) : ActionResult<List<FICSubmissionVM>>
+' }
+
+' class DPMSContext {
+'     +Submissions : DbSet<FICSubmission>
+' }
+
+' class FICSubmissionVM {
+'     +SystemId : Guid
+'     +FormId : Guid
+'     +Id : Guid
+'     +Name : string
+'     +ExternalSystemName : string
+'     +CreatedAt : DateTime
+'     +CreatedBy : string
+' }
+
+' FormController --> DPMSContext : "query list of FIC submissions"
+' FormController --> FICSubmissionVM : "map to view model"
+
+' @enduml
+
+@startuml
+top to bottom direction
+
+' === Controller Layer ===
+class FormController {
+    -_formService : IFormService
+    +GetFICSubmissions(Guid? systemId) : ActionResult<List<FICSubmissionVM>>
+}
+
+' === Service Layer ===
+interface IFormService {
+    +GetFICSubmissions(Guid? systemId) : Task<List<FICSubmissionVM>>
+}
+
+class FormService {
+    -_formRepo : IFICSubmissionRepository
+    +GetFICSubmissions(Guid? systemId) : Task<List<FICSubmissionVM>>
+}
+
+FormController --> IFormService : "calls service method"
+FormService -u-|> IFormService : "implements"
+
+' === Repository Layer ===
+interface ISubmissionRepository {
+    +GetFICSubmissions(Guid? systemId) : Task<List<FICSubmission>>
+}
+
+class FICSubmission {
+    +SystemId : Guid
+    +FormId : Guid
+    +Id : Guid
+    +CreatedAt : DateTime
+    +CreatedBy : string
+    +Form : Form
+    +ExternalSystem : ExternalSystem
+}
+
+class FICSubmissionVM {
+    +SystemId : Guid
+    +FormId : Guid
+    +Id : Guid
+    +Name : string
+    +ExternalSystemName : string
+    +CreatedAt : DateTime
+    +CreatedBy : string
+}
+
+FormService --> ISubmissionRepository : "query from db"
+FormController --> FICSubmissionVM : "map to view model"
+
+@enduml

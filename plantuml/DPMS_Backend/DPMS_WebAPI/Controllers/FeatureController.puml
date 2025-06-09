@@ -1,0 +1,13 @@
+@startuml
+class FeatureController {
+    + FeatureController(featureService:IFeatureService, mapper:IMapper, logger:ILogger<FeatureController>)
+    + <<async>> GetListNestedFeatures(groupId:string) : Task<IActionResult>
+    + <<async>> GetFeatures(queryParams:QueryParams) : Task<IActionResult>
+    + <<async>> GetFeature(id:string) : Task<IActionResult>
+    + <<async>> CreateFeature(featureVM:CreateFeatureVM) : Task<IActionResult>
+    + <<async>> UpdateFeature(id:string, featureVM:FeatureVM) : Task<IActionResult>
+    + <<async>> DeleteFeature(id:string) : Task<IActionResult>
+    + <<async>> AddFeatureToGroup(model:FeatureGroupAssignmentModel) : Task<ActionResult>
+}
+ControllerBase <|-- FeatureController
+@enduml

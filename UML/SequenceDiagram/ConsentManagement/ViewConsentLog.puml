@@ -1,0 +1,31 @@
+@startuml
+actor "User" as User
+boundary "Consent Log Screen" as Screen
+participant "ConsentController" as Controller
+participant "ConsentService" as Service
+participant "ConsentRepository" as Repository
+database "Database" as DB
+
+User -> Screen : Apply filters/sort/pagination
+activate Screen
+Screen -> Controller : GetConsentLog(QueryParams)
+deactivate Screen
+activate Controller
+
+Controller -> Service : GetConsentLogWithPurpose(queryParams)
+activate Service
+
+Service -> Repository : GetConsentLogWithPurpose(queryParams)
+activate Repository
+Repository -> DB : Invoke SELECT
+DB --> Repository : PagedResponse<Consent>
+deactivate DB
+Repository --> Service : PagedResponse<Consent> with ConsentPurposes
+deactivate Repository
+
+Service --> Controller : PagedResponse<ConsentLogVM>
+deactivate Service
+
+Controller --> Screen : Render paged list of ConsentLogVM
+deactivate Controller
+@enduml

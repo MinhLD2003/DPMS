@@ -1,0 +1,35 @@
+@startuml
+
+class DPIAController {
+    -_dpiaService : IDPIAService
+    -_mediator : IMediator
+
+    +Approve(Guid id) : Task<ActionResult>
+    +Reject(Guid id) : Task<ActionResult>
+}
+
+class DPIAService {
+    +ApproveAsync(Guid id, ClaimsPrincipal principal) : Task
+    +RejectAsync(Guid id, ClaimsPrincipal principal) : Task
+}
+
+class UserRepository {
+    +CheckUserInGroup(Guid userId, string groupName) : Task<Result<bool>>
+}
+
+class ClaimsPrincipal {
+    +Identities : IEnumerable<ClaimsIdentity>
+    ...
+}
+
+class DPIARepository {
+    +GetDPIADetailAsync(Guid dpiaId) : Task<DPIA?>
+    +GetDPIAMembersAsync(Guid id) : Task<IEnumerable<DPIAMember>>
+}
+
+DPIAController --> DPIAService : "approve/reject DPIA"
+DPIAService --> UserRepository : "check user in DPO group"
+DPIAService --> DPIARepository : "get DPIA instance to check responsibilities' status"
+DPIAService --> DPIARepository : "get DPIA members to send notification"
+
+@enduml

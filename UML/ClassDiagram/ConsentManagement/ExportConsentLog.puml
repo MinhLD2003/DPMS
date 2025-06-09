@@ -1,0 +1,18 @@
+@startuml
+
+class ConsentController {
+    +ExportConsentLog(Guid? systemId) : Task<ActionResult>
+}
+
+class ConsentService {
+    +ExportConsentLog(Guid? systemId) : Task<Stream>
+}
+
+class FlexCelReport {
+    +Run(templateStream, outputStream) : void
+}
+
+ConsentController --> ConsentService : "get data for export"
+ConsentService --> FlexCelReport : "apply data to excel template"
+
+@enduml

@@ -1,0 +1,37 @@
+@startuml
+actor Admin
+boundary "Form Templates List Screen" as Screen
+participant "FormController" as Controller
+participant "FormService" as Service
+participant "BaseService<Form>" as BaseService
+participant "BaseRepository<Form>" as BaseRepo
+database "Database" as DB
+
+Admin -> Screen : Apply filter (e.g. Draft, Active)
+activate Screen
+Screen -> Controller : GetFormTemplates(formStatus)
+deactivate Screen
+activate Controller
+
+Controller -> Service : GetPagedAsync(QueryParams with status filter)
+activate Service
+
+Service -> BaseService : GetPagedAsync(QueryParams)
+activate BaseService
+
+BaseService -> BaseRepo : GetPagedAsync(QueryParams)
+activate BaseRepo
+BaseRepo -> DB : Invoke SELECT 
+DB --> BaseRepo : Paged list of forms
+BaseRepo --> BaseService : PagedResponse<Form>
+deactivate BaseRepo
+
+BaseService --> Service : PagedResponse<Form>
+deactivate BaseService
+
+Service --> Controller : PagedResult
+deactivate Service
+
+Controller --> Screen : Display list of form templates
+deactivate Controller
+@enduml

@@ -1,0 +1,23 @@
+@startuml
+|Business Owner or Product Developer|
+start
+:Login;
+:Create new Issue Ticket;
+:View Submitted Tickets;
+stop
+
+|DPO|
+start
+:Login;
+:View Submitted Tickets;
+
+if (Any pending ticket?) then (yes)
+  :Change status to Accepted or Rejected;
+endif
+
+if (Ticket was Accepted?) then (yes)
+  :Mark ticket as Done;
+endif
+
+stop
+@enduml

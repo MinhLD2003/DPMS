@@ -1,0 +1,37 @@
+@startuml
+
+actor DPO
+boundary "Policy Management Screen" as Screen
+participant "PrivacyPolicyController" as Controller
+participant "PrivacyPolicyService" as Service
+participant "BaseService<Policy>" as BaseService
+participant "BaseRepository<Policy>" as Repo
+database "Database" as DB
+
+DPO -> Screen : Apply filters or scroll through policies
+activate Screen
+Screen -> Controller : GetPolicies(QueryParams)
+deactivate Screen
+activate Controller
+
+
+Controller -> Service : GetPagedAsync(queryParams)
+activate Service
+
+Service -> BaseService : GetPagedAsync(queryParams)
+activate BaseService
+BaseService -> Repo : GetPagedAsync(queryParams)
+activate Repo
+Repo -> DB : Invoke SELECT
+DB --> Repo : Paged List<Policy>
+Repo --> BaseService : PagedResponse<Policy>
+deactivate Repo
+
+BaseService --> Service : PagedResponse<Policy>
+deactivate BaseService
+Service --> Controller : PagedResponse<Policy>
+deactivate Service
+
+Controller --> Screen : Return policy list + pagination data
+deactivate Controller
+@enduml

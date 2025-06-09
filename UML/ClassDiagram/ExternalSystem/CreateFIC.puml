@@ -1,0 +1,53 @@
+@startuml
+
+abstract class BaseService<T> {
+    #Repository : IRepository<T>
+    #_unitOfWork : IUnitOfWork
+
+    +FindAsync(Expression<Func<T, bool>> predicate) : IEnumerable<T>
+    +AddAsync(T entity) : Task<T>
+}
+
+class FormService {}
+
+' Entity
+
+' ViewModel
+class CreateFormVm {
+    +Name : string
+    +FormType : FormTypes
+    +FormElements : ICollection<CreateFormElementsVm>?
+}
+
+class CreateFormElementsVm {
+    +Name : string
+    +DataType : FormElementTypes?
+    +Value : string?
+    +OrderIndex : int?
+    +Children : ICollection<CreateFormElementsVm>?
+}
+
+' Service Layer
+
+
+' Controller
+class FormController {
+    -_context : DPMSContext
+    -_mapper : IMapper
+
+    +SaveForm(CreateFormVm form) : ActionResult<CreateFormVm>
+    -AssignFormAndParentIds(FormElement element, Guid formId, Guid? parentId) : void
+}
+
+interface IMapper {
+    +Map<T>(source) : T
+}
+
+' Relationships (with comments on arrows)
+FormController --> CreateFormVm : "receives from client"
+CreateFormVm --> CreateFormElementsVm : "has many"
+FormService --|> BaseService : "inherits default implemenations"
+FormController --> FormService : "if form's name not duplicate, create form"
+FormController --> IMapper : "Map CreateFormElementsVm to Form entity"
+FormController --> FormController : "Assign parent-child relationship \n using AssignFormAndParentIds"
+@enduml

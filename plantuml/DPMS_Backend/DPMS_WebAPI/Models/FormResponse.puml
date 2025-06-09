@@ -1,0 +1,10 @@
+@startuml
+class FormResponse {
+    string SubmissionId
+    Submission Submission
+    + Value : string? <<get>> <<set>>
+}
+BaseModel <|-- FormResponse
+FormResponse --> "Submission" Submission
+FormResponse --> "FormElement" FormElement
+@enduml

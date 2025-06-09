@@ -1,0 +1,25 @@
+@startuml
+actor System
+boundary "DPIAService" as Service
+participant "IMediator" as Mediator
+participant "EmailNotificationHandler" as Handler
+participant "EmailTemplateService" as TemplateService
+
+System -> Service : Call PublishApprovalNotification(dpiaInfo)
+activate Service
+Service -> Mediator : Publish(notification)
+deactivate Service
+activate Mediator
+
+Mediator -> Handler : Handle(notification)
+deactivate Mediator
+activate Handler
+
+Handler -> TemplateService : SendDPIAApprovalNotification(notification)
+activate TemplateService
+TemplateService --> Handler : Send result (true/false)
+deactivate TemplateService
+Handler --> Mediator : Handling completed
+deactivate Handler
+
+@enduml

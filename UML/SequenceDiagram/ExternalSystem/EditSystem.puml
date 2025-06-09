@@ -1,0 +1,37 @@
+@startuml
+actor Admin
+boundary "External System Edit Screen" as Screen
+participant "ExternalSystemController" as Controller
+participant "ExternalSystemService" as Service
+participant "ExternalSystemRepository" as Repo
+participant "UnitOfWork" as UoW
+database "Database" as DB
+
+Admin -> Screen : Edit name/description and submit
+activate Screen
+Screen -> Controller : UpdateSystem(model, systemId)
+deactivate Screen
+activate Controller
+
+Controller -> Service : UpdateSystem(model, systemId)
+activate Service
+
+Service -> Repo : GetByIdAsync(systemId)
+activate Repo
+Repo -> DB : SELECT * FROM ExternalSystems WHERE Id = ?
+DB --> Repo : ExternalSystem
+Repo --> Service : ExternalSystem entity
+deactivate Repo
+
+Service -> UoW : SaveChangesAsync()
+activate UoW
+UoW -> DB : UPDATE ExternalSystems SET ... WHERE Id = ?
+DB --> UoW : OK
+UoW --> Service : Success
+deactivate UoW
+
+Service --> Controller : OK
+deactivate Service
+Controller --> Screen : Show "Updated successfully"
+deactivate Controller
+@enduml

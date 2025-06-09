@@ -1,0 +1,35 @@
+@startuml
+actor "Data Subject / Public User" as User
+boundary "Privacy Policy Screen" as Screen
+participant "PrivacyPolicyController" as Controller
+participant "PrivacyPolicyService" as Service
+participant "BaseService<Policy>" as BaseService
+participant "BaseRepository<Policy>" as BaseRepo
+database "Database" as DB
+
+User -> Screen : Visit policy page
+activate Screen
+Screen -> Controller : GetPolicy()
+deactivate Screen
+activate Controller
+
+Controller -> Service : Get active policy
+activate Service
+
+Service -> BaseService : FindAsync(p => p.Status == Active)
+activate BaseService
+BaseService -> BaseRepo : FindAsync(predicate)
+activate BaseRepo
+BaseRepo -> DB : SELECT from PrivacyPolicies
+DB --> BaseRepo : Policy entity
+BaseRepo --> BaseService : Policy
+deactivate BaseRepo
+BaseService --> Service : Policy
+deactivate BaseService
+
+Service --> Controller : PolicyVM
+deactivate Service
+
+Controller --> Screen : Return PolicyVM (Title, Content, etc.)
+deactivate Controller
+@enduml

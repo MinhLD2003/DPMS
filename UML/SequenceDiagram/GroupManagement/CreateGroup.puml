@@ -1,0 +1,31 @@
+@startuml
+actor Admin
+boundary "Group Management Screen" as Screen
+participant "GroupController" as Controller
+participant "GroupService" as Service
+participant "GroupRepository" as Repository
+database "Database" as DB
+
+Admin -> Screen : Submit new group
+activate Screen
+Screen -> Controller : CreateGroup(GroupVM)
+deactivate Screen
+activate Controller
+
+
+Controller -> Service : AddAsync(Group)
+activate Service
+
+Service -> Repository : AddAsync(Group)
+activate Repository
+Repository -> DB : Invoke INSERT query
+DB --> Repository : OK
+Repository --> Service : Group (created entity)
+deactivate Repository
+
+Service --> Controller : Created Group
+deactivate Service
+
+Controller --> Screen : Return success response
+deactivate Controller
+@enduml

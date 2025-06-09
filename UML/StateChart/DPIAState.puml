@@ -1,0 +1,13 @@
+@startuml
+state  Draft  : Create DPIA
+state  Started : Add Member and Approve DPIA  
+state  Approve : DPO Click Approve DPIA
+state  Reject : DPO Click Reject DPIA 
+
+[*] --> Draft : DPO create DPIA
+Draft --> Started : DPO start DPIA
+Started --> Approve : DPO Approve DPIA
+Started --> Reject : DPO reject DPIA 
+Approve --> [*]
+Reject --> [*]
+@enduml

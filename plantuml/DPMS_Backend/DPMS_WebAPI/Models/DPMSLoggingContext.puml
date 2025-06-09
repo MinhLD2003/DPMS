@@ -1,0 +1,9 @@
+@startuml
+class DPMSLoggingContext {
+    + DPMSLoggingContext(options:DbContextOptions<DPMSLoggingContext>)
+}
+class "DbSet`1"<T> {
+}
+DbContext <|-- DPMSLoggingContext
+DPMSLoggingContext --> "HttpLogs<HttpLog>" "DbSet`1"
+@enduml

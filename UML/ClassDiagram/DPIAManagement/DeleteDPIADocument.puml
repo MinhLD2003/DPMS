@@ -1,0 +1,31 @@
+@startuml
+
+class DPIAController {
+    -_dpiaService : IDPIAService
+    -_mediator : IMediator
+
+    +DeleteDocument(Guid id, Guid documentId) : Task<ActionResult>
+}
+
+class DPIAService {
+    +DeleteDocumentAsync(Guid id, Guid documentId) : Task
+}
+
+class DPIADocumentRepository {
+}
+
+class S3FileStorage {
+    +DeleteFileAsync(string fileUrl) : Task<bool>
+}
+
+abstract class BaseRepository<T> {
+    +GetByIdAsync(object id) : Task<T?>
+    +DeleteAsync(object id) : Task
+}
+
+DPIADocumentRepository --|> BaseRepository
+DPIAService --> DPIADocumentRepository : "get DPIA document instance\nand delete file record in database"
+DPIAService --> S3FileStorage : "deletes file in S3"
+DPIAController --> DPIAService : "deletes DPIA"
+
+@enduml

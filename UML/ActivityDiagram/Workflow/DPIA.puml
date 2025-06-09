@@ -1,0 +1,55 @@
+@startuml
+|DPO|
+start
+:Create DPIA (for External System);
+:Assign PICs for tasks (CIO, QA Manager, IT Manager);
+:DPIA Status = Draft;
+
+|PICs (CIO / QA Manager / IT Manager)|
+repeat
+:Login;
+:Select assigned Task;
+:Adjust Team Members;
+:Click "Ready" for Task;
+repeat while (More PICs adjust team?)
+
+|DPO|
+repeat
+if (All Tasks marked Ready?) then (yes)
+  :Click "Start DPIA";
+  :DPIA Status = Started;
+else (no)
+  :Wait for all PICs to Ready;
+endif
+repeat while (Not all tasks ready)
+
+|Team Members|
+repeat
+:Login;
+:Upload Work Documents;
+:Update Work Status (InProgress → Complete);
+repeat while (Work not completed)
+
+|PICs|
+repeat
+if (All team members completed work?) then (yes)
+  :Mark Task as Completed;
+else (no)
+  :Wait for all team members to complete;
+endif
+repeat while (Not all team members completed)
+
+|DPO|
+repeat
+if (All Tasks Completed?) then (yes)
+  :Click "Approve DPIA";
+  :DPIA Status = Approved;
+else (no)
+  :Wait for all tasks to complete;
+endif
+repeat while (Not all tasks completed)
+
+:Optionally Click "Reject DPIA";
+:DPIA Status = Rejected;
+stop
+@enduml

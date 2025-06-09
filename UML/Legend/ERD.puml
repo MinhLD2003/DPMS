@@ -1,0 +1,54 @@
+@startuml
+' =======================
+' ERD Relationships Legend
+' =======================
+' }|..||   => Many-to-One
+' }o..o|   => Optional Many-to-Optional One
+' ||--o{   => One-to-Many
+' |o--||   => Optional One-to-One
+hide circle
+top to bottom direction
+skinparam packageStyle rectangle
+skinparam DefaultFontSize 20
+skinparam defaultFontName Arial
+skinparam backgroundColor #FDFDFD               
+skinparam classBackgroundColor #F3F2F1       
+skinparam ClassHeaderBackgroundColor  #FFBC66  
+skinparam classBorderColor #8C8C8C          
+skinparam ClassBorderThickness 1    
+skinparam classFontColor #000000 
+skinparam ClassAttributeFontColor #393939
+skinparam classFontStyle bold
+skinparam ArrowColor #393939         
+skinparam ArrowThickness 2         
+Entity01 }|..|| Entity02  : Many-to-One
+Entity03 }o..o| Entity04  : Optional Many-to-Optional One
+Entity05 ||--o{ Entity06  : One-to-Many
+Entity07 |o--|| Entity08  : Optional One-to-One
+
+
+
+@enduml
+@startuml
+hide circle
+top to bottom direction
+skinparam packageStyle rectangle
+skinparam DefaultFontSize 20
+skinparam defaultFontName Arial
+skinparam backgroundColor #FDFDFD               
+skinparam classBackgroundColor #F3F2F1       
+skinparam ClassHeaderBackgroundColor  #FFBC66  
+skinparam classBorderColor #8C8C8C          
+skinparam ClassBorderThickness 1    
+skinparam classFontColor #000000 
+skinparam ClassAttributeFontColor #393939
+skinparam classFontStyle bold
+skinparam ArrowColor #393939         
+skinparam ArrowThickness 2         
+entity Entity09 {
+  * identifying_attribute   
+  --
+  attribute_1
+  attribute_2
+}
+@enduml

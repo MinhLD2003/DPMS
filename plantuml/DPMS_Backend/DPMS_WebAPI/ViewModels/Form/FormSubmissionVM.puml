@@ -1,0 +1,13 @@
+@startuml
+class FormSubmissionVM {
+}
+class FormResponseVM {
+    + Value : string <<get>> <<set>>
+}
+class "List`1"<T> {
+}
+FormSubmissionVM --> "FormId" string
+FormSubmissionVM --> "SystemId" string
+FormSubmissionVM o-> "Responses<FormResponseVM>" "List`1"
+FormResponseVM --> "FormElementId" string
+@enduml

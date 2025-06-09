@@ -1,0 +1,54 @@
+@startuml
+title Update Privacy Policy (Validation + Direct Update)
+
+actor DPO
+boundary "Edit Policy Screen" as Screen
+participant "PrivacyPolicyController" as Controller
+participant "PrivacyPolicyService" as Service
+participant "BaseService<Policy>" as BaseService
+participant "IRepository<Policy>" as Repo
+database "Database" as DB
+
+DPO -> Screen : Submit updated policy (id, updatedFields)
+activate Screen
+Screen -> Controller : UpdatePolicy(id, updatedFields)
+deactivate Screen
+activate Controller
+
+' === Validate Policy Exists ===
+Controller -> Service : GetByIdAsync(id)
+activate Service
+Service -> BaseService : GetByIdAsync(id)
+activate BaseService
+BaseService -> Repo : GetByIdAsync(id)
+Repo -> DB : SELECT * FROM PrivacyPolicies WHERE Id = ?
+DB --> Repo : Policy or NULL
+Repo --> BaseService : Policy / null
+BaseService --> Service : Policy / null
+deactivate BaseService
+Service --> Controller : Policy / null
+deactivate Service
+
+alt Policy not found
+    Controller --> Screen : Return NotFound("Policy with ID {id} not found")
+    
+else Policy found
+
+    ' === Update Policy ===
+    Controller -> Service : UpdateAsync(policy)
+    activate Service
+    Service -> BaseService : UpdateAsync(policy)
+    activate BaseService
+    BaseService -> Repo : Update(policy)
+    Repo -> DB : UPDATE PrivacyPolicies SET ... WHERE Id = ?
+    DB --> Repo : OK
+    Repo --> BaseService : policy
+    BaseService --> Service : policy
+    deactivate BaseService
+    Service --> Controller : Updated policy
+    deactivate Service
+
+    Controller --> Screen : Return "Policy updated successfully"
+    deactivate Controller
+end
+@enduml

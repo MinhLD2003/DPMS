@@ -1,0 +1,7 @@
+@startuml
+class GroupVM {
+    + <<required>> Name : string <<get>> <<set>>
+    + Description : string? <<get>> <<set>>
+}
+GroupVM --> "Id" string
+@enduml

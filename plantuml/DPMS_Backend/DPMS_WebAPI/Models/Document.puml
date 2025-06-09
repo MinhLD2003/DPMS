@@ -1,0 +1,17 @@
+@startuml
+class Document {
+    + RelatedId : string <<get>> <<set>>
+    + IssueTicketId : string <<get>> <<set>>
+    + DPIAId : string <<get>> <<set>>
+    + Title : string <<get>> <<set>>
+    + FileUrl : string <<get>> <<set>>
+    + FileFormat : string <<get>> <<set>>
+}
+enum DocumentType {
+    DPIA,
+    IssueTicket,
+    General,
+}
+BaseModel <|-- Document
+Document --> "DocumentType" DocumentType
+@enduml

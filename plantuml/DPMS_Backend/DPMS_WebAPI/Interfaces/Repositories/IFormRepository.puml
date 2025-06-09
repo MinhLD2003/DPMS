@@ -1,0 +1,7 @@
+@startuml
+interface IFormRepository {
+}
+class "IRepository`1"<T> {
+}
+"IRepository`1" "<Form>" <|-- IFormRepository
+@enduml

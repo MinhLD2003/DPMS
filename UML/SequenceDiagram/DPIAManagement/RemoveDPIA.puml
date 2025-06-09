@@ -1,0 +1,48 @@
+@startuml
+actor DPO
+boundary "DPIA Management Screen" as Screen
+participant "DPIAController" as Controller
+participant "DPIAService" as Service
+participant "UserRepository" as UserRepo
+participant "DPIARepository" as Repo
+database "Database" as DB
+
+DPO -> Screen : Click Delete on DPIA
+activate Screen
+Screen -> Controller : DeleteDPIA(dpiaId)
+deactivate Screen
+activate Controller
+
+Controller -> Service : DeleteAsync(dpiaId, principal)
+activate Service
+
+Service -> UserRepo : CheckUserInGroup(userId, "DPO")
+activate UserRepo
+UserRepo -> DB : SELECT FROM UserGroups 
+DB --> UserRepo : Result
+UserRepo --> Service : IsDPO (true/false)
+deactivate UserRepo
+
+alt User Is DPO
+    Service -> Repo : GetByIdAsync(dpiaId)
+    activate Repo
+    Repo -> DB : SELECT FROM DPIAs 
+    DB --> Repo : DPIA entity
+    Repo --> Service : DPIA
+    deactivate Repo
+
+    Service -> Repo : DeleteAsync(dpiaId)
+    activate Repo
+    Repo -> DB : DELETE FROM DPIAs 
+    DB --> Repo : OK
+    Repo --> Service : OK
+    deactivate Repo
+
+    Service --> Controller : Success
+else Not authorized
+    Service --> Controller : Return Forbidden
+end
+deactivate Service
+Controller --> Screen : Show result (success/error)
+deactivate Controller
+@enduml

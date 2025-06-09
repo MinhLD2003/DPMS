@@ -1,0 +1,69 @@
+@startuml
+
+actor Admin
+boundary "System Management Screen" as Screen
+participant "ExternalSystemController" as Controller
+participant "ConsentUtils" as Utils
+participant "ExternalSystemService" as Service
+participant "BaseService<ExternalSystem>" as BaseService
+participant "BaseRepository<ExternalSystem>" as BaseRepo
+database "Database" as DB
+
+Admin -> Screen : Click "Generate API Key"
+activate Screen
+Screen -> Controller : GenerateAPIKey(systemId)
+deactivate Screen
+activate Controller
+
+Controller -> Service : GetByIdAsync(systemId)
+activate Service
+Service -> BaseService : GetByIdAsync(systemId)
+activate BaseService
+BaseService -> BaseRepo : GetByIdAsync(systemId)
+activate BaseRepo
+BaseRepo -> DB : Invoke SELECT query
+DB --> BaseRepo : ExternalSystem entity
+BaseRepo --> BaseService : ExternalSystem
+deactivate BaseRepo
+BaseService --> Service : ExternalSystem
+deactivate BaseService
+Service --> Controller : ExternalSystem
+deactivate Service
+
+' === Validate system existence ===
+alt system == null
+    Controller --> Screen : Show error "System not found"
+else valid system
+    ' === Generate raw key ===
+    Controller -> Utils : GenerateApiKey()
+    activate Utils
+    Utils --> Controller : rawApiKey
+    deactivate Utils
+
+    ' === Hash the key ===
+    Controller -> Utils : HashApiKey(rawApiKey)
+    activate Utils
+    Utils --> Controller : hashedKey
+    deactivate Utils
+
+    ' === Update the entity ===
+    Controller -> Service : UpdateAsync(ExternalSystem)
+    activate Service
+    Service -> BaseService : UpdateAsync(ExternalSystem)
+    activate BaseService
+    BaseService -> BaseRepo : UpdateAsync(ExternalSystem)
+    activate BaseRepo
+    BaseRepo -> DB : Invoke UPDATE query
+    DB --> BaseRepo : OK
+    BaseRepo --> BaseService : Done
+    deactivate BaseRepo
+    BaseService --> Service : Done
+    deactivate BaseService
+    Service --> Controller : Done
+    deactivate Service
+
+    Controller --> Screen : Show new raw API key
+    deactivate Controller
+end
+
+@enduml

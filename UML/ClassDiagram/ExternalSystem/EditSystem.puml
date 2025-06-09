@@ -1,0 +1,52 @@
+@startuml
+
+' Entity
+class UpdateSystemVM {
+    +Name: string
+    +Description: string
+}
+
+' Service Layer
+abstract class BaseRepository<T> {
+    #_context : DPMSContext
+    #_dbSet : DbSet<T>
+
+    +GetByIdAsync<T>(object id) : Task<T?>
+}
+
+abstract class BaseService<T> {
+    #Repository : IRepository<T>
+    #_unitOfWork : IUnitOfWork
+}
+
+class UnitOfWork {
+    +SaveChangesAsync() : Task<int>
+}
+
+class ExternalSystemRepository {
+}
+
+class ExternalSystemService {
+    -_mapper : IMapper
+    -_externalSystemRepository : IExternalSystemRepository
+
+    +UpdateSystem(UpdateSystemVM model, Guid systemId) : Task
+}
+
+' Controller
+class ExternalSystemController {
+    +UpdateSystem(UpdateSystemVM model, Guid systemId) : Task<ActionResult>
+
+    -_systemService: IExternalSystemService
+}
+
+' Relationships (with comments on arrows)
+
+ExternalSystemRepository --|> BaseRepository : "inherits default implementations"
+ExternalSystemService --> ExternalSystemRepository : "Uses repository to get data"
+BaseService --> UnitOfWork : Save changes to database
+ExternalSystemService --|> BaseService : "inherits default implementations"
+ExternalSystemService <-U- ExternalSystemController : "Updates system"
+ExternalSystemController --> UpdateSystemVM : "receives from client"
+
+@enduml

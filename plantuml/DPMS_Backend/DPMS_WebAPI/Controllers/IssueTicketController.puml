@@ -1,0 +1,12 @@
+@startuml
+class IssueTicketController {
+    + IssueTicketController(mapper:IMapper, issueTicketService:IIssueTicketService, documentService:IDocumentService)
+    + <<async>> CreateIssueTicket(issueTicketVM:IssueTicketVM, files:List<IFormFile>) : Task<IActionResult>
+    + <<async>> GetIssueTickets(queryParams:QueryParams) : Task<IActionResult>
+    + <<async>> GetIssueTicketById(id:string) : Task<IActionResult>
+    + <<async>> UpdateIssueTicket(id:string, issueTicketVM:IssueTicketVM, newFiles:List<IFormFile>, removedFiles:List<string>) : Task<IActionResult>
+    + <<async>> UpdateIssueTicketStatus(id:string, status:IssueTicketStatus) : Task<IActionResult>
+    + <<async>> DeleteIssueTicket(id:string) : Task<IActionResult>
+}
+ControllerBase <|-- IssueTicketController
+@enduml

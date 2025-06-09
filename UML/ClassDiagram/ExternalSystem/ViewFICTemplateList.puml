@@ -1,0 +1,56 @@
+@startuml
+
+' abstract class BaseService<T> {
+'     #Repository : IRepository<T>
+'     #_unitOfWork : IUnitOfWork
+
+'     +GetPagedAsync(QueryParams queryParams , params Expression<Func<T, object>>[]? includes) : Task<PagedResponse<T>>
+' }
+
+' abstract class BaseRepository<T> {
+'     +GetPagedAsync(QueryParams queryParams , params Expression<Func<T, object>>[]? includes) : Task<PagedResponse<T>>
+' }
+
+' interface IRepository<T> {
+'     +GetPagedAsync(QueryParams queryParams , params Expression<Func<T, object>>[]? includes) : Task<PagedResponse<T>>
+' }
+
+interface IFormService {
+    +GetPagedAsync(QueryParams queryParams , params Expression<Func<Form, object>>[]? includes) : Task<PagedResponse<Form>>
+}
+
+' interface IService<T> {
+'     +GetPagedAsync(QueryParams queryParams , params Expression<Func<T, object>>[]? includes) : Task<PagedResponse<T>>
+' }
+
+class FormService {}
+
+interface IFormRepository {
+    +GetPagedAsync(QueryParams queryParams , params Expression<Func<Form, object>>[]? includes) : Task<PagedResponse<Form>>
+}
+
+class FormRepository {}
+
+' Entity
+
+' Service Layer
+
+
+' Controller
+class FormController {
+    +GetFormTemplates(int? formStatus) : ActionResult<List<Form>>
+}
+
+' Relationships (with comments on arrows)
+FormRepository ..|> IFormRepository
+' IFormRepository --|> IRepository
+' FormRepository --|> BaseRepository : "inherits default implemenations"
+' IFormService --|> IService
+FormService ..|> IFormService : "implements"
+' BaseService ..|> IService
+' FormService --|> BaseService : "inherits default implemenations"
+FormController --> IFormService : "get paged data"
+' BaseService --> IRepository : "uses"
+' IRepository <|.. BaseRepository : "inherits default implemenations"
+FormService --> IFormRepository : "uses"
+@enduml

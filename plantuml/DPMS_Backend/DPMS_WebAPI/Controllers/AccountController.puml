@@ -1,0 +1,8 @@
+@startuml
+class AccountController {
+    + AccountController(mapper:IMapper, userService:IUserService, configuration:IConfiguration, logger:ILogger<AccountController>, emailService:IEmailService)
+    + <<async>> CreateAccount(model:CreateAccountVM) : Task<ActionResult<CreateAccountVM>>
+    + <<async>> GetAccountList(queryParams:QueryParams) : Task<ActionResult>
+}
+ControllerBase <|-- AccountController
+@enduml

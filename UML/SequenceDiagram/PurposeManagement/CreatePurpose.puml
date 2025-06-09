@@ -1,0 +1,33 @@
+@startuml
+
+actor DPO
+boundary "Create Purpose Screen" as Screen
+participant "PurposeController" as Controller
+participant "PurposeService" as Service
+participant "BaseService<Purpose>" as BaseService
+participant "IRepository<Purpose>" as Repo
+database "Database" as DB
+
+DPO -> Screen : Submit new purpose
+activate Screen
+Screen -> Controller : CreatePurpose(PurposeVM)
+deactivate Screen
+activate Controller
+
+Controller -> Service : AddAsync(Purpose)
+activate Service
+Service -> BaseService : AddAsync(Purpose)
+activate BaseService
+BaseService -> Repo : AddAsync(Purpose)
+Repo -> DB : INSERT INTO Purposes (...)
+DB --> Repo : New purpose record
+Repo --> BaseService : Purpose
+BaseService --> Service : Purpose
+deactivate BaseService
+
+Service --> Controller : Created Purpose
+deactivate Service
+
+Controller --> Screen : Show success response
+deactivate Controller
+@enduml

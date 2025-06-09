@@ -1,0 +1,19 @@
+@startuml
+class Feature {
+    + ParentId : string <<get>> <<set>>
+    + <<required>> FeatureName : string <<get>> <<set>>
+    + Description : string? <<get>> <<set>>
+    + Url : string? <<get>> <<set>>
+}
+enum HttpMethodType {
+    GET,
+    POST,
+    PUT,
+    DELETE,
+    PATCH,
+}
+BaseModel <|-- Feature
+Feature --> "State" FeatureState
+Feature --> "HttpMethod" HttpMethodType
+Feature --> "Parent" Feature
+@enduml

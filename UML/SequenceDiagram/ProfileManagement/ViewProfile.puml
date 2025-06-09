@@ -1,0 +1,47 @@
+    @startuml
+    actor User
+    boundary "View Profile Screen" as Screen
+    participant "AccountController" as Controller
+    participant "UserService" as Service
+    participant "UserRepository" as Repository
+    database "Database" as DB
+
+    User -> Screen : Request to view profile
+    activate Screen
+    Screen -> Controller : GetProfile(userId)
+    deactivate Screen
+    activate Controller
+
+    ' ========== Check Group Membership ==========
+    Controller -> Service : CheckUserInGroup(userId, "User")
+    activate Service
+    Service -> Repository : CheckUserInGroup(userId, "User")
+    activate Repository
+    Repository -> DB : Invoke SELECT Query
+    activate DB
+    DB --> Repository : true / false
+    deactivate DB
+    Repository --> Service : Result<bool>
+    deactivate Repository
+    Service --> Controller : Result<bool>
+    deactivate Service
+
+    alt User is in group Admin / Is User Account
+        ' ======== Fetch User Profile ========
+        Controller -> Service : GetUserProfileAsync(userId)
+        activate Service
+        Service -> Repository : GetUserProfileAsync(userId)
+        activate Repository
+        Repository -> DB : Invoke Database query
+        activate DB
+        DB --> Repository : Return User Entity
+        deactivate DB
+        Repository --> Service : Return User entity
+        deactivate Repository
+        Service --> Controller : Return mapped ProfileVM
+        deactivate Service
+        Controller --> Screen : Return ProfileVM
+    else Not authorized
+        Controller --> Screen : Return error (403 or message)
+    end
+    deactivate Controller

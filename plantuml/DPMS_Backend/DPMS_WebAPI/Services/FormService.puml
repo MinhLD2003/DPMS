@@ -1,0 +1,9 @@
+@startuml
+class FormService {
+    + FormService(unitOfWork:IUnitOfWork)
+}
+class "BaseService`1"<T> {
+}
+"BaseService`1" "<Form>" <|-- FormService
+IFormService <|-- FormService
+@enduml

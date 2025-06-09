@@ -1,0 +1,15 @@
+@startuml
+actor User
+boundary "Logout Screen" as Screen
+participant "AuthController" as Controller
+
+User -> Screen : Click "Logout"
+activate Screen
+Screen -> Controller : Logout()
+deactivate Screen
+activate Controller
+
+' (Assuming session/token is invalidated or removed)
+Controller --> Screen : Redirect to Login / Show message
+deactivate Controller
+@enduml

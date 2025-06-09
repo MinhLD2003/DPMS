@@ -1,0 +1,8 @@
+@startuml
+interface IExternalSystemRepository {
+    + GetUsersAsync(systemId:string) : Task<IEnumerable<User>>
+}
+class "IRepository`1"<T> {
+}
+"IRepository`1" "<ExternalSystem>" <|-- IExternalSystemRepository
+@enduml

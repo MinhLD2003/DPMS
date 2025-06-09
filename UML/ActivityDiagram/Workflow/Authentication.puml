@@ -1,0 +1,21 @@
+@startuml
+title DPMS Authentication & Authorization - User Actions and Outcomes
+
+start
+:Admin Access Login Page;
+if (Choose Login Method?) then (Manual Login)
+  :Login with Email;
+  :System grants access if correct;
+else (Google Login)
+  :Sign in with Google account;
+  :System grants access if Google auth successful;
+endif
+  :Create new Group (e.g., QA Group);
+  :Assign features to Group;
+  :Create or select User (e.g., qa_user);
+  :Assign User to Group;
+:Logout;
+:Login again as qa_user;
+:See only features assigned to your group;
+stop
+@enduml

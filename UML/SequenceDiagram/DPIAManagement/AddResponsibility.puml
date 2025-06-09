@@ -1,0 +1,54 @@
+@startuml
+actor DPO
+boundary "DPIA Responsibility Assignment Screen" as Screen
+participant "DPIAController" as Controller
+participant "DPIAService" as Service
+participant "DPIARepository" as DPIARepo
+participant "DPIAResponsibilityRepository" as RespRepo
+participant "DPIAMemberRepository" as MemberRepo
+database "Database" as DB
+
+DPO -> Screen : Submit updated responsibilities
+activate Screen
+Screen -> Controller : UpdateMembersResponsibilities(dpiaId, List<RespVM>)
+deactivate Screen
+activate Controller
+
+Controller -> Service : Update loop of responsibilities
+activate Service
+
+Service -> DPIARepo : GetDetailAsync(dpiaId)
+activate DPIARepo
+DPIARepo -> DB : SELECT * FROM DPIAs 
+DB --> DPIARepo : DPIA entity
+DPIARepo --> Service : DPIA
+deactivate DPIARepo
+
+loop for each responsibilityVM
+    Service -> RespRepo : FindAsync(r => r.Id == ResponsibilityId)
+    activate RespRepo
+    RespRepo -> DB : SELECT * FROM Responsibilities 
+    DB --> RespRepo : Responsibility
+    RespRepo --> Service : Responsibility
+    deactivate RespRepo
+
+    Service -> MemberRepo : FindAsync(m => m.ResponsibilityId == ...)
+    activate MemberRepo
+    MemberRepo -> DB : SELECT * FROM DPIAMembers 
+    DB --> MemberRepo : Current members
+    MemberRepo --> Service : Members
+    deactivate MemberRepo
+
+    Service -> MemberRepo : BulkAddAsync(new members)
+    activate MemberRepo
+    MemberRepo -> DB : INSERT INTO DPIAMembers (...)
+    DB --> MemberRepo : OK
+    MemberRepo --> Service : OK
+    deactivate MemberRepo  
+end
+
+Service --> Controller : OK
+deactivate Service
+Controller --> Screen : Show "All responsibilities updated"
+deactivate Controller
+@enduml

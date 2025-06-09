@@ -1,0 +1,12 @@
+@startuml
+class FeatureDetailVM {
+    + <<required>> FeatureName : string <<get>> <<set>>
+    + Description : string? <<get>> <<set>>
+    + Url : string? <<get>> <<set>>
+}
+class "List`1"<T> {
+}
+FeatureDetailVM --> "Id" string
+FeatureDetailVM --> "HttpMethod" HttpMethodType
+FeatureDetailVM o-> "Children<FeatureVM>" "List`1"
+@enduml

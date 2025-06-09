@@ -1,0 +1,43 @@
+@startuml
+
+abstract class BaseService<T> {
+    #Repository : IRepository<T>
+    #_unitOfWork : IUnitOfWork
+}
+
+abstract class BaseRepository<T> {
+    #_context : DPMSContext
+    #_dbSet : DbSet<T>
+}
+
+interface IRepository<T> {
+    +Task<T?> GetByIdAsync(object id)
+}
+
+BaseRepository --|> IRepository
+
+BaseService --|> IService
+BaseService --> IRepository : uses IRepository<T>
+
+class PurposeController {
+    -_purposeService : IPurposeService
+
+    +Task<IActionResult> GetPurpose(Guid id)
+}
+
+class PurposeService {
+}
+
+interface IPurposeService {
+}
+
+interface IService<T> {
+    +Task<T?> GetByIdAsync(object id)
+}
+
+IPurposeService --|> IService
+PurposeService --|> IPurposeService
+PurposeService --|> BaseService : inherits default \nimplementations from
+PurposeController --> IPurposeService : uses GetByIdAsync<T>,\n passing id (PurposeId) as paramater
+
+@enduml

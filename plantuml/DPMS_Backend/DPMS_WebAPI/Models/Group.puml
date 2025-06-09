@@ -1,0 +1,10 @@
+@startuml
+class Group {
+    + SystemId : string <<get>> <<set>>
+    + <<required>> Name : string <<get>> <<set>>
+    + Description : string? <<get>> <<set>>
+    + IsGlobal : bool <<get>> <<set>>
+}
+BaseModel <|-- Group
+Group --> "System" ExternalSystem
+@enduml

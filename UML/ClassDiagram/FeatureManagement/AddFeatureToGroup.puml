@@ -1,0 +1,45 @@
+@startuml
+
+abstract class BaseService<T> {
+    #Repository : IRepository<T>
+    #_unitOfWork : IUnitOfWork
+}
+
+BaseService ..|> IService
+
+class FeatureController {
+    -_featureService : IFeatureService
+
+    +ActionResult AddFeatureToGroup([FromBody] FeatureGroupAssignmentModel model)
+}
+
+class FeatureGroupAssignmentModel {
+    +FeatureIds : List<Guid>
+    +GroupId : Guid
+}
+
+class DPMSContext {
+    +Features : DbSet<Feature> 
+    +Groups : DbSet<Group>
+}
+
+class FeatureService {
+    +bool AddFeaturesToGroup(List<Guid> featureIds, Guid groupId)
+}
+
+FeatureService --> DPMSContext : uses DbContext to query database
+
+interface IFeatureService {
+    +bool AddFeaturesToGroup(List<Guid> featureIds, Guid groupId)
+}
+
+interface IService<T> {
+}
+
+FeatureController --> FeatureGroupAssignmentModel : "receives from client"
+IFeatureService --|> IService : implements base interface
+FeatureService ..|> IFeatureService 
+FeatureService --|> BaseService : provides default implementations
+FeatureController --> IFeatureService : uses AddFeaturesToGroup
+
+@enduml

@@ -1,0 +1,36 @@
+@startuml
+
+class DSARController {
+    -_consentService : ConsentService
+    -_dsarService : DsarService
+
+    +GetDsars(Guid systemId, [FromQuery] QueryParams queryParams) : Task<IActionResult>
+}
+
+class QueryParams {
+    PageNumber : int
+    PageSize : int
+    SortBy : string
+    SortDirection : string
+    Filters : Dictionary<string, string>
+}
+
+class DsarService {
+}
+
+abstract class BaseService<T> {
+    #Repository : IRepository<T>
+
+    +GetPagedAsync(QueryParams queryParams , params Expression<Func<T, object>>[]? includes) : Task<PagedResponse<T>>
+}
+
+abstract class BaseRepository<T> {
+    +GetPagedAsync(QueryParams queryParams , params Expression<Func<T, object>>[]? includes) : Task<PagedResponse<T>>
+}
+
+DSARController --> QueryParams : "receives from client"
+DSARController --> DsarService : "get paginated result"
+BaseService --> BaseRepository : "uses repository to get paginated result"
+DsarService --|> BaseService
+
+@enduml

@@ -1,0 +1,33 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam defaultTextAlignment center
+
+actor User
+boundary "DPIA Comment Screen" as Screen
+participant "DPIAController" as Controller
+participant "DPIAService" as Service
+participant "DPIARepository" as Repo
+database "Database" as DB
+
+User -> Screen : Submit comment (text input)
+activate Screen
+Screen -> Controller : AddComment(dpiaId, content)
+deactivate Screen
+activate Controller
+
+Controller -> Service : AddCommentAsync(AddCommentVM)
+activate Service
+
+Service -> Repo : SaveCommentAsync(Comment)
+activate Repo
+Repo -> DB : INSERT INTO Comments 
+DB --> Repo : OK
+Repo --> Service : Success
+deactivate Repo
+
+Service --> Controller : OK
+deactivate Service
+
+Controller --> Screen : Return success
+deactivate Controller
+@enduml

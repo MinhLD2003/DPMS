@@ -1,0 +1,77 @@
+@startuml
+class IssueTicketController {
+    + Task<IActionResult> GetIssueTickets(QueryParams queryParams)
+}
+
+interface IIssueTicketService {
+    + Task<PagedResult<IssueTicket>> GetPagedAsync(QueryParams queryParams, params Expression<Func<IssueTicket, object>>[] includes)
+}
+
+class IssueTicketService {
+    + Task<PagedResult<IssueTicket>> GetPagedAsync(QueryParams queryParams, params Expression<Func<IssueTicket, object>>[] includes)
+}
+
+interface IIssueTicketRepository {
+    + Task<PagedResult<IssueTicket>> GetPagedAsync(QueryParams queryParams, params Expression<Func<IssueTicket, object>>[] includes)
+}
+
+class IssueTicketRepository {
+    + Task<PagedResult<IssueTicket>> GetPagedAsync(QueryParams queryParams, params Expression<Func<IssueTicket, object>>[] includes)
+}
+
+class QueryParams {
+    + Dictionary<string, string> Filters
+    + int PageNumber
+    + int PageSize
+    + string SortBy
+    + string SortDirection
+}
+
+class PagedResult<T> {
+    + int PageNumber
+    + int PageSize
+    + int TotalPages
+    + int TotalRecords
+    + List<T> Data
+}
+
+class IssueTicket {
+    +Id : Guid 
+    +ExternalSystem : ExternalSystem?
+    +TicketType : TicketType
+    +IssueTicketStatus : IssueTicketStatus 
+    +Documents : List<IssueTicketDocument>
+    ...
+}
+
+class IssueTicketVM {
+    +ExternalSystemId : Guid
+    +Title : string
+    +Description : string
+    +TicketType : TicketType
+    +Documents : List<DocumentVM>?
+}
+
+class IssueTicketDocument {
+    +IssueTicketId : Guid
+    +Title : string
+    +FileUrl : string
+    +FileFormat : string?
+}
+
+class IMapper {
+    + List<IssueTicketVM> Map<List<IssueTicketVM>>(List<IssueTicket> source)
+}
+
+IssueTicketController --> IIssueTicketService
+IIssueTicketService <|.. IssueTicketService
+IssueTicketService --> IIssueTicketRepository
+IIssueTicketRepository <|.. IssueTicketRepository
+IssueTicketController --> QueryParams
+IIssueTicketService --> PagedResult
+IssueTicket --> IssueTicketDocument
+IssueTicketController --> IMapper
+IMapper --> IssueTicketVM
+PagedResult --> IssueTicket
+
+@enduml

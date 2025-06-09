@@ -1,0 +1,26 @@
+@startuml
+
+participant SystemProcess as Caller
+participant "IMediator" as Mediator
+participant "EmailNotificationHandler" as Handler
+participant "EmailTemplateService" as EmailService
+
+Caller -> Mediator : Publish(UserAddedToSystemNotification)
+activate Mediator
+
+Mediator -> Handler : Handle(notification, cancellationToken)
+activate Handler
+
+Handler -> EmailService : SendUserAddedToSystemNotificationAsync(notification)
+activate EmailService
+
+EmailService --> Handler : Task<bool> (result)
+deactivate EmailService
+
+Handler --> Mediator : Task (completed)
+deactivate Handler
+
+Mediator --> Caller : Task (completed)
+deactivate Mediator
+
+@enduml

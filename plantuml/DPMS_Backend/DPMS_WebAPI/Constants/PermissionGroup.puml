@@ -1,0 +1,6 @@
+@startuml
+struct PermissionGroup {
+    + <<const>> ADMIN_DPMS : string = "admin_group"
+    + <<const>> DPO : string = "DPO"
+}
+@enduml

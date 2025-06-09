@@ -1,0 +1,57 @@
+@startuml
+
+' Entity
+
+' ViewModel
+class GroupUserVM {
+    +GroupId : Guid
+    +UserIds : List<Guid>
+}
+
+' Service Layer
+
+abstract class BaseRepository<T> {
+    #_context : DPMSContext
+    #_dbSet : DbSet<T>
+
+    +GetDetailAsync(object id, params Expression<Func<T, object>>[] includes) : Task<T?>
+}
+
+class GroupRepository {
+    +AddUserToGroup(Guid groupId, List<Guid> userIds) : Task<int>
+    +DeleteUserFromGroup(Guid groupId, List<Guid> userIds) : Task<int>
+}
+
+class ExternalSystemRepository {
+}
+
+class ExternalSystemService {
+    -_externalSystemRepository : IExternalSystemRepository
+
+    +UpdateSystemUsers(Guid systemId, List<GroupUserVM> model) : Task
+}
+
+' Controller
+class ExternalSystemController {
+    +UpdateSystemUsers(Guid systemId, List<GroupUserVM> model) : Task<ActionResult>
+
+    -_groupService: IGroupService
+    -_systemService: IExternalSystemService
+    -_userService: IUserService
+    -_mapper: IMapper
+}
+
+class UnitOfWork {
+    +SaveChangesAsync() : Task<int>
+}
+
+' Relationships (with comments on arrows)
+GroupRepository --|> BaseRepository : "inherits default implementations"
+ExternalSystemRepository --|> BaseRepository : "inherits default implementations"
+ExternalSystemService --> ExternalSystemRepository : "3. Get updated \nExternalSystem instance"
+ExternalSystemService --> GroupRepository : "4. Get system's user group\nto determine user being removed/added"
+
+ExternalSystemService <-- ExternalSystemController : "2. Update system user"
+ExternalSystemController --> GroupUserVM : "1. Receives from client"
+
+@enduml

@@ -1,0 +1,35 @@
+@startuml
+actor Admin
+boundary "Feature Management Screen" as Screen
+participant "FeatureController" as Controller
+participant "FeatureService" as Service
+participant "BaseService<Feature>" as BaseService
+participant "BaseRepository<Feature>" as Repository
+database "Database" as DB
+
+Admin -> Screen : Fill feature form and submit
+activate Screen
+Screen -> Controller : CreateFeature(CreateFeatureVM)
+deactivate Screen
+activate Controller
+
+Controller -> Service : AddAsync(feature)
+activate Service
+
+Service -> BaseService : AddAsync(feature)
+activate BaseService
+BaseService -> Repository : AddAsync(feature)
+activate Repository
+Repository -> DB : INSERT INTO Features (...)
+DB --> Repository : New Feature ID
+deactivate DB
+Repository --> BaseService : Feature entity
+deactivate Repository
+BaseService --> Service : Feature entity
+deactivate BaseService
+Service --> Controller : Feature created
+deactivate Service
+
+Controller --> Screen : Return success response
+deactivate Controller
+@enduml

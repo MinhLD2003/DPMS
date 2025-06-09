@@ -1,0 +1,11 @@
+@startuml
+class QueryParams {
+    + PageNumber : int <<get>> <<set>> = 1
+    + PageSize : int <<get>> <<set>>
+    + SortBy : string <<get>> <<set>>
+    + SortDirection : string <<get>> <<set>> = "asc"
+}
+class "Dictionary`2"<T1,T2> {
+}
+QueryParams o-> "Filters<string,string>" "Dictionary`2"
+@enduml

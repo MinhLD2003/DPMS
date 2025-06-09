@@ -1,0 +1,7 @@
+@startuml
+class UserVM {
+    + <<required>> Name : string <<get>> <<set>>
+    + <<required>> Email : string <<get>> <<set>>
+}
+UserVM --> "Id" string
+@enduml

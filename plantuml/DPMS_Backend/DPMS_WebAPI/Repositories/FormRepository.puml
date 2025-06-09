@@ -1,0 +1,9 @@
+@startuml
+class FormRepository {
+    + FormRepository(context:DPMSContext)
+}
+class "BaseRepository`1"<T> {
+}
+"BaseRepository`1" "<Form>" <|-- FormRepository
+IFormRepository <|-- FormRepository
+@enduml

@@ -1,0 +1,10 @@
+@startuml
+class DPIA {
+    + ExternalSystemId : string <<get>> <<set>>
+    + Title : string? <<get>> <<set>>
+    + Description : string? <<get>> <<set>>
+}
+BaseModel <|-- DPIA
+DPIA --> "Status" DPIAStatus
+DPIA --> "ExternalSystem" ExternalSystem
+@enduml

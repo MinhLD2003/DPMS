@@ -1,0 +1,26 @@
+@startuml
+
+actor User
+boundary "Risk List Screen" as Screen
+participant "RiskController" as Controller
+participant "RiskService" as Service
+database "Database" as DB
+
+User -> Screen : Click "Export"
+activate Screen
+Screen -> Controller : Export()
+deactivate Screen
+activate Controller
+
+Controller -> Service : ExportAsync()
+activate Service
+
+Service -> DB : SELECT * FROM Risks
+DB --> Service : List<Risk>
+
+Service --> Controller : Stream
+deactivate Service
+
+Controller --> Screen : Return file download response
+deactivate Controller
+@enduml

@@ -1,0 +1,49 @@
+@startuml
+
+actor User
+boundary "Resolve Risk Form" as Screen
+participant "RiskController" as Controller
+participant "RiskService" as Service
+participant "BaseService<Risk>" as BaseService
+participant "BaseRepository<Risk>" as Repo
+database "Database" as DB
+
+User -> Screen : Submit post-mitigation values
+activate Screen
+Screen -> Controller : ResolveRisk(id, RiskResolveVM)
+deactivate Screen
+activate Controller
+
+Controller -> Service : GetByIdAsync(id)
+activate Service
+Service -> BaseService : GetByIdAsync(id)
+activate BaseService
+BaseService -> Repo : GetByIdAsync(id)
+activate Repo
+Repo -> DB : Invoke SELECT
+DB --> Repo : Risk
+Repo --> BaseService : Risk
+deactivate Repo
+BaseService --> Service : Risk
+deactivate BaseService
+Service --> Controller : Risk
+deactivate Service
+
+Controller -> Service : UpdateAsync(Risk)
+activate Service
+Service -> BaseService : UpdateAsync(Risk)
+activate BaseService
+BaseService -> Repo : UpdateAsync(Risk)
+activate Repo
+Repo -> DB : Invoke UPDATE
+DB -> Repo: Success
+Repo --> BaseService : Updated Risk
+deactivate Repo
+BaseService --> Service : Updated Risk
+deactivate BaseService
+Service --> Controller : Updated Risk
+deactivate Service
+
+Controller --> Screen : Show update success
+deactivate Controller
+@enduml

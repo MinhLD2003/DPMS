@@ -1,0 +1,43 @@
+@startuml
+
+abstract class BaseService<T> {
+    #Repository : IRepository<T>
+    #_unitOfWork : IUnitOfWork
+}
+
+abstract class BaseRepository<T> {
+    #_context : DPMSContext
+    #_dbSet : DbSet<T>
+}
+
+interface IRepository<T> {
+    #Task<PagedResponse<T>> GetPagedAsync(QueryParams queryParams , params Expression<Func<T, object>>[]? includes)
+}
+
+BaseRepository --|> IRepository
+
+BaseService --|> IService
+BaseService --> IRepository : uses IRepository<T>
+
+class FeatureController {
+    -_featureService : IFeatureService
+
+    +Task<IActionResult> UpdateFeature(Guid id, [FromBody] FeatureVM featureVM)
+}
+
+class FeatureService {
+}
+
+interface IFeatureService {
+}
+
+interface IService<T> {
+    +Task<PagedResponse<T>> GetPagedAsync(QueryParams queryParams , params Expression<Func<T, object>>[]? includes)
+}
+
+IFeatureService --|> IService
+FeatureService --|> IFeatureService
+FeatureService --|> BaseService
+FeatureController --> IFeatureService : uses GetPagedAsync<T>
+
+@enduml

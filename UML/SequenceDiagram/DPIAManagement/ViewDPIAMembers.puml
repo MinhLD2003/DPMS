@@ -1,0 +1,38 @@
+@startuml
+actor DPO
+boundary "View DPIA Member" as Screen
+participant "DPIAController" as Controller
+participant "DPIAService" as Service
+participant "GroupRepository" as GroupRepo
+participant "DPIARepository" as DPIARepo
+database "Database" as DB
+
+DPO -> Screen : Open "Assign Members" view
+activate Screen
+Screen -> Controller : GetMembersForDPIA()
+deactivate Screen
+activate Controller
+
+Controller -> Service : GetUsersForDPIA()
+activate Service
+
+Service -> GroupRepo : Get users by group(s)
+activate GroupRepo
+GroupRepo -> DB : SELECT FROM Users 
+DB --> GroupRepo : List<User>
+GroupRepo --> Service : Users
+deactivate GroupRepo
+
+Service -> DPIARepo : (optional) fetch DPIA context for filtering
+activate DPIARepo
+DPIARepo -> DB : SELECT FROM DPIA 
+DB --> DPIARepo : DPIA data
+DPIARepo --> Service : DPIA (optional)
+deactivate DPIARepo
+
+Service --> Controller : List<UserVM>
+deactivate Service
+
+Controller --> Screen : Display member options
+deactivate Controller
+@enduml

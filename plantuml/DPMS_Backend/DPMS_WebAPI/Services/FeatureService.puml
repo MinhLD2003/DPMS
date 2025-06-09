@@ -1,0 +1,12 @@
+@startuml
+class FeatureService {
+    + FeatureService(unitOfWork:IUnitOfWork, mapper:IMapper, context:DPMSContext)
+    + AddFeaturesToGroup(featureIds:List<string>, groupId:string) : bool
+    + <<async>> GetListNestedFeatures(groupId:string) : Task<List<FeatureVM>>
+    + UserHasFeature(email:string, featureName:string) : bool
+}
+class "BaseService`1"<T> {
+}
+"BaseService`1" "<Feature>" <|-- FeatureService
+IFeatureService <|-- FeatureService
+@enduml

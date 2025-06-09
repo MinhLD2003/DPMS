@@ -1,0 +1,17 @@
+@startuml
+abstract class "BaseService`1"<T> {
+    + <<virtual>> <<async>> GetAllAsync() : Task<IEnumerable<T>>
+    + <<virtual>> <<async>> GetPagedAsync(queryParams:QueryParams, includes:Expression<Func<T, object>>[]?) : Task<PagedResponse<T>>
+    + <<virtual>> <<async>> FindAsync(predicate:Expression<Func<T, bool>>) : Task<IEnumerable<T>>
+    + <<virtual>> <<async>> GetByIdAsync(id:object) : Task<T?>
+    + <<virtual>> <<async>> AddAsync(entity:T) : Task<T>
+    + <<virtual>> <<async>> UpdateAsync(entity:T) : Task<T>
+    + <<virtual>> <<async>> DeleteAsync(id:object) : Task<bool>
+    + <<virtual>> <<async>> BulkAddAsync(entities:IEnumerable<T>) : Task<bool>
+    + <<virtual>> <<async>> BulkDeleteAsync(entities:IEnumerable<T>) : Task<bool>
+    + <<async>> GetDetailAsync(id:object, includes:Expression<Func<T, object>>[]) : Task<T?>
+}
+class "IService`1"<T> {
+}
+"IService`1" "<T>" <|-- "BaseService`1"
+@enduml

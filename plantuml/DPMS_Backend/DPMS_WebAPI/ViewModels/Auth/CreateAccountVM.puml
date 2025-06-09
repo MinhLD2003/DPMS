@@ -1,0 +1,10 @@
+@startuml
+class CreateAccountVM {
+    + FullName : string <<get>> <<set>>
+    + Email : string <<get>> <<set>>
+    + IsPasswordConfirmed : bool <<get>> <<set>>
+    + UserName : string <<get>> <<set>>
+    + Password : string? <<get>> <<set>>
+}
+CreateAccountVM --> "UserStatus" UserStatus
+@enduml

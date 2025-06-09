@@ -1,0 +1,44 @@
+@startuml
+
+actor Admin
+boundary "User Management UI" as Screen
+participant "UserController" as Controller
+participant "UserService" as Service
+participant "UserRepository" as Repository
+database "Database" as DB
+
+Admin -> Screen : Change user status
+activate Screen
+Screen -> Controller : UpdateUserStatus(UpdateUserStatusVM)
+deactivate Screen
+activate Controller
+
+Controller -> Service : UpdateUserStatus(model)
+activate Service
+
+' === Fetch user by Id ===
+Service -> Repository : GetByIdAsync(model.Id)
+activate Repository
+Repository -> DB : Invoke SELECT query
+activate DB
+DB --> Repository : Return User
+deactivate DB
+Repository --> Service : Return User
+deactivate Repository
+
+' === Update user status ===
+Service -> Repository : UpdateAsync(user)
+activate Repository
+Repository -> DB : Invoke UPDATE query
+activate DB
+DB --> Repository : OK
+deactivate DB
+Repository --> Service : Success
+deactivate Repository
+
+Service --> Controller : Done
+deactivate Service
+
+Controller --> Screen : Show confirmation
+deactivate Controller
+@enduml

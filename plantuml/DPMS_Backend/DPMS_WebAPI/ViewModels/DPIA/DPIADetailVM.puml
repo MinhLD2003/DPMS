@@ -1,0 +1,13 @@
+@startuml
+class DPIADetailVM {
+    + DPIADetailVM(dpia:Models.DPIA)
+    + Name : string <<get>> <<set>>
+    + Description : string <<get>> <<set>>
+    + Status : string <<get>> <<set>>
+    + CreatedBy : string <<get>> <<set>>
+    + UpdatedBy : string <<get>> <<set>>
+}
+DPIADetailVM --> "Id" string
+DPIADetailVM --> "CreatedAt" DateTime
+DPIADetailVM --> "UpdatedAt" DateTime
+@enduml

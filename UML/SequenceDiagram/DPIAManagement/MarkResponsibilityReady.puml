@@ -1,0 +1,56 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam defaultTextAlignment center
+
+actor User
+boundary "DPIA Responsibility Screen" as Screen
+participant "DPIAController" as Controller
+participant "DPIAService" as Service
+participant "DPIARepository" as DPIARepo
+participant "DPIAResponsibilityRepository" as RespRepo
+participant "Publisher (IMediator)" as Mediator
+database "Database" as DB
+
+User -> Screen : Click Update Responsibility Status
+activate Screen
+Screen -> Controller : UpdateResponsibilityStatus(id, statusVM)
+deactivate Screen
+activate Controller
+
+Controller -> Service : UpdateResponsibilityStatusAsync(id, statusVM)
+activate Service
+
+Service -> DPIARepo : GetDetailAsync(id, includes: Responsibilities, ExternalSystem)
+activate DPIARepo
+DPIARepo -> DB : SELECT FROM DPIA 
+DB --> DPIARepo : DPIA record
+DPIARepo --> Service : DPIA entity
+deactivate DPIARepo
+
+Service -> RespRepo : GetDetailAsync(statusVM.DPIAResponsibilityId, includes: Responsibility)
+activate RespRepo
+RespRepo -> DB : SELECT FROM DPIAResponsibilities 
+DB --> RespRepo : DPIAResponsibility
+RespRepo --> Service : Responsibility entity
+deactivate RespRepo
+
+Service -> RespRepo : Update(entity)
+activate RespRepo
+RespRepo -> DB : UPDATE DPIAResponsibilities
+DB --> RespRepo : OK
+RespRepo --> Service : Success
+deactivate RespRepo
+
+alt Status == Completed
+    Service -> Mediator : Publish(ResponsibilityCompletedNotification)
+    activate Mediator
+    Mediator --> Service : OK
+    deactivate Mediator
+end
+
+Service --> Controller : OK
+deactivate Service
+
+Controller --> Screen : Show success message
+deactivate Controller
+@enduml

@@ -1,0 +1,75 @@
+
+@startuml
+
+' Entity
+
+' ViewModel
+class FormVM {
+    +Name : string
+    +FormType : FormTypes
+    +Status : FormStatus
+    +FormElements : ICollection<FormElementVM>?
+}
+
+class FormElementVM {
+    +Id : Guid
+    +FormId : Guid
+    +ParentId : Guid?
+    +Name : string
+    +DataType : FormElementTypes?
+    +Value : string?
+    +OrderIndex : int?
+    +Children : ICollection<FormElementVM>?
+}
+
+' Service Layer
+interface IFormService {
+    +GetDetailAsync(object id, params Expression<Func<T, object>>[] includes) : Task<T?>
+}
+
+class FormService {
+    -_formRepository : IFormRepository
+}
+
+interface IFormRepository {
+    +GetDetailAsync(object id, params Expression<Func<T, object>>[] includes) : Task<T?>
+}
+
+class FormRepository {
+}
+
+' Controller
+class FormController {
+    -_mapper : IMapper
+
+    +GetFormDetails(Guid id) : ActionResult<FormVM>
+}
+
+interface IMapper {
+    +Map<T>(source) : T
+}
+
+enum FormElementTypes {
+    Boolean
+    Text
+}
+
+enum FormStatus {
+    Draft
+    Activated
+    Deactivated
+}
+
+enum FormTypes {
+    FIC
+}
+
+' Relationships (with comments on arrows)
+FormController --> FormVM : "returns client"
+FormVM --> FormElementVM : "has many"
+FormController --> IMapper : "Map Form to FormVM entity"
+FormService .U.|> IFormService
+FormRepository ..|> IFormRepository
+FormController --> IFormService : "get form details"
+FormService --> IFormRepository
+@enduml

@@ -1,0 +1,9 @@
+@startuml
+class DocumentRepository {
+    + DocumentRepository(context:DPMSContext)
+}
+class "BaseRepository`1"<T> {
+}
+"BaseRepository`1" "<Document>" <|-- DocumentRepository
+IDocumentRepository <|-- DocumentRepository
+@enduml

@@ -1,0 +1,43 @@
+@startuml
+
+actor User
+boundary "Risk Form" as Screen
+participant "RiskController" as Controller
+participant "RiskService" as Service
+participant "BaseService<Risk>" as BaseService
+participant "BaseRepository<Risk>" as Repo
+database "Database" as DB
+
+User -> Screen : Fill and submit risk form
+activate Screen
+Screen -> Controller : CreateRisk(RiskVM)
+deactivate Screen
+activate Controller
+
+alt ModelState invalid
+    Controller --> Screen : Return 400 BadRequest(ModelState)
+    
+else valid input
+    Controller -> Controller : Map RiskVM → Risk
+    Controller -> Service : AddAsync(Risk)
+    activate Service
+    Service -> BaseService : AddAsync(Risk)
+    activate BaseService
+    BaseService -> Repo : AddAsync(Risk)
+    activate Repo
+    Repo -> DB : Invoke INSERT INTO Risks (...)
+    activate DB
+    DB --> Repo : New Risk record with Id
+    deactivate DB
+    Repo --> BaseService : Risk
+    deactivate Repo
+    BaseService --> Service : Risk
+    deactivate BaseService
+    Service --> Controller : Risk
+    deactivate Service
+
+    Controller --> Screen : Success message
+    deactivate Controller
+end
+
+@enduml

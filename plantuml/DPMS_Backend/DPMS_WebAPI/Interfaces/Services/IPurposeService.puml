@@ -1,0 +1,7 @@
+@startuml
+interface IPurposeService {
+}
+class "IService`1"<T> {
+}
+"IService`1" "<Purpose>" <|-- IPurposeService
+@enduml

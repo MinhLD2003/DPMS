@@ -1,0 +1,14 @@
+@startuml
+
+state NotStarted
+state Ready
+state InProgress
+state Completed
+
+[*] --> NotStarted : Responsibility just created
+NotStarted --> Ready : Responsibility's PIC confirm member
+Ready --> InProgress : DPO starts DPIA
+InProgress --> Completed : All member complete their works
+Completed --> InProgress : DPO click "Continue work"
+
+@enduml

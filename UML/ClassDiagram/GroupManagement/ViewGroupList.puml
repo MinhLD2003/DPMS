@@ -1,0 +1,50 @@
+@startuml
+
+abstract class BaseService<T> {
+
+}
+
+abstract class BaseRepository<T> {
+
+}
+
+interface IRepository<T> {
+
+}
+
+BaseRepository ..|> IRepository
+
+BaseService ..|> IService
+BaseService --> IRepository : uses IRepository<T>
+
+class GroupController {
+    -_groupService : IGroupService
+
+    +Task<ActionResult> GetGroups(QueryParams queryParams)
+}
+
+class QueryParams {
+    PageNumber : int
+    PageSize : int
+    SortBy : string
+    SortDirection : string
+    Filters : Dictionary<string, string>
+}
+
+class GroupService {
+}
+
+interface IGroupService {
+}
+
+interface IService<T> {
+    Task<PagedResponse<T>> GetPagedAsync(QueryParams queryParams , params Expression<Func<T, object>>[]? includes)
+}
+
+IGroupService --|> IService
+GroupService ..|> IGroupService
+GroupService --|> BaseService
+GroupController --> IGroupService : uses GetPagedAsync<T>
+GroupController --> QueryParams : receives from client
+
+@enduml

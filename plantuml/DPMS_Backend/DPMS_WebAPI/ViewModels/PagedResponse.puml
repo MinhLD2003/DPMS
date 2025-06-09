@@ -1,0 +1,14 @@
+@startuml
+class "PagedResponse`1"<T> {
+    + PageNumber : int <<get>> <<set>>
+    + PageSize : int <<get>> <<set>>
+    + TotalPages : int <<get>> <<set>>
+    + TotalRecords : int <<get>> <<set>>
+    + HasPrevious : bool <<get>>
+    + HasNext : bool <<get>>
+    + PagedResponse()
+}
+class "List`1"<T> {
+}
+"PagedResponse`1" o-> "Data<T>" "List`1"
+@enduml

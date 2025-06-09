@@ -1,0 +1,34 @@
+@startuml
+
+class DPIAService {
+    -_mediator : IMediator
+}
+
+interface IMediator {
+    +Publish<T>(T notification) : Task
+}
+
+class EmailNotificationHandler {
+    +Handle(DPIAApprovalNotification notification) : Task
+}
+
+class EmailTemplateService {
+    +SendDPIAApprovalNotification(DPIAApprovalNotification notification) : Task<bool>
+}
+
+class DPIAApprovalNotification {
+    +Email : string
+    +FullName : string
+    +DPIAName : string
+    +IsApproved : bool
+    +DPOName : string
+    +TimeStamp : DateTime
+    +SystemName : string
+}
+
+DPIAService --> IMediator : "uses"
+DPIAService --> DPIAApprovalNotification : "creates notification"
+IMediator ..> EmailNotificationHandler : "handles notification"
+EmailNotificationHandler --> EmailTemplateService : "sends email"
+
+@enduml

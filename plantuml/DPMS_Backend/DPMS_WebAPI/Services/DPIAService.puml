@@ -1,0 +1,7 @@
+@startuml
+class DPIAService {
+    + DPIAService(dpiaRepository:IDPIARepository)
+    + <<async>> GetDPIAByIdAsync(id:string) : Task<DPIADetailVM?>
+    + <<async>> CreateDPIAAsync(dpiavm:AddDPIAVM) : Task<DPIA>
+}
+@enduml

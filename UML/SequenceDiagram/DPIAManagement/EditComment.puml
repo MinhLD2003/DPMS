@@ -1,0 +1,40 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam defaultTextAlignment center
+
+actor User
+boundary "Comment Edit Form" as Screen
+participant "DPIAController" as Controller
+participant "DPIAService" as Service
+participant "CommentRepository" as Repo
+database "Database" as DB
+
+User -> Screen : Edit and submit comment update
+activate Screen
+Screen -> Controller : UpdateComment(dpiaId, commentId, content)
+deactivate Screen
+activate Controller
+
+Controller -> Service : UpdateCommentAsync(commentId, AddCommentVM)
+activate Service
+
+Service -> Repo : GetByIdAsync(commentId)
+activate Repo
+Repo -> DB : SELECT FROM Comments 
+DB --> Repo : Comment entity
+Repo --> Service : Comment
+deactivate Repo
+
+Service -> Repo : UpdateAsync(updatedComment)
+activate Repo
+Repo -> DB : UPDATE Comments 
+DB --> Repo : OK
+Repo --> Service : Done
+deactivate Repo
+
+Service --> Controller : OK
+deactivate Service
+
+Controller --> Screen : Show update success
+deactivate Controller
+@enduml

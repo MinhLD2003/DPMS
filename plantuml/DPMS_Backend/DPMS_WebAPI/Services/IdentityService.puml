@@ -1,0 +1,7 @@
+@startuml
+class IdentityService {
+    + IdentityService(httpContextAccessor:IHttpContextAccessor, userService:IUserService)
+    + <<async>> GetCurrentUserAsync() : Task<User?>
+    + GetCurrentUserId() : string
+}
+@enduml

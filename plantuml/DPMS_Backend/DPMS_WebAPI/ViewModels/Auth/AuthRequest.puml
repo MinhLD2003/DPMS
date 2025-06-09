@@ -1,0 +1,5 @@
+@startuml
+class AuthRequest {
+    + <<required>> Token : string <<get>> <<set>>
+}
+@enduml

@@ -1,0 +1,7 @@
+@startuml
+interface IGroupRepository {
+}
+class "IRepository`1"<T> {
+}
+"IRepository`1" "<Group>" <|-- IGroupRepository
+@enduml

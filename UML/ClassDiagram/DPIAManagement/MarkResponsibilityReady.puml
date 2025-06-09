@@ -1,0 +1,38 @@
+@startuml
+
+class DPIAController {
+    -_dpiaService : IDPIAService
+    -_mediator : IMediator
+
+    +UpdateResponsibilityStatus(Guid id, DPIAResponsibilityUpdateStatusVM vm) : Task<ActionResult>
+}
+
+interface IPublisher {
+    +Publish<T>(T notification, CancellationToken cancellationToken) : Task
+}
+
+class DPIAService {
+    +UpdateResponsibilityStatusAsync(Guid id, DPIAResponsibilityUpdateStatusVM status) : Task
+}
+
+class DPIAResponsibilityUpdateStatusVM {
+    +DPIAResponsibilityId : Guid
+    +Status : ResponsibilityStatus
+}
+
+class DPIARepository {
+    +GetDetailAsync(object id, params Expression<Func<T, object>>[] includes) : Task<T?>
+}
+
+class DPIAResponsibilityRepository {
+    +GetDetailAsync(object id, params Expression<Func<T, object>>[] includes) : Task<T?>
+    Update(T entity) : Task
+}
+
+DPIAController --> DPIAService
+DPIAController --> DPIAResponsibilityUpdateStatusVM : "binds to view model"
+DPIAService --> DPIARepository : "get DPIA instance"
+DPIAService --> DPIAResponsibilityRepository : "get responsibilities and update status"
+DPIAService --> IPublisher : "publish event"
+
+@enduml

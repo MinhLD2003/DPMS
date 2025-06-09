@@ -1,0 +1,52 @@
+@startuml
+
+actor User
+boundary "Risk List Screen" as Screen
+participant "RiskController" as Controller
+participant "RiskService" as Service
+participant "BaseService<Risk>" as BaseService
+participant "BaseRepository<Risk>" as Repo
+database "Database" as DB
+
+User -> Screen : Click "Delete" on risk
+activate Screen
+Screen -> Controller : DeleteRisk(id)
+deactivate Screen
+activate Controller
+
+Controller -> Service : GetByIdAsync(id)
+activate Service
+Service -> BaseService : GetByIdAsync(id)
+activate BaseService
+BaseService -> Repo : GetByIdAsync(id)
+activate Repo
+Repo -> DB : Invoke SELECT 
+DB --> Repo : Risk (or null)
+Repo --> BaseService : Risk
+deactivate Repo
+BaseService --> Service : Risk
+deactivate BaseService
+Service --> Controller : Risk
+deactivate Service
+
+alt Risk exists
+    Controller -> Service : DeleteAsync(id)
+    activate Service
+    Service -> BaseService : DeleteAsync(id)
+    activate BaseService
+    BaseService -> Repo : DeleteAsync(id)
+    activate Repo
+    Repo -> DB : Invoke DELETE 
+    DB --> Repo : OK
+    Repo --> BaseService : OK
+    deactivate Repo
+    BaseService --> Service : OK
+    deactivate BaseService
+    Service --> Controller : OK
+    deactivate Service
+    Controller --> Screen : Show success message
+else Not Found
+    Controller --> Screen : Show 404 Risk Not Found
+end
+deactivate Controller
+@enduml

@@ -1,0 +1,242 @@
+@import "tailwindcss";
+
+/* .ant-btn-primary {
+  background-color: rgba(255, 102, 0, 0.623) !important;
+} */
+/* This will apply red background to all antd table headers */
+
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+
+a:hover {
+  color: #535bf2;
+}
+
+body {
+  margin: 0;
+  /* display: flex; */
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+.width500 {
+  width: 500px;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+
+button:hover {
+  border-color: #646cff;
+}
+
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+
+  a:hover {
+    color: #747bff;
+  }
+
+  button {
+    background-color: #f9f9f9;
+  }
+}
+
+input[data-autocompleted] {
+  background-color: transparent !important;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:focus {
+  transition: background-color 0s 0s, color 0s 0s;
+  transition-delay: calc(infinity * 1s);
+}
+
+.account-card {
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s;
+  display: flex;
+  margin: auto;
+}
+
+.account-card:hover {
+  transform: scale(1.05);
+}
+
+.account-email {
+  font-size: 12px;
+  color: #333;
+  padding: 5px;
+  /* Add padding to the text */
+  border: 1px solid #d9d9d9;
+  /* Add border to the text */
+  border-radius: 50px;
+  /* Make the border oval */
+}
+
+.selected-row {
+  background-color: #b1a9a9 !important;
+}
+
+.page-title {
+  font-size: 24px; /* Smaller size, still prominent */
+  font-weight: 700; /* Keeps it bold */
+  text-align: center;
+  letter-spacing: -0.01em; /* Slightly less tightening for balance */
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Adjusted shadow for smaller text */
+  background: linear-gradient(90deg, #fc7b02, #ffee00); /* Gradient from coral to teal */
+  -webkit-background-clip: text; /* Clips gradient to text (Webkit prefix for compatibility) */
+  background-clip: text; /* Standard property */
+  color: transparent; /* Makes the gradient visible */
+  opacity: 0;
+  animation: fadeIn 1.8s ease-out forwards; /* Same smooth animation */
+}
+
+/* Keyframes for the fade-in effect */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(15px); /* Slightly smaller slide for smaller text */
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+p {
+  width: 200px;
+}
+
+.login-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.login-box {
+  background-color: #fff;
+  width: 100%;
+  min-width: 500px;
+  min-height: 400px;
+  box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+  padding: 2rem;
+  border-radius: 0.5rem;
+}
+
+.login-box img {
+  margin: 0 auto;
+}
+
+.login-form {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.google-login-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.forgot-password-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f0f2f5;
+}
+
+.forgot-password-card {
+  width: 500px;
+  text-align: center;
+}
+.no-wrap-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* Adds "..." when text overflows */
+}
+.ant-form-item {
+  width: 100%;
+}
+/* Custom styles for tabs */
+.custom-tabs .ant-tabs-tab.ant-tabs-tab-active {
+  background-color: rgb(252, 134, 55) !important; /* Orange background for selected tab */
+  border-color: #ff7a45 !important;
+}
+
+.custom-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: white !important; /* White text for better contrast on orange background */
+}
+
+/* Optional: Hover effect for tabs */
+.custom-tabs .ant-tabs-tab:hover {
+  color: #ff7a45;
+}
+
+/* Optional: Border color for the tab bar */
+/* .custom-tabs .ant-tabs-nav::before {
+  border-bottom-color: #050100;
+} */
+ 
+.ant-table-thead > tr > th {
+  background: linear-gradient(90deg, #4096FF, #50a6f7) !important;
+  color: white !important;
+  font-weight: bold;
+}

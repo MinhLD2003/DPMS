@@ -1,0 +1,5 @@
+@startuml
+enum DPIAStatus {
+    Init= 0,
+}
+@enduml

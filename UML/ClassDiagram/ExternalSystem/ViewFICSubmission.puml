@@ -1,0 +1,100 @@
+' @startuml
+
+' class FormController {
+'     -_context : DPMSContext
+'     -_mapper : IMapper
+
+'     -AssignValues(ICollection<FormElementVM> formElements, List<FormResponse> responses) : void
+'     +GetSubmissionDetails(Guid id) : ActionResult<FormVM>
+' }
+
+' class FormVM {
+'     +Name : string
+'     +FormType : FormTypes
+'     +Status : FormStatus
+'     +FormElements : ICollection<FormElementVM>?
+' }
+
+' class FormElementVM {
+'     +Id : Guid
+'     +FormId : Guid
+'     +ParentId : Guid?
+'     +Name : string
+'     +DataType : FormElementTypes?
+'     +Value : string?
+'     +OrderIndex : int?
+'     +Children : ICollection<FormElementVM>?
+' }
+
+' interface IMapper {
+'     +Map<T>(src) : T
+' }
+
+
+' FormController --> FormVM : "returns to client"
+' FormVM --> FormElementVM
+
+' FormController --> IMapper : "maps FormSubmissionVM to Submission object"
+' FormController --> FormController : "recursively assign child-parent"
+
+' @enduml
+
+@startuml
+top to bottom direction
+
+' === Controller ===
+class FormController {
+    -_formService : IFormService
+    -_mapper : IMapper
+
+    +GetSubmissionDetails(Guid id) : ActionResult<FormVM>
+    -AssignValues(ICollection<FormElementVM> formElements, List<FormResponse> responses) : void
+}
+
+' === Service Interface ===
+interface IFormService {
+    +GetSubmissionDetails(Guid id) : Task<FormVM>
+}
+
+' === Service Implementation ===
+class FormService {
+    -_submissionRepo : ISubmissionRepository
+    -_mapper : IMapper
+
+    +GetSubmissionDetails(Guid id) : Task<FormVM>
+}
+
+FormController --> IFormService : "calls"
+FormService --|> IFormService
+
+' === Repository ===
+interface ISubmissionRepository {
+    +GetDetailAsync(Guid id, includes) : Task<Submission?>
+}
+
+' === ViewModels ===
+class FormVM {
+    +Name : string
+    +FormType : FormTypes
+    +Status : FormStatus
+    +FormElements : ICollection<FormElementVM>?
+}
+
+class FormElementVM {
+    +Id : Guid
+    +FormId : Guid
+    +ParentId : Guid?
+    +Name : string
+    +DataType : FormElementTypes?
+    +Value : string?
+    +OrderIndex : int?
+    +Children : ICollection<FormElementVM>?
+}
+
+FormVM --> FormElementVM : "contains"
+FormController --> FormVM : "returns to client"
+FormController --> IMapper : "maps Submission -> FormVM"
+FormController --> FormController : "assigns response values"
+FormService --> ISubmissionRepository : "loads submission with responses"
+
+@enduml

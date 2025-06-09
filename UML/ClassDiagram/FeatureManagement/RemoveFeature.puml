@@ -1,0 +1,43 @@
+@startuml
+
+abstract class BaseService<T> {
+    #Repository : IRepository<T>
+    #_unitOfWork : IUnitOfWork
+}
+
+abstract class BaseRepository<T> {
+    #_context : DPMSContext
+    #_dbSet : DbSet<T>
+}
+
+interface IRepository<T> {
+    #Task DeleteAsync(object id)
+}
+
+BaseRepository --|> IRepository
+
+BaseService --|> IService
+BaseService --> IRepository : uses IRepository<T>
+
+class FeatureController {
+    -_featureService : IFeatureService
+
+    +Task<IActionResult> DeleteFeature(Guid id)
+}
+
+class FeatureService {
+}
+
+interface IFeatureService {
+}
+
+interface IService<T> {
+    +Task<bool> DeleteAsync(object id)
+}
+
+IFeatureService --|> IService
+FeatureService --|> IFeatureService
+FeatureService --|> BaseService
+FeatureController --> IFeatureService : uses DeleteAsync<T>
+
+@enduml

@@ -1,0 +1,29 @@
+@startuml
+
+class FormController {
+    +UpdateStatus(Guid id, int formStatus) : ActionResult
+}
+
+interface IFormService {
+    +GetByIdAsync(object id) : Task<Form?>
+    +UpdateAsync(Form entity) : Task<Form>
+}
+
+class FormService {
+    -_formRepository : IFormRepository
+}
+
+interface IFormRepository {
+    +GetByIdAsync(object id) : Task<T?>
+    +UpdateAsync(Form entity) : Task<Form>
+}
+
+class FormRepository {
+}
+
+FormService .U.|> IFormService
+FormRepository ..|> IFormRepository
+FormController --> IFormService : "update form status"
+FormService --> IFormRepository
+
+@enduml

@@ -1,0 +1,61 @@
+@startuml
+
+actor DPO
+boundary "Edit Purpose Screen" as Screen
+participant "PurposeController" as Controller
+participant "PurposeService" as Service
+participant "BaseService<Purpose>" as BaseService
+participant "BaseRepository<Purpose>" as Repo
+database "Database" as DB
+
+DPO -> Screen : Submit new status
+activate Screen
+Screen -> Controller : UpdateStatus(id, PurposeVM)
+deactivate Screen
+activate Controller
+
+' === Get Purpose by ID ===
+Controller -> Service : GetByIdAsync(id)
+activate Service
+Service -> BaseService : GetByIdAsync(id)
+activate BaseService
+BaseService -> Repo : GetByIdAsync(id)
+activate Repo
+Repo -> DB : Invoke SELECT
+DB --> Repo : Purpose / null
+Repo --> BaseService : Purpose
+deactivate Repo
+BaseService --> Service : Purpose
+deactivate BaseService
+Service --> Controller : Purpose
+deactivate Service
+
+alt Purpose not found
+    Controller --> Screen : Return 404 Not Found
+    
+else Purpose exists
+    alt Status == Draft
+        Controller --> Screen : Return 400 BadRequest\n("Cannot update status back to Draft.")
+        
+    else Valid status
+        Controller -> Service : UpdateAsync(purpose)
+        activate Service
+        Service -> BaseService : UpdateAsync(purpose)
+        activate BaseService
+        BaseService -> Repo : Update(purpose)
+        activate Repo
+        Repo -> DB : Invoke UPDATE
+        DB --> Repo : OK
+        Repo --> BaseService : Updated Purpose
+        deactivate Repo
+        BaseService --> Service : Updated Purpose
+        deactivate BaseService
+        Service --> Controller : Updated Purpose
+        deactivate Service
+
+        Controller --> Screen : Return 200 OK with mapped PurposeVM
+        deactivate Controller
+    end
+end
+
+@enduml

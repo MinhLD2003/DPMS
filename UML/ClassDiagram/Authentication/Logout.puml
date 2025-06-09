@@ -1,0 +1,9 @@
+@startuml
+
+' Controller
+class AuthController {
+  -ILogger<AuthController> _logger
+  +Task<IActionResult> Logout()
+}
+
+@enduml

@@ -1,0 +1,54 @@
+@startuml
+
+class ConsentController {
+    -_consentService : ConsentService
+    -_systemService : ExternalSystemService
+
+    +GetConsentLog([FromQuery] QueryParams queryParams) : Task<IActionResult>
+}
+
+class QueryParams {
+    PageNumber : int
+    PageSize : int
+    SortBy : string
+    SortDirection : string
+    Filters : Dictionary<string, string>
+}
+
+
+class ConsentService {
+    +GetConsentLogWithPurpose(QueryParams queryParams) : Task<PagedResponse<Consent>>
+}
+
+class ConsentRepository {
+    +GetConsentLogWithPurpose(QueryParams queryParams) : Task<PagedResponse<Consent>>
+}
+
+class ConsentLogVM {
+    +DataSubjectId : string?
+    +Email : string
+    +ConsentMethod : ConsentMethod
+    +ConsentIp : string
+    +ConsentUserAgent : string
+    +PrivacyPolicyId : Guid
+    +ExternalSystemName : string
+    +IsWithdrawn : bool
+    +WithdrawnDate : DateTime?
+    +ConsentPurpose : List<ConsentPurposeLogVM>
+    +CreatedAt : DateTime
+    +ConsentDate : DateTime
+}
+
+class ConsentPurposeLogVM {
+    +Name : string
+    +Status : bool
+}
+
+ConsentController --> ConsentService
+ConsentController --> QueryParams : "receives from client"
+ConsentController --> ConsentLogVM : "returns to client list of ConsentLogVM"
+ConsentService --> ConsentRepository
+
+ConsentLogVM --> ConsentPurposeLogVM
+
+@enduml

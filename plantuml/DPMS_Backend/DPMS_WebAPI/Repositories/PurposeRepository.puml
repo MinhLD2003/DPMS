@@ -1,0 +1,9 @@
+@startuml
+class PurposeRepository {
+    + PurposeRepository(context:DPMSContext)
+}
+class "BaseRepository`1"<T> {
+}
+"BaseRepository`1" "<Purpose>" <|-- PurposeRepository
+IPurposeRepository <|-- PurposeRepository
+@enduml

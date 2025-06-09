@@ -1,0 +1,53 @@
+@startuml
+title Update Risk
+
+actor User
+boundary "Edit Risk Form" as Screen
+participant "RiskController" as Controller
+participant "RiskService" as Service
+participant "BaseService<Risk>" as BaseService
+participant "IRepository<Risk>" as Repo
+database "Database" as DB
+participant "RiskVM" as ViewModel
+
+User -> Screen : Submit updated risk
+activate Screen
+Screen -> Controller : UpdateRisk(id, RiskVM)
+deactivate Screen
+activate Controller
+
+Controller -> Service : GetByIdAsync(id)
+activate Service
+Service -> BaseService : GetByIdAsync(id)
+activate BaseService
+BaseService -> Repo : GetByIdAsync(id)
+Repo -> DB : SELECT * FROM Risks WHERE Id = ?
+DB --> Repo : Risk
+Repo --> BaseService : Risk
+BaseService --> Service : Risk
+deactivate BaseService
+Service --> Controller : Risk
+deactivate Service
+
+alt Risk found
+    Controller -> ViewModel : Apply fields to Risk entity (name, mitigation, impact, etc.)
+
+    Controller -> Service : UpdateAsync(Risk)
+    activate Service
+    Service -> BaseService : UpdateAsync(Risk)
+    activate BaseService
+    BaseService -> Repo : Update(Risk)
+    Repo -> DB : UPDATE Risks SET ... WHERE Id = ?
+    DB --> Repo : OK
+    Repo --> BaseService : Updated Risk
+    BaseService --> Service : Updated Risk
+    deactivate BaseService
+    Service --> Controller : Updated Risk
+    deactivate Service
+
+    Controller --> Screen : Show success message
+else Not Found
+    Controller --> Screen : Show 404 Not Found
+end
+deactivate Controller
+@enduml

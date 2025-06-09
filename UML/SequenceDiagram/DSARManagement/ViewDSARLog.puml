@@ -1,0 +1,37 @@
+@startuml
+actor DPO
+boundary "DSAR Log Screen" as Screen
+participant "DSARController" as Controller
+participant "DsarService" as Service
+participant "BaseService<DSAR>" as BaseService
+participant "BaseRepository<DSAR>" as Repo
+database "Database" as DB
+
+DPO -> Screen : Apply filters (systemId, status, etc.)
+activate Screen
+Screen -> Controller : GetDsars(systemId, queryParams)
+deactivate Screen
+activate Controller
+
+Controller -> Service : GetPagedAsync(queryParams + systemId)
+activate Service
+
+Service -> BaseService : GetPagedAsync(queryParams + systemId)
+activate BaseService
+
+BaseService -> Repo : GetPagedAsync(queryParams + systemId)
+activate Repo
+Repo -> DB : SELECT FROM DSAR
+DB --> Repo : PagedResponse<DSAR>
+Repo --> BaseService : PagedResponse<DSAR>
+deactivate Repo
+
+BaseService --> Service : Paged result
+deactivate BaseService
+
+Service --> Controller : PagedResponse<DSAR>
+deactivate Service
+
+Controller --> Screen : Display DSARs list
+deactivate Controller
+@enduml

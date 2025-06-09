@@ -1,0 +1,18 @@
+@startuml
+|Admin|
+start
+:Open DPMS login page;
+:Enter credentials;
+|System|
+:Validate credentials;
+:Grant access;
+|Admin|
+:Navigate to Account Management;
+:Fill new account information;
+|System|
+:Create new account;
+:Sending account credentials;
+|Admin|
+:Add newly created account to group "ProductDeveloper";
+stop
+@enduml

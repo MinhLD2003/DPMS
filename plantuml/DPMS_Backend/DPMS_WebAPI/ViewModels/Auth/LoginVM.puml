@@ -1,0 +1,7 @@
+@startuml
+class LoginVM {
+    + Email : string <<get>> <<set>>
+    + Password : string <<get>> <<set>>
+    + RememberMe : bool <<get>> <<set>>
+}
+@enduml

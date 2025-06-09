@@ -1,0 +1,57 @@
+
+
+
+@startuml
+
+actor Admin
+boundary "Create Account Form" as Screen
+participant "AccountController" as Controller
+participant "UserService" as Service
+participant "UserRepository" as Repository
+participant "PasswordUtils" as Util
+participant "EmailService" as Mailer
+database "Database" as DB
+
+Admin -> Screen : Fill user form and submit
+activate Screen
+Screen -> Controller : CreateAccount(User)
+deactivate Screen
+activate Controller
+
+Controller -> Service : CreateUser(User)
+activate Service
+
+Service -> Repository : FindUserByEmail(user.Email)
+activate Repository
+Repository -> DB : Invoke SELECT Query
+DB --> Repository : exists / not exists
+Repository --> Service : result
+deactivate Repository
+
+alt Email already exists
+    Service --> Controller : return false
+    Controller --> Screen : Show "Email already exists"
+else New user
+    
+    Service -> Util : HashPassword(user.Password, user.Salt)
+    Util --> Service : hashed password
+
+    Service -> Repository : CreateUser(User)
+    activate Repository
+    Repository -> DB : Invoke INSERT query
+    DB --> Repository : OK
+    Repository --> Service : true
+    deactivate Repository
+
+    Service --> Controller : true
+    deactivate Service
+
+    Controller -> Mailer : SendAccountCredentialsAsync(AccountCredentials)
+    activate Mailer
+    Mailer -> Mailer : build & send email
+    Mailer --> Controller : done
+    deactivate Mailer
+    Controller --> Screen : Show success message
+    deactivate Controller
+end
+@enduml

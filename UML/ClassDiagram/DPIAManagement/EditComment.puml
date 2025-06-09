@@ -1,0 +1,38 @@
+@startuml
+
+class DPIAController {
+    -_dpiaService : IDPIAService
+
+    +UpdateComment(Guid dpiaId, Guid commentId, string content) : Task<ActionResult>
+}
+
+class AddCommentVM {
+    +ReferenceId : Guid
+    +Content : string
+    +UserId : Guid
+    +Type : CommentType
+}
+
+enum CommentType {
+    DPIA
+    DPIAResponsibility
+    IssueTicket
+    ...
+}
+
+class DPIAService {
+    -_mapper : IMapper
+
+    +UpdateCommentAsync(Guid id, AddCommentVM comment) : Task
+}
+
+class CommentRepository {
+    +GetByIdAsync(object id) : Task<Comment?>
+    +UpdateAsync(Comment comment) : Task
+}
+
+DPIAController --> DPIAService : "calls service to update comment"
+DPIAController --> AddCommentVM : "constructs from request body"
+DPIAService --> CommentRepository : "retrieves comment by id and updates it"
+
+@enduml

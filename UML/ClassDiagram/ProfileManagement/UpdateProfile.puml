@@ -1,0 +1,62 @@
+@startuml
+skinparam defaultTextAlignment center
+skinparam linetype ortho
+
+' === DTO ===
+class UpdateProfileVM {
+  +Email : string 
+  +UserName : string 
+  +FullName : string 
+  +Dob : DateTime 
+}
+
+
+' === Service Interface ===
+interface IUserRepository {
+  +GetByIdAsync(Guid id) : Task<User?> 
+  +CheckUserInGroup(Guid userId, string groupName) : Task<Result<bool>> 
+  +GetUserByEmailAsync(string email) : Task<User?> 
+  +UpdateAsync(User user) : Task 
+}
+
+' === Service Implementation ===
+class UserRepository {
+  -DPMSContext _context
+  +GetByIdAsync(Guid) : Task<User?>
+  +CheckUserInGroup(Guid, string) : Result<bool>
+  +GetUserByEmailAsync  (string) : Task<User?>
+  +UpdateAsync(User) : Task
+}
+
+UserRepository -U-|> IUserRepository
+
+' === Service Interface ===
+interface IUserService {
+  +GetByIdAsync(Guid id) : Task<User?> 
+  +CheckUserInGroup(Guid userId, string groupName) : Task<Result<bool>> 
+  +GetUserByEmailAsync(string email) : Task<User?> 
+  +UpdateAsync(User user) : Task 
+}
+
+' === Service Implementation ===
+class UserService {
+  -_userRepository : IUserRepository 
+  +GetByIdAsync(Guid) : Task<User?>
+  +CheckUserInGroup(Guid, string) : Result<bool>
+  +GetUserByEmailAsync(string) : Task<User?>
+  +UpdateAsync(User) : Task
+}
+
+UserService -U-|> IUserService
+UserService --> IUserRepository : query Users
+
+' === Controller ===
+class AccountController {
+  -IUserService _userService
+  +Task<ActionResult> UpdateProfile(UpdateProfileVM profile)
+}
+
+AccountController --> IUserService : validate data and\n update profile
+AccountController --> UpdateProfileVM : receives from client
+
+@enduml

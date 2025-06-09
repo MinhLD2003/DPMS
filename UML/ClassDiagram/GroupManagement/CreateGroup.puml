@@ -1,0 +1,44 @@
+@startuml
+
+' DTO sent from client to API
+class GroupVM {
+    +Guid? Id
+    +string Name
+    +string? Description
+    +bool IsGlobal
+}
+
+interface IGroupService {
+    +Task<Group> AddAsync(Group group)
+}
+
+' Service handling business logic
+class GroupService {
+    +Task<Group> AddAsync(Group group)
+}
+
+GroupService --|> IGroupService
+
+' Repository for persisting data
+class IGroupRepository {
+    +Task AddAsync(Group group)
+}
+
+class GroupRepository {
+    +Task AddAsync(Group group)
+}
+
+GroupRepository --|> IGroupRepository
+
+' Controller receiving API requests
+class GroupController {
+    -_groupService : IGroupService
+    +Task<ActionResult> CreateGroup(GroupVM groupVM)
+}
+
+' Relationships
+GroupController --> GroupVM : receives from client
+GroupController --> IGroupService : uses service
+GroupService --> IGroupRepository : uses\n(Injects _groupRepository)
+
+@enduml

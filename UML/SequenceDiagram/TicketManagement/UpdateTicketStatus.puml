@@ -1,0 +1,46 @@
+@startuml
+
+actor Admin
+boundary "Ticket Detail Page" as Screen
+participant "IssueTicketController" as Controller
+participant "IssueTicketService" as Service
+participant "IIssueTicketRepository" as TicketRepo
+database "Database" as DB
+
+Admin -> Screen : Change status (e.g., Accept)
+activate Screen
+Screen -> Controller : UpdateIssueTicketStatus(id, newStatus)
+deactivate Screen
+activate Controller
+
+' === Check if ticket exists ===
+Controller -> Service : GetDetailAsync(id)
+activate Service
+Service -> TicketRepo : GetByIdAsync(id)
+activate TicketRepo
+TicketRepo -> DB : SELECT FROM IssueTickets 
+DB --> TicketRepo : IssueTicket or null
+TicketRepo --> Service : IssueTicket (entity or null)
+deactivate TicketRepo
+Service --> Controller : IssueTicket (entity or null)
+deactivate Service
+
+alt Ticket not found
+    Controller --> Screen : Return NotFound("Issue ticket with ID {id} not found")
+else Ticket found
+    ' === Update Ticket Status ===
+    Controller -> Service : UpdateAsync(IssueTicket)
+    activate Service
+    Service -> TicketRepo : UpdateAsync(IssueTicket)
+    activate TicketRepo
+    TicketRepo -> DB : UPDATE IssueTickets 
+    DB --> TicketRepo : OK
+    TicketRepo --> Service : Updated IssueTicket
+    deactivate TicketRepo
+    Service --> Controller : Updated IssueTicket
+    deactivate Service
+
+    Controller --> Screen : Show success message ("Ticket status updated successfully")
+    deactivate Controller
+end
+@enduml

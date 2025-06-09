@@ -1,0 +1,108 @@
+@startuml
+
+' Entity
+class ExternalSystem {
+    +Id: Guid
+    +Name: string
+    +Url: string
+    ...
+}
+
+' ViewModel
+class ExternalSystemVM {
+    +Id: Guid
+    +Name: string
+    +Description : string
+    +CreatedAt: DateTime
+    +CreatedBy: string
+    +Status : ExternalSystemStatus
+}
+
+' Service Layer
+interface IExternalSystemService {
+    +GetAllAsync(): Task<List<ExternalSystem>>
+}
+class ExternalSystemService {
+    +GetAllAsync(): Task<List<ExternalSystem>>
+}
+
+' Mapper
+interface IMapper {
+    +Map<T>(source): T
+}
+
+' Controller
+class ExternalSystemController {
+    +GetAll(): Task<ActionResult<List<ExternalSystemVM>>>
+    -_groupService: IGroupService
+    -_systemService: IExternalSystemService
+    -_userService: IUserService
+    -_mapper: IMapper
+}
+
+' Group and User service for authorization logic
+interface IGroupService {
+    +UserBelongToGroupAsync(email: string, group: PermissionGroup): Task<bool>
+}
+
+interface IUserService {
+    +GetManageSystems(email: string): Task<List<ExternalSystemVM>>
+}
+
+interface IRepository<T> {
+}
+
+interface IService<T> {
+    +GetAllAsync(): Task<List<T>>
+}
+
+abstract class BaseRepository<T> {
+    #_context: DPMSContext
+    #_dbSet: DbSet<T>
+}
+
+abstract class BaseService<T> {
+    #Repository: IRepository<T>
+    #_unitOfWork: IUnitOfWork
+}
+
+interface IUserRepository {
+    +GetManageSystems(string email) : Task<List<ExternalSystem>>
+}
+
+class UserRepository {
+    +GetManageSystems(string email) : Task<List<ExternalSystem>>
+}
+
+class UserService {
+    +GetManageSystems(string email) : Task<List<ExternalSystemVM>>
+}
+
+' Enum
+enum PermissionGroup {
+    ADMIN_DPMS
+    DPO
+}
+
+' Relationships (with comments on arrows)
+
+UserRepository ..|> IUserRepository : "Implements repository interface"
+UserRepository --|> BaseRepository : "Inherits from BaseRepository"
+IUserRepository --|> IRepository : "Implements repository interface"
+ExternalSystem <-- ExternalSystemService : "Returned as list from DB query"
+UserService ..|> IUserService : "Implements user service interface"
+UserService --> IUserRepository : "Uses user repository for data access"
+ExternalSystemService ..|> IExternalSystemService
+ExternalSystemService --|> BaseService : "Inherits from BaseService"
+BaseService ..|> IService
+BaseRepository ..|> IRepository
+BaseService --> IRepository : "Uses repository for data access"
+
+IExternalSystemService <-- ExternalSystemController : Get all available systems if admin/dpo
+ExternalSystemController --> IMapper : "Maps entity → view model"
+ExternalSystemController --> ExternalSystemVM : "Returns mapped data to client"
+
+ExternalSystemController --> IGroupService : "Check group roles"
+ExternalSystemController --> IUserService : "If not admin/dpo, get filtered systems"
+
+@enduml

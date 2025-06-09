@@ -1,0 +1,44 @@
+@startuml
+
+class DPIAController {
+    -_dpiaService : IDPIAService
+
+    +GetDPIADetail(Guid id) : Task<ActionResult>
+}
+
+class QueryParams {
+    PageNumber : int
+    PageSize : int
+    SortBy : string
+    SortDirection : string
+    Filters : Dictionary<string, string>
+}
+
+class DPIAService {
+    -_mapper : IMapper
+
+    +GetDPIAByIdAsync(Guid id) : Task<DPIADetailVM>
+}
+
+class DPIARepository {
+    +GetDPIAResponsibilitiesAsync(Guid id) : Task<IEnumerable<DPIAResponsibility>>
+    +GetDPIAMembersAsync(Guid id) : Task<IEnumerable<DPIAMember>>
+    +GetDPIADetailAsync(Guid dpiaId) : Task<DPIA?>
+}
+
+class DPIADetailVM {
+    +Id : Guid
+    +Title : string
+    +Description : string
+    ...
+    Documents : List<DPIADocumentVM>
+    Members : List<DPIAMemberVM>
+    Responsibilities : List<DPIAResponsibilityListVM>
+}
+
+DPIAController --> QueryParams : "receives from client"
+DPIAController --> DPIAService : "gets DPIA details"
+DPIAService --> DPIARepository : "get responsibilities and members"
+DPIAService --> DPIADetailVM : "aggreate data from repository to DPIADetailsVM object"
+
+@enduml

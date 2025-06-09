@@ -1,0 +1,18 @@
+@startuml
+class HttpLog {
+    string Id
+    + TraceId : string? <<get>> <<set>>
+    + HttpType : int? <<get>> <<set>>
+    + ResponseStatus : int? <<get>> <<set>>
+    + Email : string? <<get>> <<set>>
+    + Method : string? <<get>> <<set>>
+    + IpAddress : string? <<get>> <<set>>
+    + Url : string? <<get>> <<set>>
+    + UserAgent : string? <<get>> <<set>>
+    + AccessedTime : DateTime? <<get>> <<set>>
+    + CreatedAt : DateTime? <<get>> <<set>>
+}
+' HttpLog --> "Id" string
+' HttpLog o-> "AccessedTime" DateTime
+' HttpLog o-> "CreatedAt" DateTime
+@enduml

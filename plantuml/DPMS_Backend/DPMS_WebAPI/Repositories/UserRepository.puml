@@ -1,0 +1,14 @@
+@startuml
+class UserRepository {
+    + UserRepository(context:DPMSContext)
+    + <<async>> GetUserByEmailAsync(email:string) : Task<User?>
+    + <<async>> UpdateUserPassword(password:string, salt:string, email:string) : Task<User?>
+    + <<async>> GetFeaturesByUserEmailAsync(email:string) : Task<List<Feature?>>
+    + <<async>> GetManageSystems(email:string) : Task<List<ExternalSystem>>
+    + <<async>> UpdateLastLoginTimeStamp(user:User) : Task
+}
+class "BaseRepository`1"<T> {
+}
+"BaseRepository`1" "<User>" <|-- UserRepository
+IUserRepository <|-- UserRepository
+@enduml

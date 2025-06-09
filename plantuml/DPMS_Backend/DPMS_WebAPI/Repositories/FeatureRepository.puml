@@ -1,0 +1,11 @@
+@startuml
+class FeatureRepository {
+    + FeatureRepository(context:DPMSContext)
+    + GetFeaturesByGroupId(groupId:string) : Task<List<Feature>>
+    + <<async>> GetListNestedFeatures() : Task<List<Feature>>
+}
+class "BaseRepository`1"<T> {
+}
+"BaseRepository`1" "<Feature>" <|-- FeatureRepository
+IFeatureRepository <|-- FeatureRepository
+@enduml

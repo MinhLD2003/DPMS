@@ -1,0 +1,7 @@
+@startuml
+interface IFeatureRepository {
+}
+class "IRepository`1"<T> {
+}
+"IRepository`1" "<Feature>" <|-- IFeatureRepository
+@enduml

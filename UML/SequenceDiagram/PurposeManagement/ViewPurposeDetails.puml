@@ -1,0 +1,38 @@
+@startuml
+
+actor DPO
+boundary "View Purpose Detail" as Screen
+participant "PurposeController" as Controller
+participant "PurposeService" as Service
+participant "BaseService<Purpose>" as BaseService
+participant "IRepository<Purpose>" as Repo
+database "Database" as DB
+
+DPO -> Screen : Request purpose details
+activate Screen
+Screen -> Controller : GetPurpose(id)
+deactivate Screen
+activate Controller
+
+Controller -> Service : GetByIdAsync(id)
+activate Service
+
+Service -> BaseService : GetByIdAsync(id)
+activate BaseService
+BaseService -> Repo : GetByIdAsync(id)
+Repo -> DB : SELECT * FROM Purposes WHERE Id = ?
+DB --> Repo : Purpose or null
+Repo --> BaseService : Purpose
+BaseService --> Service : Purpose
+deactivate BaseService
+
+Service --> Controller : Purpose
+deactivate Service
+
+alt Purpose found
+    Controller --> Screen : Display purpose details
+else Not Found
+    Controller --> Screen : Show 404 Not Found
+end
+deactivate Controller
+@enduml

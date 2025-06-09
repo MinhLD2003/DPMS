@@ -1,0 +1,35 @@
+@startuml
+top to bottom direction
+
+' === Controller Layer ===
+class DSARController {
+    -_consentService : ConsentService
+    -_dsarService : DsarService
+
+    +DoImportDsar(IFormFile importFile) : Task<ActionResult>
+}
+
+' === Service Layer ===
+class DsarService {
+    -_dsarBaseService : DSARBaseService
+
+    +DoImportDsarAsync(Stream data) : Task<Result>
+}
+
+DSARController --> DsarService : "import DSARs from Excel"
+
+' === Base Service Layer ===
+class BaseService<DSAR> {
+    -_repository : DSARBaseRepository
+    +BulkAddAsync(IEnumerable<DSAR>) : Task
+}
+
+DsarService --> BaseService : "calls BulkAddAsync"
+
+' === Repository Layer ===
+class BaseRepository<DSAR>  {
+    +BulkAddAsync(IEnumerable<DSAR>) : Task
+}
+
+DSARBaseService --> BaseRepository : "uses for DB operations"
+@enduml

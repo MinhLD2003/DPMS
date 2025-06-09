@@ -1,0 +1,62 @@
+@startuml
+
+abstract class BaseService<T> {
+    #Repository : IRepository<T>
+    #_unitOfWork : IUnitOfWork
+}
+
+abstract class BaseRepository<T> {
+    #_context : DPMSContext
+    #_dbSet : DbSet<T>
+}
+
+class CreateFeatureVM {
+    +ParentId : Guid
+    +FeatureName : string
+    +Description : string
+    +Url : string?
+    +HttpMethod : HttpMethodType?
+}
+
+enum HttpMethodType
+{
+    GET
+    POST
+    PUT
+    DELETE
+    PATCH
+}
+
+interface IRepository<T> {
+    #Task<T> AddAsync(T entity)
+}
+
+BaseRepository --|> IRepository
+
+BaseService --|> IService
+BaseService --> IRepository : uses IRepository<T>
+
+class FeatureController {
+    -_featureService : IFeatureService
+
+    +Task<IActionResult> CreateFeature([FromBody] CreateFeatureVM featureVM)
+}
+
+class FeatureService {
+}
+
+interface IFeatureService {
+}
+
+interface IService<T> {
+    +Task<T> AddAsync(T entity)
+}
+
+IFeatureService --|> IService
+FeatureService --|> IFeatureService
+FeatureService --|> BaseService
+FeatureController --> IFeatureService : uses AddAsync<T>
+FeatureController --> CreateFeatureVM : receives from client
+CreateFeatureVM --> HttpMethodType
+
+@enduml

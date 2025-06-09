@@ -1,0 +1,61 @@
+' @startuml
+' actor Admin
+' boundary "Form Preview Screen" as Screen
+' participant "FormController" as Controller
+' participant "DPMSContext" as Context
+' database "Database" as DB
+
+' Admin -> Screen : Click "View Form"
+' activate Screen
+' Screen -> Controller : GetFormDetails(formId)
+' deactivate Screen
+' activate Controller
+
+' Controller -> Context : Query Form and Elements
+' activate Context
+' Context -> DB : Invoke SELECT
+' DB --> Context : Form entity + FormElement list
+' Context --> Controller : Raw entities
+' deactivate Context
+
+' Controller --> Screen : Return FormVM
+' deactivate Controller
+' @enduml
+
+@startuml
+actor Admin
+boundary "Form Preview Screen" as Screen
+participant "FormController" as Controller
+participant "FormService" as Service
+participant "BaseService<Form>" as BaseService
+participant "BaseRepository<Form>" as BaseRepo
+database "Database" as DB
+
+Admin -> Screen : Click "View Form"
+activate Screen
+Screen -> Controller : GetFormDetails(formId)
+deactivate Screen
+activate Controller
+
+Controller -> Service : GetByIdAsync(formId, includes: FormElements)
+activate Service
+
+Service -> BaseService : GetByIdAsync(formId, includes)
+activate BaseService
+
+BaseService -> BaseRepo : GetByIdAsync(formId, includes)
+activate BaseRepo
+BaseRepo -> DB : Invoke SELECT
+DB --> BaseRepo : Form entity + list of FormElements
+BaseRepo --> BaseService : Form with elements
+deactivate BaseRepo
+
+BaseService --> Service : Form
+deactivate BaseService
+
+Service --> Controller : Form
+deactivate Service
+
+Controller --> Screen : Return FormVM
+deactivate Controller
+@enduml

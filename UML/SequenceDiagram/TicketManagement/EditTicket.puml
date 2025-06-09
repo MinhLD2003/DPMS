@@ -1,0 +1,56 @@
+@startuml
+
+actor User
+boundary "Edit Ticket Form" as Screen
+participant "IssueTicketController" as Controller
+participant "IssueTicketService" as Service
+participant "S3FileStorage" as S3
+participant "IssueTicketDocumentRepository" as DocRepo
+database "Database" as DB
+
+User -> Screen : Submit updated ticket info\n+ newFiles, removedFiles
+activate Screen
+Screen -> Controller : UpdateIssueTicket(id, vm, newFiles, removedFiles)
+deactivate Screen
+activate Controller
+
+Controller -> Service : GetByIdAsync(id)
+activate Service
+Service -> DB : SELECT FROM IssueTickets
+DB --> Service : IssueTicket
+
+Controller -> Service : UpdateIssueTicketFilesOnS3(id, newFiles, removedFiles)
+
+alt New files provided
+    loop for each file
+        Service -> S3 : UploadFileAsync(stream, key, contentType)
+        S3 --> Service : File URL
+    end
+end
+
+alt Files to delete provided
+    loop for each removedFile
+        Service -> S3 : Delete file from S3 (by URL)
+        S3 --> Service : OK
+    end
+end
+
+Service -> DocRepo : BulkDeleteAsync(old documents)
+activate DocRepo
+DocRepo -> DB : DELETE FROM IssueTicketDocuments 
+DB --> DocRepo : OK
+DocRepo --> Service : Done
+deactivate DocRepo
+
+Service -> DB : INSERT INTO IssueTicketDocuments (...)
+DB --> Service : OK
+
+Service -> DB : UPDATE IssueTickets
+DB --> Service : Updated
+
+Service --> Controller : Success
+deactivate Service
+
+Controller --> Screen : Show success message
+deactivate Controller
+@enduml

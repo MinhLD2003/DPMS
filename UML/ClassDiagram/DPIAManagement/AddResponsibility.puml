@@ -1,0 +1,39 @@
+@startuml
+
+class DPIAController {
+    -_dpiaService : IDPIAService
+
+    +UpdateMembersResponsibilities(Guid id, List<DPIAResponsibilityVM> responsibilityVMs) : Task<ActionResult>
+}
+
+class DPIAResponsibilityVM {
+    +ResponsibilityId : Guid
+    +DueDate : DateTime?
+    +UserId : List<Guid>
+    +Pic : Guid
+}
+
+class DPIAService {
+    +UpdateResponsibilityMembersAsync(Guid dpiaId, Guid responsibilityId, List<Guid> userIds, Guid? picId) : Task
+}
+
+class DPIARepository {
+    +GetDetailAsync(object id, params Expression<Func<T, object>>[] includes) : Task<T?>
+}
+
+class DPIAResponsibilityRepository {
+    +FindAsync(Expression<Func<T, bool>> predicate) : Task<IEnumerable<T>>
+}
+
+class DPIAMemberRepository {
+    +FindAsync(Expression<Func<T, bool>> predicate) : Task<IEnumerable<T>>
+    +BulkAddAsync(IEnumerable<T> entities) : Task
+}
+
+DPIAController --> DPIAService
+DPIAController --> DPIAResponsibilityVM : "receives from client"
+DPIAService --> DPIARepository : "get DPIA instance"
+DPIAService --> DPIAResponsibilityRepository : "get responsibilities"
+DPIAService --> DPIAMemberRepository : "add/remove responsibilities"
+
+@enduml

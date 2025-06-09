@@ -1,0 +1,6 @@
+@startuml
+struct Policies {
+    + <<const>> Authenticated : string = "Authenticated"
+    + <<const>> FeatureRequired : string = "FeatureRequired"
+}
+@enduml

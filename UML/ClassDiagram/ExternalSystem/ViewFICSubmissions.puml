@@ -1,0 +1,30 @@
+@startuml
+actor "User" as Admin
+boundary "FIC Submission Screen" as Screen
+participant "FormController" as Controller
+participant "FormService" as Service
+participant "ISubmissionRepository" as Repo
+database "Database" as DB
+
+Admin -> Screen : Click "View FIC Submissions"
+activate Screen
+Screen -> Controller : GetFICSubmissions(systemId)
+deactivate Screen
+activate Controller
+
+Controller -> Service : GetFICSubmissions(systemId)
+activate Service
+
+Service -> Repo : GetFICSubmissions(systemId)
+activate Repo
+Repo -> DB : Invoke SELECT query
+DB --> Repo : List<FICSubmission>
+Repo --> Service : List<FICSubmission>
+deactivate Repo
+
+Service --> Controller : List<FICSubmissionVM>
+deactivate Service
+
+Controller --> Screen : Display FICSubmissionVM list
+deactivate Controller
+@enduml

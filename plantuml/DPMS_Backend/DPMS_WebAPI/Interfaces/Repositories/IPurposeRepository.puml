@@ -1,0 +1,7 @@
+@startuml
+interface IPurposeRepository {
+}
+class "IRepository`1"<T> {
+}
+"IRepository`1" "<Purpose>" <|-- IPurposeRepository
+@enduml

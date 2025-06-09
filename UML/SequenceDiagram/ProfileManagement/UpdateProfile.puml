@@ -1,0 +1,87 @@
+@startuml
+actor User
+boundary "Update Profile Screen" as Screen
+participant "AccountController" as Controller
+participant "UserService" as Service
+participant "UserRepository" as Repository
+database "Database" as DB
+
+User -> Screen : Fill & submit profile form
+activate Screen
+Screen -> Controller : UpdateProfile(UpdateProfileVM)
+deactivate Screen
+activate Controller
+
+Controller -> Controller : Extract currentUserId\nfrom JWT claims
+
+' === Get currently logged-in user ===
+Controller -> Service : GetByIdAsync(currentUserId)
+activate Service
+Service -> Repository : GetByIdAsync(currentUserId)
+activate Repository
+Repository -> DB : SELECT * FROM Users WHERE Id = ?
+activate DB
+DB --> Repository : Return User
+deactivate DB
+Repository --> Service : Return User
+deactivate Repository
+Service --> Controller : Return User
+deactivate Service
+
+' === Check if user is admin ===
+Controller -> Service : CheckUserInGroup(currentUserId, "ADMIN_DPMS")
+activate Service
+Service -> Repository : CheckUserInGroup(currentUserId, "ADMIN_DPMS")
+activate Repository
+Repository -> DB : SELECT * FROM UserGroups\nWHERE userId = ? AND group = "ADMIN_DPMS"
+activate DB
+DB --> Repository : true / false
+deactivate DB
+Repository --> Service : Result<bool>
+deactivate Repository
+Service --> Controller : Result<bool>
+deactivate Service
+
+alt isAdmin.IsFailed
+    Controller --> Screen : Return BadRequest(isAdmin)
+    
+else continue
+    ' === Get user by email ===
+    Controller -> Service : GetUserByEmailAsync(profile.Email)
+    activate Service
+    Service -> Repository : GetUserByEmailAsync(profile.Email)
+    activate Repository
+    Repository -> DB : SELECT * FROM Users WHERE Email = ?
+    activate DB
+    DB --> Repository : user/null
+    deactivate DB
+    Repository --> Service : Return User/null
+    deactivate Repository
+    Service --> Controller : Return User/null
+    deactivate Service
+
+    alt updatedUser is null
+        Controller --> Screen : Return BadRequest("User does not exist")
+        
+    else has permission (admin OR self)
+        alt isAdmin = true or updatedUser.Id == currentUserId
+            Controller -> Service : UpdateAsync(updatedUser)
+            activate Service
+            Service -> Repository : UpdateAsync(updatedUser)
+            activate Repository
+            Repository -> DB : UPDATE Users SET ...
+            DB --> Repository : OK
+            Repository --> Service : OK
+            deactivate Repository
+            Service --> Controller : OK
+            deactivate Service
+
+            Controller --> Screen : Return success (200 OK)
+            deactivate Controller
+        else unauthorized
+            Controller --> Screen : Return Forbid()
+            deactivate Controller
+        end
+    end
+end
+@enduml

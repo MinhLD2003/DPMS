@@ -1,0 +1,7 @@
+@startuml
+interface IFeatureService {
+}
+class "IService`1"<T> {
+}
+"IService`1" "<Feature>" <|-- IFeatureService
+@enduml

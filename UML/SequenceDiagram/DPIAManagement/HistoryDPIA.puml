@@ -1,0 +1,39 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam defaultTextAlignment center
+
+actor User
+boundary "DPIA History" as Screen
+participant "DPIAController" as Controller
+participant "DPIAService" as Service
+participant "DPIARepository" as DPIARepo
+database "Database" as DB
+
+User -> Screen : Click "View DPIA History"
+activate Screen
+Screen -> Controller : GetHistory(dpiaId)
+deactivate Screen
+activate Controller
+
+Controller -> Service : GetHistoryAsync(dpiaId)
+activate Service
+
+Service -> DPIARepo : GetByIdAsync(dpiaId)
+activate DPIARepo
+DPIARepo -> DB : SELECT FROM DPIAs 
+DB --> DPIARepo : DPIA record
+DPIARepo --> Service : DPIA
+deactivate DPIARepo
+
+Service -> DPIARepo : GetEventsAsync(dpiaId)
+activate DPIARepo
+DPIARepo -> DB : SELECT FROM DPIAEvents
+DPIARepo --> Service : List<DPIAEvent>
+deactivate DPIARepo
+
+Service --> Controller : List<EventDetailVM>
+deactivate Service
+
+Controller --> Screen : Display event timeline
+deactivate Controller
+@enduml

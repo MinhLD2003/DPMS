@@ -1,0 +1,7 @@
+@startuml
+interface IExternalSystemPurposeRepository {
+}
+class "IRepository`1"<T> {
+}
+"IRepository`1" "<ExternalSystemPurpose>" <|-- IExternalSystemPurposeRepository
+@enduml

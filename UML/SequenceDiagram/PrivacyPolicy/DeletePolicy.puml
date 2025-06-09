@@ -1,0 +1,65 @@
+@startuml
+
+actor DPO
+boundary "Policy List Screen" as Screen
+participant "PrivacyPolicyController" as Controller
+participant "PrivacyPolicyService" as Service
+participant "BaseService<Policy>" as BaseService
+participant "BaseRepository<Policy>" as Repo
+database "Database" as DB
+
+DPO -> Screen : Click delete on a policy
+activate Screen
+Screen -> Controller : DeletePolicy(id)
+deactivate Screen
+activate Controller
+
+' === Get policy by ID ===
+Controller -> Service : GetByIdAsync(id)
+activate Service
+Service -> BaseService : GetByIdAsync(id)
+activate BaseService
+BaseService -> Repo : GetByIdAsync(id)
+activate Repo
+Repo -> DB : Invoke SELECT
+activate DB
+DB --> Repo : Policy / null
+deactivate DB
+
+Repo --> BaseService : Policy
+deactivate Repo
+BaseService --> Service : Policy
+deactivate BaseService
+Service --> Controller : Policy
+deactivate Service
+
+alt Policy not found
+    Controller --> Screen : Return 404 Not Found
+else Policy exists
+    alt Policy.Status == Active
+        Controller --> Screen : Return 400 BadRequest\n("Cannot delete an active policy.")
+        
+    else Policy.Status == Inactive
+        Controller -> Service : DeleteAsync(id)
+        activate Service
+        Service -> BaseService : DeleteAsync(id)
+        activate BaseService
+        BaseService -> Repo : DeleteAsync(id)
+        activate Repo
+        Repo -> DB : Invoke DELETE
+        activate DB
+        DB --> Repo : OK
+        deactivate DB
+        Repo --> BaseService : true
+        deactivate Repo
+        BaseService --> Service : true
+        deactivate BaseService
+        Service --> Controller : true
+        deactivate Service
+
+        Controller --> Screen : Return 204 No Content
+        deactivate Controller
+    end
+end
+
+@enduml

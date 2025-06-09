@@ -1,0 +1,8 @@
+@startuml
+class ExternalSystem {
+    + Name : string? <<get>> <<set>>
+    + Description : string? <<get>> <<set>>
+}
+BaseModel <|-- ExternalSystem
+ExternalSystem --> "Status" ExternalSystemStatus
+@enduml

@@ -1,0 +1,52 @@
+@startuml
+actor DPO
+boundary "DPIA Responsibility Detail Screen" as Screen
+participant "DPIAController" as Controller
+participant "DPIAService" as Service
+participant "DPIARepository" as DPIARepo
+participant "DPIAResponsibilityRepository" as RespRepo
+participant "DPIAMemberRepository" as MemberRepo
+database "Database" as DB
+
+DPO -> Screen : Submit member + PIC for a responsibility
+activate Screen
+Screen -> Controller : UpdateResponsibilityMembers(dpiaId, responsibilityId, VM)
+deactivate Screen
+activate Controller
+
+Controller -> Service : UpdateResponsibilityMembersAsync(dpiaId, responsibilityId, userIds, picId)
+activate Service
+
+Service -> DPIARepo : GetDetailAsync(dpiaId)
+activate DPIARepo
+DPIARepo -> DB : SELECT FROM DPIAs 
+DB --> DPIARepo : DPIA
+DPIARepo --> Service : DPIA entity
+deactivate DPIARepo
+
+Service -> RespRepo : FindAsync(r => r.Id == responsibilityId AND r.DPIAId == dpiaId)
+activate RespRepo
+RespRepo -> DB : SELECT FROM Responsibilities 
+DB --> RespRepo : Responsibility
+RespRepo --> Service : Responsibility
+deactivate RespRepo
+
+Service -> MemberRepo : FindAsync(r => r.ResponsibilityId == responsibilityId)
+activate MemberRepo
+MemberRepo -> DB : SELECT FROM DPIAMembers 
+DB --> MemberRepo : Existing members
+MemberRepo --> Service : List<Member>
+deactivate MemberRepo
+
+Service -> MemberRepo : BulkAddAsync(new members list)
+activate MemberRepo
+MemberRepo -> DB : INSERT INTO DPIAMembers (...)
+DB --> MemberRepo : OK
+MemberRepo --> Service : Success
+deactivate MemberRepo
+
+Service --> Controller : Return OK
+deactivate Service
+Controller --> Screen : Show success message
+deactivate Controller
+@enduml

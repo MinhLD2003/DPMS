@@ -1,0 +1,6 @@
+@startuml
+enum ExternalSystemRole {
+    ProductDeveloper= 1,
+    BusinessOwner= 2,
+}
+@enduml

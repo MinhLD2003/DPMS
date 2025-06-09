@@ -1,0 +1,51 @@
+@startuml
+actor User
+boundary "Google Login Screen" as Screen
+participant "AuthController" as Controller
+participant "AuthService" as Service
+participant "UserRepository" as Repository
+participant "GoogleJsonWebSignature" as Google
+database "Database" as DB
+
+User -> Screen : Click "Sign in with Google"
+activate Screen
+Screen -> Controller : GoogleLogin(request: AuthRequest)
+deactivate Screen
+activate Controller
+
+Controller -> Service : VerifyGoogleTokenAsync(token)
+activate Service
+
+Service -> Google : ValidateAsync(token)
+activate Google
+alt Token invalid
+    Google --> Service : Throw error
+    deactivate Google
+    Service --> Controller : Return null / error
+    
+    Controller --> Screen : Show error "Invalid Google token"
+else Token valid
+    Google --> Service : Payload (email, name, etc.)
+    deactivate Google
+
+    Service -> Repository : GetUserByEmailAsync(payload.Email)
+    activate Repository
+    Repository -> DB : Invoke SELECT query
+    activate DB
+    DB --> Repository : Return User or null
+    deactivate DB
+    Repository --> Service : User or null
+    deactivate Repository
+
+    alt User found
+        Service -> Service : GenerateJwtToken(user)
+        Service --> Controller : JWT
+        deactivate Service
+        Controller --> Screen : Return success + JWT
+    else User not found
+        Service --> Controller : Return null
+        deactivate Service
+        Controller --> Screen : Show error "Login failed"
+    end
+end
+@enduml

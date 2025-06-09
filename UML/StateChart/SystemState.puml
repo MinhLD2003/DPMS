@@ -1,0 +1,20 @@
+@startuml
+skinparam state {
+  BackgroundColor #FDF6E3
+  BorderColor black
+  FontName "Arial"
+  FontSize 12
+}
+
+[*] --> WaitingForFIC : System Created
+
+WaitingForFIC --> WaitingForDPIA : Submit FIC (by Business Owner/ Product Developer)
+
+WaitingForDPIA --> Active : DPO activates system
+Active --> Inactive : DPO deactivates system
+
+state WaitingForDPIA
+state Active
+state Inactive
+
+@enduml

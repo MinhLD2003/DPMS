@@ -1,0 +1,31 @@
+@startuml
+
+actor User
+boundary "Ticket Details Page" as Screen
+participant "IssueTicketController" as Controller
+participant "IIssueTicketService" as Service
+participant "IIssueTicketRepository" as Repository
+database "Database" as DB
+
+User -> Screen : Request ticket details
+activate Screen
+Screen -> Controller : GetIssueTicketById(id)
+deactivate Screen
+activate Controller
+
+Controller -> Service : GetDetailAsync(id, includes)
+activate Service
+Service -> Repository : GetDetailAsync(id, includes)
+activate Repository
+Repository -> DB : SELECT FROM IssueTickets (with includes)
+DB --> Repository : IssueTicket entity (with documents)
+Repository --> Service : IssueTicket entity
+deactivate Repository
+
+Service --> Controller : IssueTicket entity
+deactivate Service
+
+Controller --> Screen : Return IssueTicketVM
+deactivate Controller
+
+@enduml

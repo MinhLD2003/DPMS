@@ -1,0 +1,79 @@
+@startuml
+
+' A simple theme for clarity (optional)
+'!theme blueprint
+
+entity "ExternalSystem" as external_system {
+  * id : guid
+  --
+  name : varchar
+  description : varchar
+  domain : varchar
+}
+
+entity "Purpose" as purpose {
+  * id : guid
+  --
+  name : varchar
+  description : text  
+  status : int
+  created_at : datetime
+  created_by : guid
+  modified_at : datetime
+  modified_by : guid
+}
+
+' Maps which External Systems use which Purposes.
+entity "ExternalSystemPurpose" as externalsystempurpose {
+  * id : guid
+  --
+  external_system_id : guid
+  purpose_id : guid
+}
+entity "Processing Activities" as processingactivities {
+  * id : guid
+  --
+}
+' Represents one user's consent session (or record).
+' Additional fields for security & auditing have been added.
+entity "Consent" as consent {
+  * id : guid
+  --
+  user_id : guid       ' <--- If you have a Users table, store a reference here
+  email : text         ' <--- Optional if user_id is present; consider hashing or encryption
+  consent_method : int
+  consent_ip : varchar ' <--- Consider hashing/truncating for privacy
+  consent_user_agent : varchar
+  consent_date : datetime
+  collected_system_id : guid  ' System that collected this consent
+  policy_version : varchar    ' Track which version of your policy was accepted
+  is_withdraw : boolean        ' If user revokes all purposes in this consent
+  withdral_date : datetime?    ' When the user revoked the consent
+  created_at : datetime
+  created_by : guid
+  modified_at : datetime?
+  modified_by : guid?
+}
+
+' Bridges each Consent record to the specific Purposes the user agreed to.
+entity "ConsentPurpose" as consentpurpose {
+  * id : guid
+  --
+  consent_id : guid
+  purpose_id : guid
+  status: boolean --> 6 record
+  created_at : datetime
+  created_by : guid
+  modified_at : datetime?
+  modified_by : guid?
+}
+
+' Relationships
+external_system ||--o{ externalsystempurpose : "Which system uses which purposes"
+purpose         ||--o{ externalsystempurpose : "Which purpose belongs to which system"
+
+consent }o--|| external_system : "FK -> collected_system_id"
+consent ||--o{ consentpurpose   
+purpose ||--o{ consentpurpose  
+externalsystempurpose ||--o{ processingactivities
+@enduml

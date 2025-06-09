@@ -1,0 +1,7 @@
+@startuml
+class PurposeVM {
+    + Name : string? <<get>> <<set>>
+    + Description : string? <<get>> <<set>>
+}
+PurposeVM --> "Status" PurposeStatus
+@enduml

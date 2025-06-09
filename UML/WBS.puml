@@ -1,0 +1,86 @@
+@startwbs 
+skinparam layout horizontal
+skinparam horizontalSpacing 10
+skinparam verticalSpacing 50
+<style>
+element {
+    FontColor #333333
+    FontName Arial
+    FontSize 16
+    Padding 12
+    Margin 5
+    LineColor #4A90E2
+    LineThickness 2
+    BackgroundColor #E3F2FD
+    RoundCorner 20
+    HorizontalAlignment center
+}
+
+rectangle {
+    FontColor #2C3E50
+    FontSize 18
+    BackgroundColor #ECF0F1
+    LineColor #2C3E50
+    LineThickness 3
+    RoundCorner 25
+    FontWeight bold
+}
+
+leafNode {
+    BackgroundColor pink
+    LineColor #95A5A6
+    FontColor #333333
+    FontSize 14
+    RoundCorner 15
+}
+arrow {
+    LineStyle 2
+    LineThickness 1.2
+    LineColor #7F8C8D
+}
+</style>
+
+* DPMS Capstone Project
+** Report 1:\nProject Introduction\n& Requirements
+*** Kick-off meeting
+*** Meeting with Supervisor\n(Global & National Situation)
+*** Prepare report 1
+*** Requirement analysis\nand defining scope/features
+** Project Planning\n(Week 2)
+*** Prepare report 2
+*** Research ideas\nfrom previous meetings
+*** Meeting with Supervisor\n(Clarify Use Cases)
+*** Internal discussion\n(Tech stack, schedule, repo)
+*** Review and update report 1
+** High-Level System Design\n& Requirements Refinement\n(Week 3-4)
+*** Gather requirements\nand refine
+*** Research ND13\nand GDPR
+*** Reference existing solutions
+*** Team and mentor meetings\n(Unify ideas)
+*** Documentation
+*** Database and\nArchitecture Design
+** Iteration 1:\nAuthentication & Authorization\n(Week 5)
+*** Documentation
+*** Design
+*** Coding
+*** Iteration Review\n& Planning
+** Iteration 2:\nAdding System, Consent,\nDPIA Flows (Week 6-7)
+*** Meeting
+*** Documentation
+*** Design
+*** Coding
+*** Testing
+*** Iteration Review\n& Planning
+** Iteration 3-6:\nImplementation (External System,\nConsent, DPIA) (Week 8-11)
+*** Meeting
+*** Documentation
+*** Design
+*** Coding
+*** Testing
+*** Iteration Review\n& Planning
+** Iteration 7:\nFinal Review, Adjustment\n& Testing (Week 12-15)
+*** Documentation
+*** Coding
+*** Testing
+*** Project Closing
+@endwbs

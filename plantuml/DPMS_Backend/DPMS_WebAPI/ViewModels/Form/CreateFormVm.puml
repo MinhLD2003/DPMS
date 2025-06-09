@@ -1,0 +1,15 @@
+@startuml
+class CreateFormVm {
+    + Name : string <<get>> <<set>>
+}
+class CreateFormElementsVm {
+    + Name : string <<get>> <<set>>
+    + Value : string? <<get>> <<set>>
+    + OrderIndex : int? <<get>> <<set>>
+}
+CreateFormVm --> "SystemId" string
+CreateFormVm --> "FormType" FormTypes
+CreateFormVm --> "FormElements<CreateFormElementsVm>" "ICollection`1"
+CreateFormElementsVm --> "DataType" FormElementTypes
+CreateFormElementsVm --> "Children<CreateFormElementsVm>" "ICollection`1"
+@enduml

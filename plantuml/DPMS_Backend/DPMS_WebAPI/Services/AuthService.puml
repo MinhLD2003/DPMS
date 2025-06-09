@@ -1,0 +1,8 @@
+@startuml
+class AuthService {
+    + AuthService(config:IConfiguration, userRepository:IUserRepository)
+    + <<async>> VerifyGoogleTokenAsync(token:string) : Task<User?>
+    + GenerateJwtToken(user:User) : string
+    + GetPrincipalFromToken(token:string) : ClaimsPrincipal
+}
+@enduml

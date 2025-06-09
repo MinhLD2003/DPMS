@@ -1,0 +1,62 @@
+@startuml
+actor User
+boundary "Ticket Edit Form" as Screen
+participant "IssueTicketController" as Controller
+participant "IssueTicketService" as Service
+participant "S3FileStorage" as S3
+participant "IssueTicketDocumentRepository" as DocRepo
+database "Database" as DB
+
+User -> Screen : Submit ticket update (with newFiles)
+activate Screen
+Screen -> Controller : UpdateIssueTicket(id, issueTicketVM, newFiles, removedFiles)
+deactivate Screen
+activate Controller
+
+alt Ticket exists
+    Controller -> Service : UpdateIssueTicketFilesOnS3(id, newFiles, removedFiles)
+    activate Service
+
+    ' === Upload new files ===
+    loop each file in newFiles
+        Service -> S3 : UploadFileAsync(fileStream, key, contentType)
+        activate S3
+        S3 --> Service : Return file URL
+        deactivate S3
+    end
+
+    ' === Delete removed files from S3 (if any) ===
+    alt removedFiles not empty
+        loop each fileUrl in removedFiles
+            Service -> S3 : Delete file from S3 by fileUrl
+            activate S3
+            S3 --> Service : OK
+            deactivate S3
+        end
+    end
+
+    ' === Update DB: Delete removed document records ===
+    alt removedFiles not empty
+        Service -> DocRepo : BulkDeleteAsync(removed document records)
+        activate DocRepo
+        DocRepo -> DB : DELETE FROM IssueTicketDocuments WHERE FileUrl IN (removedFiles)
+        DB --> DocRepo : OK
+        DocRepo --> Service : OK
+        deactivate DocRepo
+    end
+
+    ' === Add new document records ===
+    Service -> DocRepo : AddAsync(new IssueTicketDocument records)
+    activate DocRepo
+    DocRepo -> DB : INSERT INTO IssueTicketDocuments
+    DB --> DocRepo : OK
+    DocRepo --> Service : OK
+    deactivate DocRepo
+
+    Service --> Controller : Return updated document list
+    deactivate Service
+else Ticket not found
+    Controller --> Screen : Return NotFound
+end
+deactivate Controller
+@enduml

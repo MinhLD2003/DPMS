@@ -1,0 +1,64 @@
+@startuml
+actor Admin
+boundary "Group Management UI" as Screen
+participant "GroupController" as Controller
+participant "GroupService" as Service
+participant "GroupRepository" as Repo
+participant "GroupFeatureRepository" as FeatureRepo
+participant "IUnitOfWork" as UnitOfWork
+database "Database" as DB
+
+Admin -> Screen : Click "Update Group"
+activate Screen
+Screen -> Controller : UpdateGroup(id, GroupVM)
+deactivate Screen
+activate Controller
+
+Controller -> Service : UpdateAsync(id, groupVM)
+activate Service
+
+Service -> Repo : GetDetailAsync(id, includes: GroupFeatures)
+activate Repo
+Repo -> DB : SELECT * FROM Groups WHERE Id = ?
+DB --> Repo : Group entity with features
+Repo --> Service : Group entity
+deactivate Repo
+
+alt Group found
+    Service -> FeatureRepo : BulkDeleteAsync(existing GroupFeatures)
+    activate FeatureRepo
+    FeatureRepo -> DB : DELETE FROM GroupFeatures WHERE GroupId = ?
+    DB --> FeatureRepo : OK
+    FeatureRepo --> Service : Deleted
+    deactivate FeatureRepo
+
+    Service -> FeatureRepo : BulkAddAsync(new GroupFeatures)
+    activate FeatureRepo
+    FeatureRepo -> DB : INSERT INTO GroupFeatures
+    DB --> FeatureRepo : OK
+    FeatureRepo --> Service : Inserted
+    deactivate FeatureRepo
+
+    Service -> Repo : Update(group entity)
+    activate Repo
+    Repo -> DB : UPDATE Groups SET ... WHERE Id = ?
+    DB --> Repo : OK
+    Repo --> Service : Updated
+    deactivate Repo
+
+    Service -> UnitOfWork : SaveChangesAsync()
+    activate UnitOfWork
+    UnitOfWork -> DB : COMMIT TRANSACTION
+    DB --> UnitOfWork : OK
+    UnitOfWork --> Service : Saved
+    deactivate UnitOfWork
+
+    Service --> Controller : Success
+else Group not found
+    Service --> Controller : Return NotFound
+end
+deactivate Service
+
+Controller --> Screen : Show result (Success or NotFound)
+deactivate Controller
+@enduml

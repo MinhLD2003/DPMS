@@ -1,0 +1,32 @@
+
+
+
+@startuml
+
+actor Admin
+boundary "Account Management UI" as Screen
+participant "AccountController" as Controller
+participant "UserService" as Service
+participant "PagedResponse<User>" as PagedResult
+participant "IMapper" as Mapper
+database "Database" as DB
+
+Admin -> Screen : Request Account List
+activate Screen
+Screen -> Controller : GetAccountList(QueryParams)
+deactivate Screen
+activate Controller
+
+Controller -> Service : GetPagedAsync(QueryParams, include)
+activate Service
+Service -> DB : Invoke SELECT query
+DB --> Service : List<User> + total count
+Service --> Controller : PagedResponse<User>
+deactivate Service
+
+Controller -> Mapper : Map List<User> → List<UserListVM>
+Mapper --> Controller : List<UserListVM>
+
+Controller --> Screen : Return paged list
+deactivate Controller
+@enduml

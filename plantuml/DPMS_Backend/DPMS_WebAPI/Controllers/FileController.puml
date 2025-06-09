@@ -1,0 +1,9 @@
+@startuml
+class FileController {
+    + FileController(fileRepository:IFileRepository)
+    + <<async>> UploadFile(file:IFormFile) : Task<IActionResult>
+    + <<async>> DeleteFile(fileUrl:string) : Task<IActionResult>
+    + <<async>> GetFile(fileName:string) : Task<IActionResult>
+}
+ControllerBase <|-- FileController
+@enduml

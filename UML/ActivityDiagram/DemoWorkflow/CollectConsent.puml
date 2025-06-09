@@ -1,0 +1,17 @@
+@startuml
+|System (DPMS)|
+start
+:System is Active;
+
+|Product Developer|
+:Login to DPMS;
+:Generate API Key for their system;
+
+:Configure Data Processing Purposes;
+
+|External System|
+:Add X-API-KEY to HTTP request header;
+:Call DPMS API to retrieve user consent status;
+
+stop
+@enduml

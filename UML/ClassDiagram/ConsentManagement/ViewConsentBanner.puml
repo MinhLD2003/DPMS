@@ -1,0 +1,43 @@
+@startuml
+
+class ConsentController {
+    -_consentService : ConsentService
+    -_systemService : ExternalSystemService
+
+    +GetConsentBanner(string uniqueIdentifier, string token) : Task<IActionResult>
+}
+
+class ConsentService {
+    +GetSystemFromToken(string token) : Task<Guid>
+    +ValidateConsentToken(string token) : Task<bool>
+    +GetConsentByEmail(string email) : Task<Consent?>
+}
+
+class ExternalSystemService {
+    +GetSystemPurposesAsync(Guid systemId) : Task<IEnumerable<Purpose>>
+}
+
+class ConsentTokenRepository {
+}
+
+class ExternalSystemPurposeRepository {
+}
+
+class BaseRepository {
+    +GetByIdAsync(object id) : Task<T?>
+}
+
+class ConsentUtils {
+    + {static} DecryptEmail(string encryptedEmail) : string
+}
+
+ConsentController --> ConsentUtils : "decrypt uniqueidentifier from url to get email"
+ConsentController --> ConsentService : "get system from token in url, then validate token\n. If token is valid, get user's consent"
+ConsentController --> ExternalSystemService : "get system's purposes"
+
+ConsentTokenRepository --|> BaseRepository : "inherits default implementations"
+ExternalSystemPurposeRepository --|> BaseRepository : "inherits default implementations"
+ConsentService --> ConsentTokenRepository : "Query consent token"
+ExternalSystemService --> ExternalSystemPurposeRepository : "Query system's purposes"
+
+@enduml

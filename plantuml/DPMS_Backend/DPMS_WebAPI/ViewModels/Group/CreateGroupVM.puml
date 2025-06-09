@@ -1,0 +1,10 @@
+@startuml
+class CreateGroupVM {
+    + <<required>> Name : string <<get>> <<set>>
+    + Description : string? <<get>> <<set>>
+}
+class "List`1"<T> {
+}
+CreateGroupVM o-> "FeatureIds<string>" "List`1"
+CreateGroupVM o-> "UserIds<string>" "List`1"
+@enduml

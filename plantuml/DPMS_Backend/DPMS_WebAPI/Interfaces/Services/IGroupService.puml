@@ -1,0 +1,7 @@
+@startuml
+interface IGroupService {
+}
+class "IService`1"<T> {
+}
+"IService`1" "<Group>" <|-- IGroupService
+@enduml

@@ -1,0 +1,29 @@
+@startuml
+title DPIA Workflow – Evaluation and Decision Flow
+
+start
+
+:Initiation:\nBO/PD or DPO creates DPIA request;
+
+:Acceptance:\nDPO receives and initiates evaluation;
+
+:Task Assignment:\nDPO creates tasks\n(architecture, compliance, risk);
+
+:Team Setup:\nQA Manager assembles evaluation team (QA/Auditors);
+
+:Execution:\nAll teams work in parallel\nand upload findings;
+
+:Decision:\nDPO reviews all findings;
+
+if (Is DPIA acceptable?) then (Yes)
+  :✅ Approve DPIA;
+  :Proceed to launch;
+else (No)
+  :❌ Reject DPIA;
+  :Resolve gaps\n(e.g., missing consent,\nunsafe design);
+endif
+
+:Notification:\nBO and PD are informed of the result;
+
+stop
+@enduml

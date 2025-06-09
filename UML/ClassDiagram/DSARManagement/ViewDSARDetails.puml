@@ -1,0 +1,27 @@
+@startuml
+
+class DSARController {
+    -_consentService : ConsentService
+    -_dsarService : DsarService
+
+    +GetDsar(Guid id) : Task<IActionResult>
+}
+
+class DsarService {
+    +GetByIdAsync(object id) : Task<DSAR?>    
+}
+
+abstract class BaseService<T> {
+    #Repository : IRepository<T>    
+    +GetByIdAsync(object id) : Task<T?>
+}
+
+abstract class BaseRepository<T> {
+    +GetByIdAsync(object id) : Task<T?>
+}
+
+DSARController --> DsarService : "get DSAR details"
+BaseService --> BaseRepository : "uses repository to get DSAR details"
+DsarService --|> BaseService
+
+@enduml

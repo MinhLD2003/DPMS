@@ -1,0 +1,7 @@
+@startuml
+class FileStorageService {
+    + FileStorageService(fileRepository:IFileRepository)
+    + <<async>> DeleteFileAsync(fileUrl:string) : Task<bool>
+    + GetFileUrl(fileName:string) : string
+}
+@enduml

@@ -1,0 +1,78 @@
+@startuml
+
+actor User
+boundary "System List Screen" as Screen
+participant "ExternalSystemController" as Controller
+participant "GroupService" as GroupService
+participant "GroupRepository" as GroupRepo
+participant "ExternalSystemService" as SystemService
+participant "ExternalSystemRepository" as SystemRepo
+participant "UserService" as UserService
+participant "UserRepository" as UserRepo
+database "Database" as DB
+
+User -> Screen : Open "System List"
+activate Screen
+Screen -> Controller : GetAll()
+deactivate Screen
+activate Controller
+
+' === Extract user email from JWT claim ===
+Controller -> Controller : Retrieve email from claims
+
+' === Group membership checks ===
+Controller -> GroupService : UserBelongToGroupAsync(email, ADMIN_DPMS)
+activate GroupService
+GroupService -> GroupRepo : CheckUserGroup(email, ADMIN_DPMS)
+activate GroupRepo
+GroupRepo -> DB :  Invoke SELECT
+DB --> GroupRepo : true/false
+GroupRepo --> GroupService : true/false
+deactivate GroupRepo
+GroupService --> Controller : bool isAdmin
+deactivate GroupService
+
+Controller -> GroupService : UserBelongToGroupAsync(email, DPO)
+activate GroupService
+GroupService -> GroupRepo : CheckUserGroup(email, DPO)
+activate GroupRepo
+GroupRepo -> DB : Invoke SELECT
+DB --> GroupRepo : true/false
+GroupRepo --> GroupService : true/false
+deactivate GroupRepo
+GroupService --> Controller : bool isDpo
+deactivate GroupService
+
+alt isAdmin or isDpo
+    Controller -> SystemService : GetAllAsync()
+    activate SystemService
+    SystemService -> SystemRepo : GetAllAsync()
+    activate SystemRepo
+    SystemRepo -> DB : Invoke SELECT
+    activate DB
+    DB --> SystemRepo : List<ExternalSystem>
+    deactivate DB
+    SystemRepo --> SystemService : List<ExternalSystem>
+    deactivate SystemRepo
+    SystemService --> Controller : List<ExternalSystem>
+    deactivate SystemService
+
+else Regular user
+    Controller -> UserService : GetManageSystems(email)
+    activate UserService
+    UserService -> UserRepo : GetManageSystems(email)
+    activate UserRepo
+    UserRepo -> DB : Invoke SELECT
+    activate DB
+    DB --> UserRepo : List<ExternalSystem>
+    deactivate DB
+    UserRepo --> UserService : List<ExternalSystem>
+    deactivate UserRepo
+    UserService --> Controller : List<ExternalSystem>
+    deactivate UserService
+end
+
+Controller --> Screen : Return List<ExternalSystemVM>
+deactivate Controller
+
+@enduml

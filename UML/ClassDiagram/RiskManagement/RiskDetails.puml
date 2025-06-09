@@ -1,0 +1,44 @@
+@startuml
+
+abstract class BaseService<T> {
+    #Repository : IRepository<T>
+    #_unitOfWork : IUnitOfWork
+}
+
+abstract class BaseRepository<T> {
+    #_context : DPMSContext
+    #_dbSet : DbSet<T>
+}
+
+interface IRepository<T> {
+    +GetByIdAsync<T>(object id) : Task<T?>
+}
+
+BaseRepository --|> IRepository
+
+BaseService --|> IService
+BaseService --> IRepository : uses IRepository<T>
+
+class RiskController {
+    -_riskService : IRiskService
+
+    +GetRisk(Guid id) : Task<IActionResult>
+}
+
+class RiskService {
+}
+
+interface IRiskService {
+}
+
+interface IService<T> {
+    +GetByIdAsync<T>(object id) : Task<T?>
+}
+
+IRiskService --|> IService
+RiskService --|> IRiskService
+RiskService --|> BaseService : inherits default \nimplementations from
+RiskController --> IRiskService
+RiskController --> Id : receives RiskId from client
+
+@enduml

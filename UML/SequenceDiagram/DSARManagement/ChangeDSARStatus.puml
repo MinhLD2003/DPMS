@@ -1,0 +1,39 @@
+@startuml
+actor Admin
+boundary "DSAR Status Update Screen" as Screen
+participant "DSARController" as Controller
+participant "UpdateStatusVM" as VM
+participant "DsarService" as Service
+participant "BaseService<DSAR>" as BaseService
+database "Database" as DB
+
+Admin -> Screen : Select new status and submit
+activate Screen
+Screen -> Controller : UpdateStatus(UpdateStatusVM)
+deactivate Screen
+activate Controller
+
+Controller -> VM : Parse Id and Status
+Controller -> Service : UpdateStatusAsync(vm.Id, vm.Status)
+activate Service
+
+Service -> BaseService : GetByIdAsync(vm.Id)
+activate BaseService
+BaseService -> DB : SELECT * FROM DSARs WHERE Id = ?
+DB --> BaseService : DSAR entity
+BaseService --> Service : DSAR
+deactivate BaseService
+
+Service -> DSAR : Update entity.Status = vm.Status
+Service -> BaseService : UpdateAsync(DSAR)
+activate BaseService
+BaseService -> DB : UPDATE DSARs SET Status = ? WHERE Id = ?
+DB --> BaseService : OK
+BaseService --> Service : Updated entity
+deactivate BaseService
+
+Service --> Controller : Success
+deactivate Service
+Controller --> Screen : Show success message
+deactivate Controller
+@enduml

@@ -1,0 +1,8 @@
+@startuml
+class UserListVM {
+    + Name : string <<get>> <<set>>
+    + Email : string <<get>> <<set>>
+}
+UserListVM --> "Id" string
+UserListVM --> "Status" UserStatus
+@enduml

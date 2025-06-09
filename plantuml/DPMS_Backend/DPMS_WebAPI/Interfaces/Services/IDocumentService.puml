@@ -1,0 +1,7 @@
+@startuml
+interface IDocumentService {
+}
+class "IService`1"<T> {
+}
+"IService`1" "<Document>" <|-- IDocumentService
+@enduml

@@ -1,0 +1,11 @@
+@startuml
+class S3FileStorage {
+    + S3FileStorage(context:DPMSContext, config:IConfiguration)
+    + <<async>> UploadFileAsync(fileStream:Stream, key:string, contentType:string) : Task<string>
+    + <<async>> DeleteFileAsync(fileUrl:string) : Task<bool>
+    + GetFileUrl(fileName:string) : string
+    + <<async>> GetFileAsync(fileName:string) : Task<Stream?>
+    + <<async>> GetFilesByRelatedIdAsync(relatedId:string) : Task<List<Document>>
+}
+IFileRepository <|-- S3FileStorage
+@enduml

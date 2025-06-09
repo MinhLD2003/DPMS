@@ -1,0 +1,34 @@
+@startuml
+
+class DPIAController {
+    -_dpiaService : IDPIAService
+
+    +GetDPIAs([FromQuery] QueryParams queryParams) : Task<ActionResult>
+}
+
+class QueryParams {
+    PageNumber : int
+    PageSize : int
+    SortBy : string
+    SortDirection : string
+    Filters : Dictionary<string, string>
+}
+
+class DPIAService {
+}
+
+abstract class BaseService<T> {
+    #Repository : IRepository<T>
+    +GetPagedAsync(QueryParams queryParams , params Expression<Func<T, object>>[]? includes) : Task<PagedResponse<T>>
+}
+
+abstract class BaseRepository<T> {
+    +GetPagedAsync(QueryParams queryParams , params Expression<Func<T, object>>[]? includes) : Task<PagedResponse<T>>
+}
+
+DPIAController --> QueryParams : "receives from client"
+DPIAController --> DPIAService : "returns paginated data"
+DPIAService --|> BaseService : "inherits default implementations"
+BaseService --> BaseRepository : "uses repository to get paginated result"
+
+@enduml

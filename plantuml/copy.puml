@@ -1,0 +1,22 @@
+@startuml
+
+!include .\\DPMS_Backend\DPMS_WebAPI\Models\BaseModel.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Models\Consent.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Models\Document.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Models\DPIA.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Models\DPIAMember.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Models\ExternalSystem.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Models\ExternalSystemPurpose.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Models\Feature.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Models\Form.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Models\FormElement.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Models\FormResponse.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Models\Group.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Models\GroupFeature.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Models\HttpLog.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Models\IssueTicket.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Models\Purpose.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Models\Submission.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Models\User.puml
+!include .\\DPMS_Backend\DPMS_WebAPI\Models\UserGroup.puml
+@enduml

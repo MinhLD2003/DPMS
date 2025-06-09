@@ -1,0 +1,5 @@
+@startuml
+class LogResponses <<partial>> {
+}
+Migration <|-- LogResponses
+@enduml

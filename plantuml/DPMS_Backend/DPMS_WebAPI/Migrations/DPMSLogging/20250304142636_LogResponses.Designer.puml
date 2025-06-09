@@ -1,0 +1,4 @@
+@startuml
+class LogResponses <<partial>> {
+}
+@enduml

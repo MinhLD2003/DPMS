@@ -1,0 +1,69 @@
+@startuml
+
+actor DPO
+boundary "Purpose Edit Form" as Screen
+participant "PurposeController" as Controller
+participant "PurposeService" as Service
+participant "BaseService<Purpose>" as BaseService
+participant "BaseRepository<Purpose>" as Repo
+database "Database" as DB
+
+DPO -> Screen : Submit updated purpose
+activate Screen
+Screen -> Controller : UpdatePurpose(id, PurposeVM)
+deactivate Screen
+activate Controller
+
+Controller -> Service : GetDetailAsync(id, includes: ExternalSystems)
+activate Service
+Service -> BaseService : GetDetailAsync(id, includes)
+activate BaseService
+BaseService -> Repo : GetDetailAsync(id, includes)
+activate Repo
+Repo -> DB : Invoke SELECT 
+activate DB
+DB --> Repo : Purpose / null
+deactivate DB
+Repo --> BaseService : Purpose
+deactivate Repo
+BaseService --> Service : Purpose
+deactivate BaseService
+Service --> Controller : Purpose
+deactivate Service
+
+alt Purpose not found
+    Controller --> Screen : Return 404 Not Found
+else Purpose exists
+    alt Status == Draft
+    
+        Controller --> Screen : Return 400 BadRequest\n("Cannot update status back to Draft")
+    
+    else continue
+        
+        Controller -> Service : UpdateAsync(mapped Purpose)
+        activate Service
+
+        Service -> BaseService : UpdateAsync(Purpose)
+        activate BaseService
+        
+
+        BaseService -> Repo : Update(Purpose)
+        activate Repo
+        Repo -> DB : Invoke UPDATE
+        activate DB
+        DB --> Repo : OK
+        deactivate DB
+        Repo --> BaseService : Updated Purpose
+        deactivate Repo
+        BaseService --> Service : Updated Purpose
+        deactivate BaseService
+
+        Service --> Controller : Updated Purpose
+        deactivate Service
+
+        Controller --> Screen : Show update success
+        deactivate Controller
+    end
+end
+
+@enduml

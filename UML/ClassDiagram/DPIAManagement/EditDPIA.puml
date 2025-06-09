@@ -1,0 +1,35 @@
+@startuml
+
+class DPIAController {
+    -_dpiService : DPIAService
+    +UpdateDPIA(Guid id, DPIAUpdateVM model) : Task<ActionResult>
+}
+
+class DPIAUpdateVM {
+    +Title : string
+    +Description : string
+    +DueDate : DateTime?
+}
+
+class DPIAService {
+    +GetByIdAsync(object id) : Task<DPIA?>
+    +UpdateAsync(DPIA entity) : Task<DPIA>
+}
+
+abstract class BaseService<T> {
+    #Repository : IRepository<T>
+    +GetByIdAsync(object id) : Task<T?>
+    +UpdateAsync(T entity) : Task<T>
+}
+
+abstract class BaseRepository<T> {
+    +GetByIdAsync(object id) : Task<T?>
+    +UpdateAsync(T entity) : Task<T>
+}
+
+DPIAController --> DPIAUpdateVM : "receives from client"
+DPIAController --> DPIAService : "get DPIA instance then update it"
+DPIAService --|> BaseService : "inherits default implementations"
+BaseService --> BaseRepository : "uses repository to get DPIA details and update it"
+
+@enduml

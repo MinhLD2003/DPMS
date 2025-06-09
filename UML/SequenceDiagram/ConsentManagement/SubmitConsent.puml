@@ -1,0 +1,77 @@
+@startuml
+actor "Data Subject" as User
+boundary "Consent Form Screen" as Screen
+participant "ConsentController" as Controller
+participant "PrivacyPolicyService" as PolicyService
+participant "ConsentService" as Service
+participant "ExternalSystemPurposeRepository" as PurposeRepo
+participant "ConsentRepository" as ConsentRepo
+database "Database" as DB
+
+User -> Screen : Submit Consent Form
+activate Screen
+Screen -> Controller : SubmitConsent(SubmitConsentRequestVM)
+deactivate Screen
+activate Controller
+
+' === Enrich Request ===
+Controller -> Controller : PolluteRequestData(requestVM) → SubmitConsentVM
+
+' === Get Active Privacy Policy (if needed) ===
+Controller -> PolicyService : FindAsync(IsActive)
+activate PolicyService
+PolicyService -> DB : SELECT * FROM PrivacyPolicies WHERE IsActive = true
+DB --> PolicyService : Active Policy
+PolicyService --> Controller : Policy
+deactivate PolicyService
+
+Controller -> Service : SubmitConsent(SubmitConsentVM)
+activate Service
+
+' === Validate consent purposes ===
+Service -> PurposeRepo : FindAsync(p => p.ExternalSystemId == vm.ExternalSystemId)
+activate PurposeRepo
+PurposeRepo -> DB : SELECT * FROM ExternalSystemPurposes WHERE ExternalSystemId = ?
+DB --> PurposeRepo : List<SystemPurposes>
+PurposeRepo --> Service : systemPurpose
+deactivate PurposeRepo
+
+alt any purpose not in system
+    Service --> Controller : Throw "Invalid purpose key"
+    Controller --> Screen : Show error
+else continue
+
+    ' === Invalidate previous consents by email ===
+    alt consent Email not null
+        Service -> ConsentRepo : FindAsync(c => !c.IsWithdrawn && c.Email == consent.Email)
+        activate ConsentRepo
+        ConsentRepo -> DB : SELECT * FROM Consents WHERE Email = ? AND IsWithdrawn = false
+        DB --> ConsentRepo : Previous Consents
+        ConsentRepo --> Service : List<Consent>
+        deactivate ConsentRepo
+
+        loop each old consent
+            Service -> ConsentRepo : Update(c.IsWithdrawn = true, c.WithdrawnDate = Now)
+            activate ConsentRepo
+            ConsentRepo -> DB : UPDATE Consents SET IsWithdrawn = true
+            DB --> ConsentRepo : OK
+            ConsentRepo --> Service : Done
+            deactivate ConsentRepo
+        end
+    end
+
+    ' === Save new consent ===
+    Service -> ConsentRepo : AddAsync(consent)
+    activate ConsentRepo
+    ConsentRepo -> DB : INSERT INTO Consents
+    DB --> ConsentRepo : OK
+    ConsentRepo --> Service : Done
+    deactivate ConsentRepo
+
+    Service --> Controller : Done
+    deactivate Service
+
+    Controller --> Screen : Return success
+    deactivate Controller
+end
+@enduml

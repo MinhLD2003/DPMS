@@ -1,0 +1,16 @@
+@startuml
+
+class DSARController {
+    -_consentService : ConsentService
+    -_dsarService : DsarService
+
+    +DoImportDsar(IFormFile importFile) : Task<ActionResult>
+}
+
+class DsarService {
+    +DoImportDsarAsync(Stream data) : Task<Result>
+}
+
+DSARController --> DsarService : "import DSAR"
+
+@enduml

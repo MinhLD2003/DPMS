@@ -1,0 +1,10 @@
+@startuml
+class FormVM {
+    + Name : string <<get>> <<set>>
+    + Version : int <<get>> <<set>>
+}
+FormVM --> "Id" string
+FormVM --> "SystemId" string
+FormVM --> "FormType" FormTypes
+FormVM --> "FormElements<FormElementVM>" "ICollection`1"
+@enduml

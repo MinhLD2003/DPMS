@@ -1,0 +1,36 @@
+@startuml
+
+class AccountController {
+    -_emailTemplateService : IEmailTemplateService
+}
+
+class EmailTemplateService {
+    -_renderer : IRazorViewToStringRenderer
+    -_emailSender : IEmailSender
+
+    +SendAccountCredentialsAsync(AccountCredentials credentials) : Task<bool>
+}
+
+class RazorViewToStringRenderer {
+    +RenderViewToStringAsync<TModel>(string viewName, TModel model) : Task<string>
+}
+
+class EmailSender {
+    +SendAsync(EmailMessage msg) : Task<bool>
+}
+
+class AccountCredentials {
+    +FullName : string
+    +UserName : string
+    +Email : string
+    +Password : string
+    +RoleName : string
+    +DpmsLoginUrl : string
+}
+
+AccountController --> EmailTemplateService : "send account credentials"
+EmailTemplateService --> AccountCredentials : "uses"
+EmailTemplateService --> RazorViewToStringRenderer : "render RazorView email template to HTML"
+EmailTemplateService --> EmailSender : "sends email"
+
+@enduml

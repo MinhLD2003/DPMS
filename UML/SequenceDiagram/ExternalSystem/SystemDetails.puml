@@ -1,0 +1,31 @@
+@startuml
+actor Admin
+boundary "External System Details Screen" as Screen
+participant "ExternalSystemController" as Controller
+participant "ExternalSystemService" as Service
+participant "ExternalSystemRepository" as Repo
+database "Database" as DB
+
+Admin -> Screen : View system details
+activate Screen
+Screen -> Controller : GetSystemDetails(systemId)
+deactivate Screen
+activate Controller
+
+Controller -> Service : GetExternalSystemDetailAsync(systemId)
+activate Service
+
+Service -> Repo : GetDetailAsync(systemId, includes: Users, Groups, Purposes)
+activate Repo
+Repo -> DB : Invoke SELECT 
+DB --> Repo : ExternalSystem entity with relations
+Repo --> Service : ExternalSystem + Users + Groups + Purposes
+deactivate Repo
+
+
+Service --> Controller : ExternalSystemDetailVM
+deactivate Service
+
+Controller --> Screen : Display system detail
+deactivate Controller
+@enduml

@@ -1,0 +1,43 @@
+@startuml
+
+class DPIAController {
+    -_dpiaService : IDPIAService
+    -_mediator : IMediator
+
+    +StartDPIA(Guid id) : Task<ActionResult>
+}
+
+class DPIAService {
+    +StartDPIAAsync(Guid id, ClaimsPrincipal principal) : Task
+}
+
+class UserRepository {
+    +CheckUserInGroup(Guid userId, string groupName) : Task<Result<bool>>
+}
+
+class ClaimsPrincipal {
+    +Identities : IEnumerable<ClaimsIdentity>
+    ...
+}
+
+class DPIAMemberRepository {
+    +GetDpiaMemberEmail(Guid dpiaId) : Task<List<string>>
+}
+
+interface IPublisher {
+    +Publish(notification) : Task
+}
+
+class DPIARepository {
+    +SaveEventsAsync(DPIAEvent dpiaEvent) : Task
+    +GetDPIADetailAsync(Guid dpiaId) : Task<DPIA?>
+    +GetDPIAMembersAsync(Guid id) : Task<IEnumerable<DPIAMember>>
+}
+
+DPIAController --> DPIAService : "starts DPIA"
+DPIAService --> UserRepository : "check user in DPO group"
+DPIAService --> DPIARepository : "Get DPIA instance"
+DPIAService --> DPIAMemberRepository : "get all DPIA members"
+DPIAService --> IPublisher : "send notification to all DPIA members"
+
+@enduml

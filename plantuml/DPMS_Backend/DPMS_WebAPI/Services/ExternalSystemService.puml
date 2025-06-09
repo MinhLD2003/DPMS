@@ -1,0 +1,20 @@
+@startuml
+class ExternalSystemService {
+    + ExternalSystemService(unitOfWork:IUnitOfWork, externalSystemPurposeRepository:IExternalSystemPurposeRepository, externalSystemRepository:IExternalSystemRepository, mapper:IMapper)
+    + <<async>> AddExternalSystem(model:AddSystemVM) : Task<ExternalSystem>
+    + GetUsersFromExternalSystem(systemId:string) : Task<IEnumerable<User>>
+    + <<async>> AddPurposeToSystemAsync(SystemId:string, purposeId:string) : Task<ExternalSystemPurpose>
+    + <<async>> BulkAddPurposeToSystemAsync(systemId:string, purposeIds:List<string>) : Task<IEnumerable<ExternalSystemPurpose>>
+    + <<async>> BulkRemoveSystemPurposeAsync(systemId:string, purposeIds:List<string>) : Task<bool>
+    + <<async>> GetSystemPurposesAsync(systemId:string) : Task<IEnumerable<Purpose>>
+    + <<async>> RemoveSystemPurposeAsync(systemId:string, purposeId:string) : Task<bool>
+    + <<async>> GetAllUsersAsync(systemId:string) : Task<ActionResult<List<SystemUserVM>>>
+    + <<async>> GetExternalSystemDetailAsync(systemId:string) : Task<ExternalSystemDetailVM>
+    + <<async>> UpdateSystemStatus(model:SystemStatusVM, allowedStatus:List<ExternalSystemStatus>) : Task
+    + <<async>> RemoveExternalSystem(systemId:string) : Task
+}
+class "BaseService`1"<T> {
+}
+"BaseService`1" "<ExternalSystem>" <|-- ExternalSystemService
+IExternalSystemService <|-- ExternalSystemService
+@enduml

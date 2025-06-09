@@ -1,0 +1,11 @@
+@startuml
+class Form {
+    + Name : string? <<get>> <<set>>
+    + Version : int <<get>> <<set>>
+}
+enum FormTypes {
+    FIC= 1,
+}
+BaseModel <|-- Form
+Form --> "FormType" FormTypes
+@enduml

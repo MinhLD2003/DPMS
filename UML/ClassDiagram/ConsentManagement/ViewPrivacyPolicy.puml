@@ -1,0 +1,58 @@
+@startuml
+
+class PrivacyPolicyController {
+    -_privacyPolicy : PrivacyPolicyService
+
+    +GetPolicy() : Task<IActionResult>
+}
+
+class PrivacyPolicyService {
+}
+
+interface IPrivacyPolicyService {
+    +FindAsync(Expression<Func<T, bool>> predicate) : Task<IEnumerable<T>>
+}
+
+interface IFormRepository {
+    +FindAsync(Expression<Func<T, bool>> predicate) : Task<IEnumerable<T>>
+}
+
+' abstract class BaseRepository<T> {
+'     +FindAsync(Expression<Func<T, bool>> predicate) : Task<IEnumerable<T>>
+' }
+
+' interface IRepository<T> {
+'     +FindAsync(Expression<Func<T, bool>> predicate) : Task<IEnumerable<T>>
+' }
+
+class PolicyVM {
+    +PolicyCode : string
+    +Title : string
+    +Description : string
+    +Content : string
+    +Status : PolicyStatus
+}
+
+enum PolicyStatus {
+    Draft
+    Active
+    Inactive
+}
+
+class FormRepository {
+}
+
+PolicyVM --> PolicyStatus : "has statuses"
+
+' abstract class BaseService<T> {
+'     +FindAsync(Expression<Func<T, bool>> predicate) : Task<IEnumerable<T>>
+' }
+
+PrivacyPolicyController --> PolicyVM : "returns to client"
+PrivacyPolicyController --> IPrivacyPolicyService : "get the current active privacy policy"
+' PrivacyPolicyService --|> BaseService
+PrivacyPolicyService ..|> IPrivacyPolicyService
+PrivacyPolicyService --> IFormRepository : "get the current active privacy policy"
+FormRepository ..|> IFormRepository 
+
+@enduml

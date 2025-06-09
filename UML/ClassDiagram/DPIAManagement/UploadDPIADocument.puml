@@ -1,0 +1,45 @@
+@startuml
+
+class DPIAController {
+    -_dpiaService : IDPIAService
+    -_mediator : IMediator
+
+    +UploadDocument(Guid id, IFormFile file) : Task<ActionResult>
+}
+
+class DPIAService {
+    +UploadDocumentAsync(Guid id, IFormFile file, ClaimsPrincipal user) : Task
+}
+
+class ClaimsPrincipal {
+    +Identities : IEnumerable<ClaimsIdentity>
+    ...
+}
+
+class S3FileStorage {
+    +UploadFileAsync(Stream fileStream, string key, string contentType) : Task<string>
+}
+
+class DPIARepository {
+    +UploadDocumentAsync(Guid dpiaId, DPIADocument document) : Task
+}
+
+class DPIADocument {
+    +DPIAId : Guid
+    +ResponsibleId : Guid?
+    +DPIA : DPIA?
+}
+
+abstract class BaseRepository<T> {
+    +GetByIdAsync(object id) : Task<T?>
+    +DeleteAsync(object id) : Task
+}
+
+DPIARepository --> DPIADocument : "create document object and insert record to database"
+DPIAController --> ClaimsPrincipal : "extract userId from principal"
+DPIARepository --|> BaseRepository
+DPIAService --> DPIARepository
+DPIAService --> S3FileStorage : "uploads file to S3"
+DPIAController --> DPIAService : "upload DPIA documents"
+
+@enduml

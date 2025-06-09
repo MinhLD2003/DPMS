@@ -1,0 +1,7 @@
+@startuml
+class DPIACreatedEvent {
+    + DPIACreatedEvent(dpiaId:string)
+}
+DPIACreatedEvent --> "DPIAId" string
+DPIACreatedEvent --> "CreatedAt" DateTime
+@enduml

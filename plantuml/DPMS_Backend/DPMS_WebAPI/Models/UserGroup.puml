@@ -1,0 +1,10 @@
+@startuml
+class UserGroup {
+    string UserId
+    string GroupId
+    + IsPic : bool <<get>> <<set>> = false
+}
+BaseModel <|-- UserGroup
+UserGroup --> "User" User
+UserGroup --> "Group" Group
+@enduml

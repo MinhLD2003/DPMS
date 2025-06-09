@@ -1,0 +1,7 @@
+@startuml
+class AddDPIAVM {
+    + <<required>> Title : string <<get>> <<set>>
+    + Description : string? <<get>> <<set>>
+}
+AddDPIAVM --> "ExternalSystemId" string
+@enduml

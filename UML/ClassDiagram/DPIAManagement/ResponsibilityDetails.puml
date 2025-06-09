@@ -1,0 +1,45 @@
+@startuml
+
+class DPIAController {
+    -_dpiaService : IDPIAService
+
+    +GetResponsibility(Guid dpiaId, Guid responsibilityId) : Task<ActionResult>
+}
+
+class DPIAService {
+    +GetResponsibilityAsync(Guid dpiaId, Guid responsibilityId) : Task<DPIAResponsibilityDetailVM>
+}
+
+class DPIAResponsibilityDetailVM {
+    +Id : Guid
+    +ResponsibilityId : Guid
+    +ResponsibilityName : string?
+    +ResponsibilityDescription : string?
+    +DueDate : DateTime?
+    +Comments : List<CommentVM>
+    +Status : ResponsibilityStatus
+    +Members : List<MemberResponsibilityVM>
+    +Documents : List<DPIADocument>
+}
+
+class DPIARepository {
+    +GetDetailAsync(object id, params Expression<Func<T, object>>[] includes) : Task<T?>
+}
+
+class DPIAResponsibilityRepository {
+    +GetDetailAsync(object id, params Expression<Func<T, object>>[] includes) : Task<T?>
+    +FindAsync(Expression<Func<T, bool>> predicate) : Task<IEnumerable<T>>
+    +GetMembersAsync(Guid id) : Task<IEnumerable<MemberResponsibility>>
+}
+
+class CommentRepository {
+    +FindAsync(Expression<Func<T, bool>> predicate) : Task<IEnumerable<T>>
+}
+
+DPIAController --> DPIAService
+DPIAService --> DPIAResponsibilityDetailVM : "returns to controller"
+DPIAService --> DPIARepository : "get DPIA instance"
+DPIAService --> DPIAResponsibilityRepository : "get responsibilities"
+DPIAService --> CommentRepository
+
+@enduml

@@ -1,0 +1,14 @@
+@startuml
+|DPO|
+start
+:Login to DPMS;
+:Create new External System;
+:Create new FIC Template;
+:Activate FIC Template;
+
+|Business Owner|
+:Login to DPMS;
+:Select External System;
+:Fill in FIC Form (based on active template);
+stop
+@enduml

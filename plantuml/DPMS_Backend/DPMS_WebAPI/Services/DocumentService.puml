@@ -1,0 +1,10 @@
+@startuml
+class DocumentService {
+    + DocumentService(unitOfWork:IUnitOfWork, fileRepository:IFileRepository)
+    + <<async>> DeleteFilesOnS3(documents:List<Document>) : Task<bool>
+}
+class "BaseService`1"<T> {
+}
+"BaseService`1" "<Document>" <|-- DocumentService
+IDocumentService <|-- DocumentService
+@enduml

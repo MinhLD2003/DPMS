@@ -1,0 +1,41 @@
+@startuml
+
+class DSARController {
+    -_consentService : ConsentService
+    -_dsarService : DsarService
+
+    +UpdateStatus(UpdateStatusVM vm) : Task<IActionResult>
+}
+
+class UpdateStatusVM {
+    +Id : Guid
+    +Status : DSARStatus
+}
+
+enum DSARStatus {
+    Submitted
+    RequiredReponse
+    Completed
+    Rejected
+}
+
+class DsarService {
+}
+
+abstract class BaseService<T> {
+    #Repository : IRepository<T>
+    +GetByIdAsync(object id) : Task<T?>
+    +UpdateAsync(T entity) : Task<T>
+}
+
+abstract class BaseRepository<T> {
+    +GetByIdAsync(object id) : Task<T?>
+    +UpdateAsync(T entity) : Task<T>
+}
+
+BaseService --> BaseRepository : "uses repository to get DSAR details and update it"
+DSARController --> UpdateStatusVM : "receives from client"
+DSARController --> DsarService : "get DSAR instance then update it"
+DsarService --|> BaseService
+
+@enduml

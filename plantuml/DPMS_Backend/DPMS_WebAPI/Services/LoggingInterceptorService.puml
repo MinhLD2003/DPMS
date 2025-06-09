@@ -1,0 +1,8 @@
+@startuml
+class LoggingInterceptorService {
+    + LoggingInterceptorService(logContext:DPMSLoggingContext, logger:ILogger<LoggingInterceptorService>)
+    + OnRequestAsync(logContext:HttpLoggingInterceptorContext) : ValueTask
+    + OnResponseAsync(logContext:HttpLoggingInterceptorContext) : ValueTask
+}
+IHttpLoggingInterceptor <|-- LoggingInterceptorService
+@enduml

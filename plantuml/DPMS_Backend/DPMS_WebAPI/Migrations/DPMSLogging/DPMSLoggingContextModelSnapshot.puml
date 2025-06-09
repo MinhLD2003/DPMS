@@ -1,0 +1,5 @@
+@startuml
+class DPMSLoggingContextModelSnapshot <<partial>> {
+}
+ModelSnapshot <|-- DPMSLoggingContextModelSnapshot
+@enduml

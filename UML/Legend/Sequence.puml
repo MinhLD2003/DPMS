@@ -1,0 +1,75 @@
+@startuml
+actor       Actor       as Foo1
+boundary    BoundaryObject    as Foo2
+participant Participant as Foo
+database    Database    as Foo5
+Foo2 <- Foo1 : To boundary
+Foo <- Foo2 : To participant
+Foo -> Foo5 : To database
+@enduml
+
+@startuml
+actor       Actor       as Foo1
+participant Participant as Foo
+participant Participant as Foo
+Foo1 -> Foo : To actor 
+@enduml
+@startuml
+participant Participant as Foo
+@enduml
+
+@startuml
+participant User
+
+User -> A: DoWork
+activate A
+
+A -> B: << request >>
+activate B
+
+B --> A: response
+deactivate B
+A -> B: << request >>
+activate B
+B --> A: response
+deactivate B
+A -> B: << request >>
+activate B
+B --> A: response
+deactivate B
+A -> User: Done
+deactivate A
+
+@enduml
+
+@startuml
+participant A
+B <- A : Call Message
+B --> A : Return Message
+B <- A : Call Message
+B --> A : Return Message
+@enduml
+@startuml
+participant A
+A <- A : self Message
+@enduml
+
+@startuml
+participant A
+B <- A : Call Message
+B --> A : Return Message
+loop Condition
+B <- A : Call Message
+B --> A : Return Message
+end
+@enduml
+@startuml
+participant A
+alt Condition
+B <- A : Call Message
+B --> A : Return Message
+else Condition
+B <- A : Call Message
+B --> A : Return Message
+end
+@enduml

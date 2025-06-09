@@ -1,0 +1,27 @@
+@startuml
+
+interface IMediator {
+    +Publish<T>(T notification) : Task
+}
+
+class UserAddedToSystemNotification {
+    +Email : string
+    +FullName : string
+    +RoleName : string
+    +SystemName : string
+    +Timestamp : DateTime
+}
+
+class EmailTemplateService {
+    +SendUserAddedToSystemNotificationAsync(UserAddedToSystemVM model) : Task<bool>
+}
+
+class EmailNotificationHandler<T> {
+    +Handle<UserAddedToSystemNotification>(UserAddedToSystemNotification notification, CancellationToken cancellationToken) : Task
+}
+
+IMediator --> UserAddedToSystemNotification : "raises events"
+IMediator ..> EmailNotificationHandler : "used by"
+EmailNotificationHandler --> EmailTemplateService : "sends email"
+
+@enduml

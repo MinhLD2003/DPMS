@@ -1,0 +1,16 @@
+@startuml
+|DPO|
+start
+:Login to DPMS;
+:Initiate new DPIA creation;
+:Select PIC for Assess System Architecture (CTO/CIO);
+:Select PIC for Quality Assessment (QA Manager);
+:Select PIC for Infrastructure Security (IT Manager);
+:Review DPIA details;
+
+|System (DPMS)|
+:Create DPIA record;
+:Set status to "Draft";
+
+stop
+@enduml

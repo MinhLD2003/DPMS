@@ -1,0 +1,39 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+actor User
+boundary "DPIA List Screen" as Screen
+participant "DPIAController" as Controller
+participant "DPIAService" as Service
+participant "BaseService<DPIA>" as BaseService
+participant "BaseRepository<DPIA>" as BaseRepo
+database "Database" as DB
+
+User -> Screen : Apply filters, click "Search"
+activate Screen
+Screen -> Controller : GetDPIAs(QueryParams)
+deactivate Screen
+activate Controller
+
+Controller -> Service : GetPagedAsync(QueryParams)
+activate Service
+
+Service -> BaseService : GetPagedAsync(QueryParams, includes)
+activate BaseService
+
+BaseService -> BaseRepo : GetPagedAsync(QueryParams, includes)
+activate BaseRepo
+BaseRepo -> DB : SELECT FROM DPIAs
+DB -> BaseRepo : DPIAs
+BaseRepo --> BaseService : PagedResponse<DPIA>
+deactivate BaseRepo
+
+BaseService --> Service : PagedResponse<DPIA>
+deactivate BaseService
+
+Service --> Controller : PagedResponse<DPIA>
+deactivate Service
+
+Controller --> Screen : Return paginated list
+deactivate Controller
+@enduml

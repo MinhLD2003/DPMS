@@ -1,0 +1,27 @@
+@startuml
+class IssueTicket {
+    + Title : string? <<get>> <<set>>
+    + Description : string? <<get>> <<set>>
+    + ExternalSystemId : string? <<get>> <<set>>
+}
+enum TicketType {
+    DPIA,
+    Risk,
+    Violation,
+    System,
+}
+enum IssueTicketStatus {
+    New,
+    Pending,
+    InProgress,
+    Resolved,
+    Closed,
+}
+
+BaseModel <|-- IssueTicket
+' IssueTicket --> "ExternalSystemId" string
+IssueTicket --> "TicketType" TicketType
+IssueTicket --> "IssueTicketStatus" IssueTicketStatus
+IssueTicket --> "ExternalSystem" ExternalSystem
+' IssueTicket --> "Documents<Document>" "List`1"
+@enduml

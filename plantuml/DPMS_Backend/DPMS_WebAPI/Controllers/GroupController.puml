@@ -1,0 +1,15 @@
+@startuml
+class GroupController {
+    + GroupController(groupService:IGroupService, mapper:IMapper, logger:ILogger<GroupController>)
+    + <<async>> GetGroups(queryParams:QueryParams) : Task<ActionResult>
+    + <<async>> GetGroupById(id:string) : Task<ActionResult>
+    + <<async>> CreateGroup(groupVM:GroupVM) : Task<ActionResult>
+    + <<async>> UpdateGroup(id:string, groupVM:GroupVM) : Task<ActionResult<GroupVM>>
+    + <<async>> DeleteGroup(id:string) : Task<ActionResult<GroupVM>>
+    + <<async>> AddUsersToGroup(groupId:string, userIds:List<string>) : Task<ActionResult>
+    + <<async>> GetUsersInGroup(groupName:string) : Task<ActionResult>
+    + <<async>> UpdateUserInGroup(groupId:string, userIds:List<string>) : Task<ActionResult>
+    + <<async>> RemoveUserFromGroup(groupId:string, userIds:List<string>) : Task<ActionResult>
+}
+ControllerBase <|-- GroupController
+@enduml

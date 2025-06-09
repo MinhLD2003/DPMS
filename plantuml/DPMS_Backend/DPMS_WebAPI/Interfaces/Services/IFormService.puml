@@ -1,0 +1,7 @@
+@startuml
+interface IFormService {
+}
+class "IService`1"<T> {
+}
+"IService`1" "<Form>" <|-- IFormService
+@enduml

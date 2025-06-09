@@ -1,0 +1,32 @@
+@startuml
+
+actor User
+boundary "Ticket List UI" as Screen
+participant "IssueTicketController" as Controller
+participant "IssueTicketService" as Service
+participant "IssueTicketRepository" as Repository
+database "Database" as DB
+
+User -> Screen : View Ticket List (with filters)
+activate Screen
+Screen -> Controller : GetIssueTickets(QueryParams)
+deactivate Screen
+activate Controller
+
+Controller -> Service : GetPagedAsync(QueryParams, includes)
+activate Service
+
+Service -> Repository : GetPagedAsync(QueryParams, includes)
+activate Repository
+Repository -> DB : SELECT FROM IssueTickets 
+DB --> Repository : List<IssueTicket> + Total Count
+Repository --> Service : PagedResult<IssueTicket>
+deactivate Repository
+
+Service --> Controller : PagedResult<IssueTicket>
+deactivate Service
+
+
+Controller --> Screen : Return paginated list of tickets
+deactivate Controller
+@enduml

@@ -1,0 +1,37 @@
+@startuml
+
+class DPIAController {
+    -_dpiaService : IDPIAService
+
+    +AddComment(Guid id, [FromBody] string content) : Task<ActionResult>
+}
+
+class AddCommentVM {
+    +ReferenceId : Guid
+    +Content : string
+    +UserId : Guid
+    +Type : CommentType
+}
+
+enum CommentType {
+    DPIA
+    DPIAResponsibility
+    IssueTicket
+    ...
+}
+
+class DPIAService {
+    -_mapper : IMapper
+
+    +AddCommentAsync(AddCommentVM comment) : Task
+}
+
+class DPIARepository {
+    +SaveCommentAsync(Comment comment) : Task
+}
+
+DPIAController --> AddCommentVM : "constructs from request body"
+DPIAController --> DPIAService : "calls service to add comment"
+DPIAService --> DPIARepository : "saves comment to database"
+
+@enduml

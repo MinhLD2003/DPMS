@@ -1,0 +1,9 @@
+@startuml
+class ExternalSystemPurpose {
+    string ExternalSystemId
+    string PurposeId
+}
+BaseModel <|-- ExternalSystemPurpose
+ExternalSystemPurpose --> "ExternalSystem" ExternalSystem
+ExternalSystemPurpose --> "Purpose" Purpose
+@enduml

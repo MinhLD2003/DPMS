@@ -1,0 +1,51 @@
+@startuml
+
+class User {
+    +UserName: String 
+    +FullName: String 
+    +Dob: DateTime
+    +Email: String
+    +Salt: String
+    +Password: String
+    +IsEmailConfirmed: Boolean
+    +IsPasswordConfirmed: Boolean
+    +Status: UserStatus
+}
+class AccountController {
+  + CreateAccount(User user) : ActionResult
+}
+class UserService {
+    +CreateUser(User user): bool
+}
+
+class UserRepository {
+    +CreateUser(user: User) : bool
+    +FindUserByEmail(email: String): bool
+}
+  
+class EmailService {
+    +SendAccountCredentialsAsync(AccountCredentials credentials)
+}
+
+class AccountCredentials {
+    +FullName : string
+    +UserName : string
+    +Password : string
+    +Email : string
+    +RoleName : string
+    +DpmsLoginUrl : string
+}
+
+EmailService --> AccountCredentials : uses account credentials
+
+class PasswordUtils {
+    +HashPassword(string password, string salt) :string
+}
+
+UserService --> PasswordUtils : hashing password before\n stores to database
+UserService --> UserRepository 
+AccountController --> EmailService : send notifications
+AccountController --> UserService : uses
+UserRepository --> User : manages
+
+@enduml

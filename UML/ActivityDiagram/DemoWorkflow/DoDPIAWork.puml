@@ -1,0 +1,58 @@
+@startuml
+|System (DPMS)|
+start
+:DPIA Stated (status = Started);
+
+fork
+  |DPIA Member|
+  :Login to DPMS;
+  :Upload work output documents;
+  :Update work progress;
+fork again
+  |DPIA Member|
+  :Login to DPMS;
+  :Upload work output documents;
+  :Update work progress;
+fork again
+  |DPIA Member|
+  :Login to DPMS;
+  :Upload work output documents;
+  :Update work progress;
+end fork
+
+fork
+  |QA Manager (PIC)|
+  :Monitor member progress;
+  :Mark Quality responsibility as Ready;
+fork again
+  |CTO/CIO (PIC)|
+  :Monitor member progress;
+  :Mark Architecture responsibility as Ready;
+fork again
+  |IT Manager (PIC)|
+  :Monitor member progress;
+  :Mark Infrastructure responsibility as Ready;
+end fork
+
+|DPO|
+:Login to DPMS;
+:Check if all responsibilities are Ready;
+
+if (All Ready?) then (yes)
+  :Review DPIA;
+
+  if (Approve DPIA?) then (approve)
+    |System (DPMS)|
+    :Update DPIA status to "Approved";
+    :Send email notification to all DPIA members (Approval result);
+  else (reject)
+    |System (DPMS)|
+    :Update DPIA status to "Rejected";
+  endif
+
+else (no)
+  :Wait for all responsibilities to be Ready;
+endif
+
+stop
+@enduml

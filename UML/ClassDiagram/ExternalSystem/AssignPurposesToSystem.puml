@@ -1,0 +1,70 @@
+@startuml
+actor "User" as Admin
+boundary "External System Edit Screen" as Screen
+participant "ExternalSystemController" as Controller
+participant "ExternalSystemService" as Service
+participant "PurposeRepository" as PurposeRepo
+participant "ExternalSystemPurposeRepository" as RelationRepo
+database "Database" as DB
+
+Admin -> Screen : Submit selected purpose IDs
+activate Screen
+Screen -> Controller : BulkAddPurposeToSystemAsync(systemId, List<Guid> purposeIds)
+deactivate Screen
+activate Controller
+
+Controller -> Service : BulkAddPurposeToSystemAsync(systemId, purposeIds)
+activate Service
+
+' === Get valid purposes ===
+Service -> PurposeRepo : FindAsync(p => purposeIds.Contains(p.Id))
+activate PurposeRepo
+PurposeRepo -> DB : Invoke SELECT query
+DB --> PurposeRepo : List<Purpose>
+PurposeRepo --> Service : validPurposes
+deactivate PurposeRepo
+
+Service -> Service : Extract validPurposeIds
+
+alt no validPurposeIds
+    Service --> Controller : Throw ArgumentException
+    Controller --> Screen : Show error "No valid Purpose IDs"
+    
+else continue
+
+    ' === Load existing relations ===
+    Service -> RelationRepo : FindAsync(esp => esp.ExternalSystemId == systemId)
+    activate RelationRepo
+    RelationRepo -> DB : Invoke SELECT
+    DB --> RelationRepo : List<ExistingRelations>
+    RelationRepo --> Service : existingRelations
+    deactivate RelationRepo
+
+    alt existingRelations not null
+        Service -> RelationRepo : BulkDeleteAsync(existingRelations)
+        activate RelationRepo
+        RelationRepo -> DB : Invoke DELETE
+        DB --> RelationRepo : OK
+        RelationRepo --> Service : Done
+        deactivate RelationRepo
+    end
+
+    ' === Create new relations ===
+    Service -> Service : Build List<ExternalSystemPurpose>
+
+    alt newRelations not null
+        Service -> RelationRepo : BulkAddAsync(newRelations)
+        activate RelationRepo
+        RelationRepo -> DB : INSERT INTO ExternalSystemPurposes
+        DB --> RelationRepo : OK
+        RelationRepo --> Service : Done
+        deactivate RelationRepo
+    end
+
+    Service --> Controller : Return newRelations
+    deactivate Service
+
+    Controller --> Screen : Show updated relation list
+    deactivate Controller
+end
+@enduml

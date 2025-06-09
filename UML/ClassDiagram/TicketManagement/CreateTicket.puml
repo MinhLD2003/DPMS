@@ -1,0 +1,54 @@
+@startuml
+
+class IssueTicketController {
+    -_ticketService : IIssueTicketService
+    +CreateIssueTicket([FromForm] IssueTicketVM issueTicketVM, List<IFormFile> files) : Task<IActionResult>
+}
+
+class IssueTicketVM {
+    +ExternalSystemId : Guid
+    +Title : string
+    +Description : string
+    +TicketType : TicketType
+    +Documents : List<DocumentVM>?
+}
+
+class IssueTicketService {
+    +CreateIssueTicket(issueTicketVM : IssueTicketVM, files : List<IFormFile>) : Task<IActionResult>
+    +AddAsync(T entity) : Task<T>
+}
+
+abstract class BaseService<T> {
+    #Repository : IRepository<T>
+    +AddAsync(T entity) : Task<T>
+}
+
+abstract class BaseRepository<T> {
+    +AddAsync(T entity) : Task<T>
+}
+
+class S3FileStorage {
+    +UploadFileAsync(fileStream : Stream, key : string, contentType : string) : Task<string>
+}
+
+enum TicketType {
+    DPIA
+    Risk
+    Violation
+    System
+}
+
+class IFormFile {
+    +FileName : string
+    +ContentType : string
+    +Length : long
+}
+
+IssueTicketController --> IssueTicketVM : "receives from form"
+IssueTicketController --> IFormFile : "receives files from form"
+IssueTicketController --> IssueTicketService : "creates ticket"
+IssueTicketService --> S3FileStorage : "uploads files"
+IssueTicketService --|> BaseService : "inherits default implementations"
+BaseService --> BaseRepository : "uses repository to add ticket"
+
+@enduml

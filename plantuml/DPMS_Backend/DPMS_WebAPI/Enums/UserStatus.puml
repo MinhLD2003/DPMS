@@ -1,0 +1,7 @@
+@startuml
+enum UserStatus {
+    Unknown= 0,
+    Activated= 1,
+    Deactivated= 2,
+}
+@enduml

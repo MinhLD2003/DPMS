@@ -1,0 +1,44 @@
+@startuml
+actor User
+boundary "Chat box AI" as Chatbox
+participant "GoogleAIController" as Controller
+participant "HttpClient" as HttpClient
+participant "Google AI Studio API (Gemini)" as GeminiAPI    
+
+User -> Chatbox : Querry 
+activate Chatbox 
+Chatbox -> Controller : HTTP POST /api/OpenAI/Ask (prompt)
+deactivate Chatbox 
+activate Controller
+
+Controller -> Controller : Validate prompt is not empty
+
+Controller -> Controller : Read API key & model ID from configuration
+
+
+Controller -> HttpClient : SendAsync(HttpRequestMessage with API key & JSON body)
+activate HttpClient
+HttpClient -> GeminiAPI : POST /v1beta/tunedModels/...:generateContent
+activate GeminiAPI
+GeminiAPI --> HttpClient : Response (JSON result)
+deactivate GeminiAPI
+
+
+HttpClient --> Controller : Return HTTP response
+deactivate HttpClient
+
+Controller --> Chatbox : Return 200 OK with generated text
+
+
+alt Error calling Gemini API
+    
+    Controller --> Chatbox : Return error status code with message
+    
+end
+
+alt Exception occurred
+    activate Controller
+    Controller --> Chatbox : Return 500 Internal Server Error with exception message
+    deactivate Controller
+end
+@enduml

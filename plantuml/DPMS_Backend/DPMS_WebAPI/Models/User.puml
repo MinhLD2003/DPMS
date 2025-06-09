@@ -1,0 +1,15 @@
+@startuml
+class User {
+    + <<required>> UserName : string <<get>> <<set>>
+    + <<required>> FullName : string <<get>> <<set>>
+    + Email : string? <<get>> <<set>>
+    + Salt : string? <<get>> <<set>>
+    + Password : string? <<get>> <<set>>
+    + IsEmailConfirmed : bool <<get>> <<set>>
+    + IsPasswordConfirmed : bool <<get>> <<set>>
+    + LastTimeLogin : DateTime? <<get>> <<set>>
+    + Dob : DateTime? <<get>> <<set>>
+}
+BaseModel <|-- User
+User --> "Status" UserStatus
+@enduml

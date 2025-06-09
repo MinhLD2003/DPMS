@@ -1,0 +1,45 @@
+@startuml
+actor "Data Subject" as User
+boundary "Consent Banner / DSAR Form" as Screen
+participant "DSARController" as Controller
+participant "ConsentService" as ConsentSvc
+participant "ConsentTokenRepository" as TokenRepo
+participant "BaseService<DSAR>" as BaseService
+participant "DSARRepository" as Repo
+database "Database" as DB
+
+User -> Screen : Fill DSAR form and submit
+activate Screen
+Screen -> Controller : SubmitDSAR(token, SubmitDsarVM)
+deactivate Screen
+activate Controller
+
+' === Get External System ID from Token ===
+Controller -> ConsentSvc : GetSystemFromToken(token)
+activate ConsentSvc
+ConsentSvc -> TokenRepo : FindAsync(Token == token)
+activate TokenRepo
+TokenRepo -> DB : SELECT FROM ConsentTokens
+DB --> TokenRepo : Token with ExternalSystemId
+TokenRepo --> ConsentSvc : Token entity
+deactivate TokenRepo
+ConsentSvc --> Controller : systemId
+deactivate ConsentSvc
+
+' === Submit DSAR directly ===
+Controller -> BaseService : AddAsync(DSAR)
+activate BaseService
+
+BaseService -> Repo : AddAsync(DSAR)
+activate Repo
+Repo -> DB : INSERT INTO DSAR 
+DB --> Repo : New DSAR 
+Repo --> BaseService : DSAR entity
+deactivate Repo
+
+BaseService --> Controller : DSAR
+deactivate BaseService
+
+Controller --> Screen : Show success message
+deactivate Controller
+@enduml

@@ -1,0 +1,37 @@
+@startuml
+
+actor User
+boundary "Risk Register UI" as Screen
+participant "RiskController" as Controller
+participant "RiskService" as Service
+participant "BaseService<Risk>" as BaseService
+participant "BaseRepository<Risk>" as Repo
+database "Database" as DB
+
+User -> Screen : Filter / Page / Sort risks
+activate Screen
+Screen -> Controller : GetRisks(QueryParams)
+deactivate Screen
+activate Controller
+
+Controller -> Service : GetPagedAsync(queryParams)
+activate Service
+Service -> BaseService : GetPagedAsync(queryParams)
+activate BaseService
+BaseService -> Repo : GetPagedAsync(queryParams)
+activate Repo
+
+Repo -> DB : Invoke SELECT 
+DB --> Repo : List<Risk>
+Repo --> BaseService : PagedResponse<Risk>
+deactivate Repo
+
+BaseService --> Service : PagedResponse<Risk>
+deactivate BaseService
+
+Service --> Controller : PagedResponse<Risk>
+deactivate Service
+
+Controller --> Screen : Render risk list with pagination
+deactivate Controller
+@enduml

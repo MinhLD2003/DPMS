@@ -1,0 +1,36 @@
+@startuml
+actor DPO
+boundary "Policy Detail Page" as Screen
+participant "PrivacyPolicyController" as Controller
+participant "PrivacyPolicyService" as Service
+participant "BaseService<Policy>" as BaseService
+participant "BaseRepository<Policy>" as Repo
+database "Database" as DB
+
+DPO -> Screen : Open policy detail
+activate Screen
+Screen -> Controller : GetPolicy(policyId)
+deactivate Screen
+activate Controller
+
+Controller -> Service : GetByIdAsync(policyId)
+activate Service
+
+Service -> BaseService : GetByIdAsync(policyId)
+activate BaseService
+
+BaseService -> Repo : GetByIdAsync(policyId)
+activate Repo
+Repo -> DB : SELECT * FROM PrivacyPolicies WHERE Id = ?
+DB --> Repo : Policy (or null)
+Repo --> BaseService : Policy
+deactivate Repo
+BaseService --> Service : Policy
+deactivate BaseService
+
+Service --> Controller : Policy
+deactivate Service
+
+Controller --> Screen : Display policy or show Not Found
+deactivate Controller
+@enduml

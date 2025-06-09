@@ -1,0 +1,39 @@
+@startuml
+actor "User" as Admin
+boundary "Export FIC Submission Screen" as Screen
+participant "FormController" as Controller
+participant "FormService" as Service
+participant "FormRepository" as Repo
+participant "FlexCelReport" as Report
+database "Database" as DB
+
+Admin -> Screen : Click Export Submission
+activate Screen
+Screen -> Controller : ExportSubmission(submissionId)
+deactivate Screen
+activate Controller
+
+Controller -> Service : ExportFicSubmission(submissionId)
+activate Service
+
+Service -> Repo : GetFicExportData(submissionId)
+activate Repo
+Repo -> DB : Invoke SELECT
+DB --> Repo : List<ExportFICSubmissionVM>
+Repo --> Service : Export data
+deactivate Repo
+
+Service -> Report : Run(templateStream, outputStream)
+activate Report
+note right of Report
+Apply hierarchical data\ninto Excel structure
+end note
+Report --> Service : Output Excel Stream
+deactivate Report
+
+Service --> Controller : Return Stream
+deactivate Service
+
+Controller --> Screen : Trigger download (Excel)
+deactivate Controller
+@enduml

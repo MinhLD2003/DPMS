@@ -1,0 +1,14 @@
+@startuml
+class FormController {
+    + FormController(context:DPMSContext, mapper:IMapper, logger:ILogger<FormController>, formService:IFormService)
+    + <<async>> GetFormTemplates() : Task<ActionResult<List<Form>>>
+    + <<async>> GetFormDetails(id:string) : Task<ActionResult<FormVM>>
+    + <<async>> SaveForm(form:CreateFormVm) : Task<ActionResult<CreateFormVm>>
+    + <<async>> UpdateForm(form:CreateFormVm) : Task<ActionResult<CreateFormVm>>
+    + SubmitForm(submission:FormSubmissionVM) : ActionResult<FormSubmissionVM>
+    + GetFICSubmissions(systemId:string?) : ActionResult<List<FICSubmissionVM>>
+    + GetSubmissionDetails(id:string) : ActionResult<FormVM>
+    + <<async>> DeleteForm(id:string) : Task<ActionResult>
+}
+ControllerBase <|-- FormController
+@enduml

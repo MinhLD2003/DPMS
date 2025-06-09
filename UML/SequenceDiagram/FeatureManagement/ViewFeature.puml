@@ -1,0 +1,34 @@
+@startuml
+actor Admin
+boundary "Feature Management Screen" as Screen
+participant "FeatureController" as Controller
+participant "FeatureService" as Service
+participant "BaseService<Feature>" as BaseService
+participant "BaseRepository<Feature>" as Repository
+database "Database" as DB
+
+Admin -> Screen : Open Feature List (with filters/page)
+activate Screen
+Screen -> Controller : GetFeatures(QueryParams)
+deactivate Screen
+activate Controller
+
+Controller -> Service : GetPagedAsync(QueryParams)
+activate Service
+Service -> BaseService : GetPagedAsync(QueryParams)
+activate BaseService
+BaseService -> Repository : GetPagedAsync(QueryParams, includes)
+activate Repository
+Repository -> DB : SELECT * FROM Features\nWITH pagination + filters
+DB --> Repository : Paged result set
+deactivate DB
+Repository --> BaseService : PagedResponse<Feature>
+deactivate Repository
+BaseService --> Service : PagedResponse<Feature>
+deactivate BaseService
+Service --> Controller : PagedResponse<Feature>
+deactivate Service
+
+Controller --> Screen : Display feature list (paged)
+deactivate Controller
+@enduml

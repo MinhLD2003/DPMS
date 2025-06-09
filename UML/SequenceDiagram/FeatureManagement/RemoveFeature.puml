@@ -1,0 +1,34 @@
+@startuml
+actor Admin
+boundary "Feature Management Screen" as Screen
+participant "FeatureController" as Controller
+participant "FeatureService" as Service
+participant "BaseService<Feature>" as BaseService
+participant "BaseRepository<Feature>" as Repository
+database "Database" as DB
+
+Admin -> Screen : Click delete on feature
+activate Screen
+Screen -> Controller : DeleteFeature(id)
+deactivate Screen
+activate Controller
+
+Controller -> Service : DeleteAsync(id)
+activate Service
+Service -> BaseService : DeleteAsync(id)
+activate BaseService
+BaseService -> Repository : DeleteAsync(id)
+activate Repository
+Repository -> DB : DELETE FROM Features WHERE Id = ?
+DB --> Repository : OK
+deactivate DB
+Repository --> BaseService : true
+deactivate Repository
+BaseService --> Service : true
+deactivate BaseService
+Service --> Controller : true
+deactivate Service
+
+Controller --> Screen : Return success response
+deactivate Controller
+@enduml

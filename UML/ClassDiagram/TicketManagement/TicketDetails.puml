@@ -1,0 +1,48 @@
+@startuml
+class IssueTicketController {
+    +GetIssueTicketById(Guid id) : Task<IActionResult>
+}
+
+interface IIssueTicketService {
+    +GetDetailAsync(Guid id, params Expression<Func<IssueTicket, object>>[] includes) : Task<IssueTicket>
+}
+
+class IMapper {
+    +Map<TDestination>(object source) : TDestination
+}
+
+class IssueTicket {
+    +Id : Guid 
+    +ExternalSystem : ExternalSystem?
+    +TicketType : TicketType
+    +IssueTicketStatus : IssueTicketStatus 
+    +Documents : List<IssueTicketDocument>
+    ...
+}
+
+abstract class BaseService<T> {
+    #Repository : IRepository<T>
+    +GetDetailAsync(object id, params Expression<Func<T, object>>[] includes) : Task<T?>
+}
+
+abstract class BaseRepository<T> {
+    +GetDetailAsync(object id, params Expression<Func<T, object>>[] includes) : Task<T?>
+}
+
+class IssueTicketVM {
+    +ExternalSystemId : Guid
+    +Title : string
+    +Description : string
+    +TicketType : TicketType
+    +Documents : List<DocumentVM>?
+}
+
+IssueTicketController --> IIssueTicketService : "view ticket details"
+IssueTicketController --> IMapper : "uses"
+IIssueTicketService --> IssueTicket : "returns"
+IMapper --> IssueTicketVM : "maps to"
+IssueTicketService --|> BaseService : "inherits default implementations"
+IssueTicketService ..|> IIssueTicketService
+BaseService --> BaseRepository : "uses repository to get ticket details"
+
+@enduml

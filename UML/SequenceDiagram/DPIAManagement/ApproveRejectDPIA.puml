@@ -1,0 +1,70 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam defaultTextAlignment center
+
+actor DPO
+boundary "DPIA Review Screen" as Screen
+participant "DPIAController" as Controller
+participant "DPIAService" as Service
+participant "UserRepository" as UserRepo
+participant "DPIARepository" as DPIARepo
+participant "BaseRepository<DPIA>" as BaseRepo
+participant "IMediator" as Mediator
+database "Database" as DB
+
+DPO -> Screen : Click Approve/Reject on DPIA
+activate Screen
+Screen -> Controller : Approve(id) or Reject(id)
+deactivate Screen
+activate Controller
+
+Controller -> Service : ApproveAsync(id, principal) / RejectAsync(id, principal)
+activate Service
+
+Service -> UserRepo : CheckUserInGroup(userId, "DPO")
+activate UserRepo
+UserRepo -> DB : SELECT * FROM UserGroups WHERE UserId = ? AND Group = 'DPO'
+DB --> UserRepo : Result
+UserRepo --> Service : Result<bool>
+deactivate UserRepo
+
+alt User is DPO
+    Service -> DPIARepo : GetDPIADetailAsync(dpiaId)
+    activate DPIARepo
+    DPIARepo -> DB : SELECT * FROM DPIAs WHERE Id = ?
+    DB --> DPIARepo : DPIA
+    DPIARepo --> Service : DPIA entity
+    deactivate DPIARepo
+
+    Service -> DPIARepo : GetDPIAMembersAsync(dpiaId)
+    activate DPIARepo
+    DPIARepo -> DB : SELECT * FROM DPIAMembers WHERE DPIAId = ?
+    DB --> DPIARepo : List of members
+    DPIARepo --> Service : Members
+    deactivate DPIARepo
+
+    ' === Update DPIA status ===
+    Service -> BaseRepo : Update(dpia)
+    activate BaseRepo
+    BaseRepo -> DB : UPDATE DPIAs SET Status = ? WHERE Id = ?
+    DB --> BaseRepo : OK
+    BaseRepo --> Service : Done
+    deactivate BaseRepo
+
+    ' === Notify DPIA Members ===
+    loop each member
+        Service -> Mediator : Publish(DPIAApprovalNotification)
+        activate Mediator
+        Mediator --> Service : OK
+        deactivate Mediator
+    end
+
+    Service --> Controller : OK
+else Not DPO
+    Service --> Controller : Return 403 Forbidden
+end
+deactivate Service
+
+Controller --> Screen : Show success or error message
+deactivate Controller
+@enduml

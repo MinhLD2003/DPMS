@@ -1,0 +1,61 @@
+@startuml
+
+abstract class BaseService<T> {
+    #Repository : IRepository<T>
+    #_unitOfWork : IUnitOfWork
+}
+
+abstract class BaseRepository<T> {
+    #_context : DPMSContext
+    #_dbSet : DbSet<T>
+}
+
+interface IRepository<T> {
+    +Task<T?> GetByIdAsync(object id)
+    +void Update(T entity)
+}
+
+BaseRepository --|> IRepository
+
+BaseService --|> IService
+BaseService --> IRepository : uses IRepository<T>
+
+class PurposeController {
+    -_purposeService : IPurposeService
+
+    +Task<IActionResult> UpdatePurpose(Guid id, [FromBody] PurposeVM model)
+}
+
+class PurposeVM {
+    +Id : Guid
+    +Name : string
+    +Description : string
+    +Status : PurposeStatus
+}
+
+enum PurposeStatus {
+    Draft
+    Active
+    Inactive
+}
+
+PurposeVM --> PurposeStatus : has statuses
+
+class PurposeService {
+}
+
+interface IPurposeService {
+}
+
+interface IService<T> {
+    +Task<T?> GetByIdAsync(object id)
+    +Task<T> UpdateAsync(T entity)
+}
+
+IPurposeService --|> IService
+PurposeService --|> IPurposeService
+PurposeService --|> BaseService : inherits default \nimplementations from
+PurposeController --> IPurposeService : uses GetByIdAsync<T> to check purpose's existence\n and UpdateAsync<T> to update purpose
+PurposeController --> PurposeVM : receives from client
+
+@enduml

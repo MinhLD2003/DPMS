@@ -1,0 +1,66 @@
+@startuml
+
+caption "Update Privacy Policy"
+
+abstract class BaseService<T> {
+    #Repository : IRepository<T>
+    #_unitOfWork : IUnitOfWork
+}
+
+abstract class BaseRepository<T> {
+    #_context : DPMSContext
+    #_dbSet : DbSet<T>
+}
+
+interface IRepository<T> {
+    +Task<T?> GetByIdAsync(object id)
+    +void Update(T entity)
+}
+
+BaseRepository --|> IRepository
+
+BaseService --|> IService
+BaseService --> IRepository : uses IRepository<T>
+
+class PrivacyPolicyController {
+    -_privacyPolicyService : IPrivacyPolicyService
+
+    +Task<IActionResult> UpdatePolicy(Guid id, [FromBody] PolicyVM model)
+}
+
+class PolicyVM {
+    +PolicyCode : string
+    +Title : string
+    +Description : string
+    +Content : string
+    +Status : PolicyStatus
+}
+
+enum PolicyStatus {
+    Draft
+    Active
+    Inactive
+}
+
+PolicyVM --> PolicyStatus : has statuses
+
+class PrivacyPolicyService {
+    +Task ActivePolicy(Guid id)
+}
+
+interface IPrivacyPolicyService {
+    +Task ActivePolicy(Guid id)
+}
+
+interface IService<T> {
+    +Task<T?> GetByIdAsync(object id)
+    +Task<T> UpdateAsync(T entity)
+}
+
+IPrivacyPolicyService --|> IService
+PrivacyPolicyService --|> IPrivacyPolicyService
+PrivacyPolicyService --|> BaseService : inherits default \nimplementations from
+PrivacyPolicyController --> IPrivacyPolicyService
+PrivacyPolicyController --> PolicyVM : receives from client
+
+@enduml

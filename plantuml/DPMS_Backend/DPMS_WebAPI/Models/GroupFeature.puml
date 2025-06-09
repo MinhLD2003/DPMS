@@ -1,0 +1,11 @@
+@startuml
+class GroupFeature {
+    Guid GroupId
+    Guid FeatureId
+}
+BaseModel <|-- GroupFeature
+' GroupFeature --> "GroupId" string
+' GroupFeature --> "FeatureId" string
+GroupFeature --> "Group" Group
+GroupFeature --> "Feature" Feature
+@enduml

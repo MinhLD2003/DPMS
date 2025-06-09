@@ -1,0 +1,27 @@
+@startuml
+class GroupController {
+    +AddUsersToGroup(Guid groupId, List<Guid> userIds) : Task<ActionResult>
+}
+
+class GroupService {
+    +AddUserToGroup(Guid groupId, List<Guid> userIds) : Task<int>
+}
+
+interface IUnitOfWork {
+    +SaveChangesAsync() : Task<int>
+}
+
+class GroupRepository {
+    +AddUserToGroup(Guid groupId, List<Guid> userIds) : Task
+}
+
+class Group {
+    +Guid Id
+    +List<User> Users
+}
+
+GroupController --> GroupService : "uses"
+GroupService --> GroupRepository : "add to group"
+GroupService --> IUnitOfWork : "saves changes"
+GroupRepository --> Group : "modifies"
+@enduml

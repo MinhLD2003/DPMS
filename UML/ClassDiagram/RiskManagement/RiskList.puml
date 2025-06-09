@@ -1,0 +1,52 @@
+@startuml
+
+abstract class BaseService<T> {
+    #Repository : IRepository<T>
+    #_unitOfWork : IUnitOfWork
+}
+
+abstract class BaseRepository<T> {
+    #_context : DPMSContext
+    #_dbSet : DbSet<T>
+}
+
+interface IRepository<T> {
+    +GetPagedAsync(QueryParams , params Expression<Func<T, object>>[]?) : Task<PagedResponse<T>>
+}
+
+class QueryParams {
+    +PageNumber : int
+    +PageSize : int
+    +SortBy : string
+    +SortDirection : string
+    +Filters : Dictionary<string, string>
+}
+
+BaseRepository --|> IRepository
+
+BaseService --|> IService
+BaseService --> IRepository : uses IRepository<T>
+
+class RiskController {
+    -_riskService : IRiskService
+
+    +GetRisks([FromQuery] QueryParams queryParams) : Task<IActionResult>
+}
+
+class RiskService {
+}
+
+interface IRiskService {
+}
+
+interface IService<T> {
+    +GetPagedAsync(QueryParams , params Expression<Func<T, object>>[]?) : Task<PagedResponse<T>>
+}
+
+IRiskService --|> IService
+RiskService --|> IRiskService
+RiskService --|> BaseService : inherits default \nimplementations from
+RiskController --> IRiskService : uses GetPagedAsync<T>
+RiskController --> QueryParams : receives from client
+
+@enduml

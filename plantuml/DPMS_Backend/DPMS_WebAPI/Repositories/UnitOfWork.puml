@@ -1,0 +1,17 @@
+@startuml
+class UnitOfWork {
+    + UnitOfWork(context:DPMSContext)
+    + <<async>> SaveChangesAsync() : Task<int>
+    + Dispose() : void
+}
+IUnitOfWork <|-- UnitOfWork
+UnitOfWork --> "IssueTickets" IIssueTicketRepository
+UnitOfWork --> "Groups" IGroupRepository
+UnitOfWork --> "Features" IFeatureRepository
+UnitOfWork --> "Users" IUserRepository
+UnitOfWork --> "Documents" IDocumentRepository
+UnitOfWork --> "ExternalSystems" IExternalSystemRepository
+UnitOfWork --> "Purposes" IPurposeRepository
+UnitOfWork --> "Forms" IFormRepository
+UnitOfWork --> "ExternalSystemPurposes" IExternalSystemPurposeRepository
+@enduml

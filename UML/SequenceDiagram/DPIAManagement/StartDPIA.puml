@@ -1,0 +1,63 @@
+@startuml
+actor DPO
+boundary "DPIA Start Screen" as Screen
+participant "DPIAController" as Controller
+participant "DPIAService" as Service
+participant "UserRepository" as UserRepo
+participant "DPIARepository" as Repo
+participant "DPIAMemberRepository" as MemberRepo
+participant "IPublisher" as Publisher
+database "Database" as DB
+
+DPO -> Screen : Click "Start DPIA"
+activate Screen
+Screen -> Controller : StartDPIA(dpiaId)
+deactivate Screen
+activate Controller
+
+Controller -> Service : StartDPIAAsync(dpiaId, principal)
+activate Service
+
+Service -> UserRepo : CheckUserInGroup(userId, "DPO")
+activate UserRepo
+UserRepo -> DB : SELECT FROM UserGroups 
+DB --> UserRepo : true/false
+UserRepo --> Service : isDpo
+deactivate UserRepo
+
+alt User is Dpo
+    Service -> Repo : GetDPIADetailAsync(dpiaId)
+    activate Repo
+    Repo -> DB : SELECT FROM DPIA 
+    DB --> Repo : DPIA entity
+    Repo --> Service : DPIA
+    deactivate Repo
+
+    Service -> MemberRepo : GetDpiaMemberEmail(dpiaId)
+    activate MemberRepo
+    MemberRepo -> DB : SELECT FROM DPIAMembers 
+    DB --> MemberRepo : List of Emails
+    MemberRepo --> Service : Emails
+    deactivate MemberRepo
+
+    Service -> Publisher : Publish(notification to members)
+    activate Publisher
+    Publisher --> Service : OK
+    deactivate Publisher
+
+    Service -> Repo : SaveEventsAsync(DPIAStarted)
+    activate Repo
+    Repo -> DB : INSERT INTO DPIAEvents (...)
+    DB --> Repo : OK
+    Repo --> Service : OK
+    deactivate Repo
+
+    Service --> Controller : OK
+else Not Authorized
+    Service --> Controller : Return Forbidden
+end
+deactivate Service
+
+Controller --> Screen : Show result (success or error)
+deactivate Controller
+@enduml
