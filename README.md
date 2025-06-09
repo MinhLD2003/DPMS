@@ -118,17 +118,6 @@ Includes all endpoints for:
 * Consent
 * DPIA
 * Risk Assessment
-
----
-
-## 🧪 Testing
-
-Run unit and integration tests:
-
-```bash
-dotnet test
-```
-
 ---
 
 ## 📁 Project Structure
